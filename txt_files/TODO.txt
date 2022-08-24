@@ -1,0 +1,17 @@
+How this works:
+-Add "doing - <your name>" when you're working on something
+-Add "done - <your name>" when you finish something
+-Feel free to add items to this list when needed
+
+TODO:
+Save system - done - downvoid
+Player system - done - mkey
+Layer class - done - mkey
+Upgrade class - doing - incremental_gamer
+Milestone class - done - mkey
+Challenge class - done - downvoid
+Toggle class - doing - mkey
+Text-input class - doing - mkey
+Tab class - NEEDS DONE
+Achievement class - done - downvoid
+Interaction system - planning - incremental_gamer

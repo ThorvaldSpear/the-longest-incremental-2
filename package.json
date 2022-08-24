@@ -1,0 +1,11 @@
+{
+  "name": "the-longest-incremental2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.html",
+  "scripts": {},
+  "dependencies": {
+    "break_eternity.js": "1.3.1"
+  },
+  "keywords": []
+}
