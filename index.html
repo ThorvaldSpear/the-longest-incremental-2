@@ -2,22 +2,20 @@
 <html>
   <head>
     <!-- Can't eblieve they tried doing it again -->
-    <title>The Longest Incremental^2: New Edition</title>
+    <!--Well, here we go again...-->
+    <title>The Longest Incremental^2: Refactor I</title>
     <meta charset="UTF-8" />
 
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <h1>Test gwa</h1>
-    <div style="display:none">You should not be seeing this. GWA TROLL</div>
-		<div id="tabButtons">
-
+    <div id="app">
+      <main-app />
+      <div v-if="false">
+        <!-- Stuff to put for loading screens -->
+        The game is loading, please be patient...
+      </div>
     </div>
-		<!--they will be subelements of microTabButtons that have the subTabButtons class so that we can have an infinite amount of nesting and also not have it take up too much space if there are none-->
-		<div id="microTabButtons">
-
-		</div><!--You see, nested subtabs (i don't want this naming system to be too shitty)-->
-		<div id="tab">
-		<script type="module" src="src/index.js"></script>
+    <script type="module" src="src/index.js"></script>
   </body>
 </html>
