@@ -6,14 +6,25 @@
     <title>The Longest Incremental^2: Refactor I</title>
     <meta charset="UTF-8" />
 
+    <link
+      href="https://fonts.googleapis.com/css2?family=Dosis&family=Lato&family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <div id="bg">
+      <div id="inner_bg"></div>
+    </div>
     <div id="app">
       <main-app />
-      <div v-if="false">
+      <div id="loading" v-if="false">
         <!-- Stuff to put for loading screens -->
-        The game is loading, please be patient...
+
+        <h1>Loading... (this shouldn't take more than 5 hours)</h1>
+        <br />
+        What, 5 hours have passed and you still haven't loaded?! Refresh and
+        wait for it to load :troll:
       </div>
     </div>
     <script type="module" src="src/index.js"></script>

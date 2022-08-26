@@ -1,5 +1,14 @@
+:root {
+  /* theme stuff */
+  --font: "Lato", sans-serif;
+  --font-color: #012d40;
+  --bg: linear-gradient(#acc8e5, #719dcc);
+  --inner-bg: transparent;
+}
 body {
-  font-family: sans-serif;
+  font-family: var(--font);
+  color: var(--font-color);
+  margin: 0;
 }
 * {
   text-align: center;
@@ -7,4 +16,60 @@ body {
 }
 table {
   margin: auto;
+}
+
+#bg {
+  position: fixed;
+  z-index: -1;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  background: var(--bg);
+}
+#inner_bg {
+  position: absolute;
+  height: 100%;
+  width: 95%;
+  left: 2.5%;
+  background: var(--inner-bg);
+}
+#loading {
+  position: fixed;
+  top: calc(50% - 50px);
+  left: 0;
+  width: 100%;
+  height: 50px;
+  background: #fff7;
+}
+#loading * {
+  margin: 0;
+}
+#app {
+  margin-left: 2.5%;
+  margin-right: 2.5%;
+}
+
+h1,
+h2,
+h3 {
+  color: #003f7f;
+}
+.tab {
+  width: 100%;
+}
+
+button {
+  border: 2px solid #0000007f;
+  border-radius: 5px;
+  padding: 6px;
+  font-family: var(--font);
+  transition: all 0.3s ease;
+  transform: scale(1);
+}
+button:hover {
+  transform: scale(1.05);
+}
+button:active {
+  transform: scale(1);
 }
