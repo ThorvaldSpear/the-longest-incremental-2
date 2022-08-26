@@ -27,7 +27,7 @@ const tenthousandth = new Decimal(0.0001),
     "N",
     "De"
   ];
-export function trollFormat(num, precision, mantissa = true) {
+/*export function trollFormat(num, precision, mantissa = true) {
   let e = num.log(1.01).floor();
   let m = num.div(Decimal.pow(1.01, e));
   if (
@@ -44,7 +44,7 @@ export function trollFormat(num, precision, mantissa = true) {
     : e.toStringWithDecimalPlaces(0);
   if (mantissa) return `${m.toStringWithDecimalPlaces(precision)}*1.01^${e}`;
   return `1.01^${e}`;
-}
+}*/
 function exponentialFormat(num, precision, mantissa = true) {
   let e = num.log10().floor();
   let m = num.div(Decimal.pow(10, e));

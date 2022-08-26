@@ -20,7 +20,7 @@ function doBuyPoints(c) {
 // shouldn't be specific to miner
 // this works for every single buyable
 // or leave it as-is if you want to name it "miner"
-class Miner {
+class Buyable {
   constructor({ name, cost, eff, desc, unl, canBuy, doBuy, amt = 0 }) {
     this.name = name;
     this.unl = unl;
@@ -41,11 +41,11 @@ class Miner {
 
 /**
  * An array containing all the miners.
- * @type {Array<Miner>}
+ * @type {Array<Buyable>}
  */
 export const miners = [
-  new Miner({
-    name: "Bitcoin Miner",
+  new Buyable({
+    name: "Bitcoin Buyable",
     cost: (lvl) => (D(lvl).eq(0) ? D(0) : D(1.4).pow(lvl).mul(5)),
     eff: (lvl) => D(lvl),
     desc(eff) {
@@ -55,13 +55,13 @@ export const miners = [
     canBuy: canBuyPoints,
     doBuy: doBuyPoints
   }),
-  new Miner({
+  new Buyable({
     // stuffs to go in here
     /* oh swagger functioner */
     // yep that's how you do it :)
     // ~~inflated game when~~
     // right now :cart_troll:
-    name: "Ethereum Miner",
+    name: "Ethereum Buyable",
     cost: (lvl) => D(1.6).pow(lvl).mul(100),
     eff: (lvl) => D(lvl).mul(10),
     desc(eff) {
@@ -71,13 +71,13 @@ export const miners = [
     canBuy: canBuyPoints,
     doBuy: doBuyPoints
   }),
-  new Miner({
+  new Buyable({
     // stuffs to go in here
     /* oh swagger functioner */
     // yep that's how you do it :)
     // ~~inflated game when~~
     // right now :cart_troll:
-    name: "Tether Miner",
+    name: "Tether Buyable",
     // you know this will inflate?
     // thats the point :cart_troll:
     // lmao
@@ -94,7 +94,7 @@ export const miners = [
     canBuy: canBuyPoints,
     doBuy: doBuyPoints
   }),
-  new Miner({
+  new Buyable({
     // stuffs to go in here
     /* oh swagger functioner */
     // yep that's how you do it :)

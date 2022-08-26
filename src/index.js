@@ -2,12 +2,11 @@ import { createApp } from "https://unpkg.com/vue@3.2.37/dist/vue.esm-browser.js"
 import { miners } from "./features/miners.js";
 import { RESOURCES } from "./features/resources.js";
 import { runGame } from "./features/player.js";
-import { format, trollFormat } from "./utils/format.js";
+import { format } from "./utils/format.js";
 
 // VERY MUCH FOR TESTING
 const TABS = {
-  Main: ["Miners", "What"],
-  What: ["Miners"],
+  Main: ["Miners"],
   Miners: []
 };
 
@@ -27,19 +26,22 @@ createApp()
     }
   })
   .component("tab-internal", {
-    props: ["tabs"],
+    props: ["tab"],
     data() {
       return {
         tabClicked: undefined
       };
     },
-    // this won't show the content itself :(
     template: `
-      <div>Testing...</div>
+      <component :is="tab"/>
       <span v-if="tabs.length > 0">
-        <span v-if="tabs.length > 1" v-for="subtab of tabs">
-          <button @click="tabClicked = subtab" :tabrole="subtab.toLowerCase()">{{subtab}}</button>
-        </span><br>
+        <div v-if="tabs.length > 1">
+          <br><br>
+          <div v-for="subtab of tabs">
+            <button @click="tabClicked = subtab" :tabrole="subtab.toLowerCase()">{{subtab}}</button>
+          </div>
+        </div>
+        <br>
         <span v-for="subtab of tabs">
           <tab-internal v-if="tabClicked === subtab" :tab="tabClicked" />
         </span>
@@ -48,7 +50,7 @@ createApp()
     watch: {
       tabs: {
         immediate: true,
-        handler(newVal) {
+        handler() {
           // bruh lmao
           this.tabClicked = TABS[this.tab][0];
         }
@@ -70,9 +72,6 @@ createApp()
             miners
           };
         }
-      },
-      What: {
-        template: `what.`
       }
     },
     setup(props) {
@@ -88,7 +87,7 @@ createApp()
     props: ["name"],
     template: `
       <span><span style='font-size: 18px'>{{format(resource.amount)}}</span> {{resource.name}}</span>
-      <span v-if="resource.production.gt(0)" style='font-size: 8px'>(+{{format(resource.production)/s}})</span>
+      <span v-if="resource.production.gt(0)" style='font-size: 8px'> (+{{format(resource.production)}}/s)</span>
     `,
     setup(props) {
       const resource = RESOURCES[props.name];
@@ -105,7 +104,7 @@ createApp()
         <td style='width: 240px'><b>{{build.name}}</b>:</td>
         <td>{{build.amt}}</td>
         <td style='font-size: 8px'>({{build.desc.value}})</td>
-        <td><button @click="build.buy()">Cost: {{trollFormat(build.cost.value)}}</button></td>
+        <td><button @click="build.buy()">Cost: {{format(build.cost.value)}}</button></td>
       </tr>
     `,
     setup(props) {
