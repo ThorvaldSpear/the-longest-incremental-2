@@ -1,113 +1,105 @@
-import {
-  computed,
-  ref
-} from "https://unpkg.com/vue@3.2.37/dist/vue.esm-browser.js";
-import { player } from "./player.js";
+import { computed } from "https://unpkg.com/vue@3.2.37/dist/vue.esm-browser.js";
 import { D } from "../utils/break_eternity.js";
 import { format } from "../utils/format.js";
+import { player } from "./player.js";
+import { RESOURCES } from "./resources.js";
+
 /**
- * The miner class for creating miners.
+ * The Buyable class for creating Miners.
  */
-
-function canBuyPoints(c) {
-  return player.points.gte(c);
-}
-
-function doBuyPoints(c) {
-  player.points = player.points.sub(c);
-}
-
-// shouldn't be specific to miner
-// this works for every single buyable
-// or leave it as-is if you want to name it "miner"
 class Buyable {
-  constructor({ name, cost, eff, desc, unl, canBuy, doBuy, amt = 0 }) {
+  constructor({ name, group, unl, cost, eff, desc }) {
     this.name = name;
+    this.group = group;
     this.unl = unl;
-    this.amt = ref(amt);
-    this.doBuy = doBuy;
-    this.cost = computed(() => cost(this.amt.value));
-    this.eff = computed(() => eff(this.amt.value));
+    this.cost = computed(() => cost(this.amt));
+    this.eff = computed(() => eff(this.amt));
     this.desc = computed(() => desc(this.eff.value));
-    this.canBuy = computed(() => canBuy(this.cost.value));
   }
 
+  get res() {
+    return RESOURCES[BUYABLES[this.group].res];
+  }
+  get player() {
+    return BUYABLES[this.group].player();
+  }
+  get amt() {
+    return D(this.player[this.name] ?? 0);
+  }
+
+  canBuy() {
+    return this.res.gte(this.cost.value);
+  }
   buy() {
-    if (!this.canBuy.value || !this.unl.value) return;
-    this.doBuy(this.cost.value);
-    this.amt.value++;
+    if (!this.unl.value) return;
+    if (!this.canBuy()) return;
+    this.res.sub(this.cost.value);
+    this.player[this.name] = this.amt.add(1);
   }
 }
 
-/**
- * An array containing all the miners.
- * @type {Array<Buyable>}
- */
-export const miners = [
-  new Buyable({
-    name: "Bitcoin Buyable",
-    cost: (lvl) => (D(lvl).eq(0) ? D(0) : D(1.4).pow(lvl).mul(5)),
-    eff: (lvl) => D(lvl),
-    desc(eff) {
-      return `+${format(eff)}/s`;
-    },
-    unl: computed(() => true),
-    canBuy: canBuyPoints,
-    doBuy: doBuyPoints
-  }),
-  new Buyable({
-    // stuffs to go in here
-    /* oh swagger functioner */
-    // yep that's how you do it :)
-    // ~~inflated game when~~
-    // right now :cart_troll:
-    name: "Ethereum Buyable",
-    cost: (lvl) => D(1.6).pow(lvl).mul(100),
-    eff: (lvl) => D(lvl).mul(10),
-    desc(eff) {
-      return `+${format(eff)}/s`;
-    },
-    unl: computed(() => miners[0].amt.value >= 1),
-    canBuy: canBuyPoints,
-    doBuy: doBuyPoints
-  }),
-  new Buyable({
-    // stuffs to go in here
-    /* oh swagger functioner */
-    // yep that's how you do it :)
-    // ~~inflated game when~~
-    // right now :cart_troll:
-    name: "Tether Buyable",
-    // you know this will inflate?
-    // thats the point :cart_troll:
-    // lmao
-    // why don't you set the cost to 0
-    // :troll_cart: giving you points every time you buy it
-    cost: (lvl) => D(1.8).pow(lvl).mul(1e3),
-    eff: (lvl) => D(lvl).mul(30),
-    // LMAO
-    // best way to earn points working in 2022 , 100% working , no viruses , free download , glitchless , unpatched , undetected
-    desc(eff) {
-      return `+${format(eff)}/s`;
-    },
-    unl: computed(() => miners[1].amt.value >= 1),
-    canBuy: canBuyPoints,
-    doBuy: doBuyPoints
-  }),
-  new Buyable({
-    // stuffs to go in here
-    /* oh swagger functioner */
-    // yep that's how you do it :)
-    // ~~inflated game when~~
-    // right now :cart_troll:
-    name: "Hardware Booster",
-    cost: (lvl) => D(1e4).mul(D(10).pow(lvl)),
-    eff: (lvl) => D(2).pow(lvl), // funky effector
-    desc(eff) {
-      return `x${format(eff)}`;
-    },
-    unl: computed(() => miners[2].amt.value >= 1),
-    canBuy: canBuyPoints,
-    doBuy: doBuyPoints
-  })
-];
+function getMiner(x) {
+  return getBuyable("Miners", x);
+}
+
+export function getMinerEff(x) {
+  return getBuyableEff("Miners", x);
+}
+
+function getBuyable(group, x) {
+  return BUYABLES[group].data[x];
+}
+
+export function getBuyableEff(group, x) {
+  return getBuyable(group, x).eff.value;
+}
+
+export const BUYABLES = {
+  Miners: {
+    res: "dirt",
+    player: () => player.miners,
+    data: [
+      // @type {Array<Buyable>}
+      new Buyable({
+        name: "Starter Miner",
+        cost: (lvl) => (D(lvl).eq(0) ? D(0) : D(1.4).pow(lvl).mul(5)),
+        eff: (lvl) => D(lvl),
+        desc(eff) {
+          return `+${format(eff)}/s`;
+        },
+        unl: computed(() => true),
+        group: "Miners"
+      }),
+      new Buyable({
+        name: "Hard Miner",
+        cost: (lvl) => D(1.6).pow(lvl).mul(100),
+        eff: (lvl) => D(lvl).mul(10),
+        desc(eff) {
+          return `+${format(eff)}/s`;
+        },
+        unl: computed(() => getMiner(0).amt.gt(1)),
+        group: "Miners"
+      }),
+      new Buyable({
+        name: "Ranged Miner",
+        cost: (lvl) => D(1.8).pow(lvl).mul(1e3),
+        eff: (lvl) => D(lvl).mul(30),
+        desc(eff) {
+          return `+${format(eff)}/s`;
+        },
+        unl: computed(() => getMiner(1).amt.gt(1)),
+        group: "Miners"
+      }),
+      new Buyable({
+        name: "Efficient Miner",
+        cost: (lvl) => D(1e4).mul(D(10).pow(lvl)),
+        eff: (lvl) => D(2).pow(lvl), // funky effector
+        desc(eff) {
+          return `x${format(eff)}`;
+        },
+        unl: computed(() => getMiner(2).amt.gt(1)),
+        group: "Miners"
+      })
+    ]
+  }
+};

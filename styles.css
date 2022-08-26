@@ -1,7 +1,7 @@
 :root {
   /* theme stuff */
   --font: "Lato", sans-serif;
-  --font-color: #012d40;
+  --font-color: #003f7f;
   --bg: linear-gradient(#acc8e5, #719dcc);
   --inner-bg: transparent;
 }
@@ -55,12 +55,19 @@ h2,
 h3 {
   color: #003f7f;
 }
+.tab_navigator {
+  background: #fff7;
+  width: 100%;
+}
 .tab {
   width: 100%;
 }
 
 button {
-  border: 2px solid #0000007f;
+  background: linear-gradient(white, #7fcfff);
+  color: #000b;
+  box-shadow: 3px 3px 6px #07f7;
+  border: 0px;
   border-radius: 5px;
   padding: 6px;
   font-family: var(--font);
@@ -72,4 +79,11 @@ button:hover {
 }
 button:active {
   transform: scale(1);
+}
+
+.buyables td {
+  text-align: left;
+}
+.buyables button {
+  width: 120px;
 }

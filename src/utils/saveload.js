@@ -1,54 +1,43 @@
-import Decimal from "./break_eternity.js";
-import { Layer, layers } from "./layer.js"; // wtf why is it gray
-let player = {}; // i really really really really hope my syntax is riht
+import { player, generatePlayer } from "../features/player.js";
 const SAVE_KEY = "the_longest_incremental_2";
-function startPlayer() {
-  // wtf why
-  // temp????????????????????????????
-  // that's just the name of the fucking playre var
-  const temp = {};
-  temp.layers = [];
-  for (let i in layers) {
-    temp.layers.push(layers[i].playerLayer());
-  }
-} // gwa gwa
 /**
  * Recursively merges defaultData with newData.
  * @param {Record<PropertyKey, unkown>} defaultData Object containing the default data.
  * @param {Record<PropertyKey, unkown>} newData New data to merge with the default one.
  */
-function fixData(defaultData, newData) {
-  for (const item in defaultData) {
-    if (defaultData[item] === null) {
-      if (newData[item] === undefined) newData[item] = null;
-    } else if (Array.isArray(defaultData[item])) {
-      if (newData[item] === undefined) newData[item] = defaultData[item];
-      else fixData(defaultData[item], newData[item]);
-    } else if (!!defaultData[item] && typeof defaultData[item] === "object") {
-      if (newData[item] === undefined || typeof defaultData[item] !== "object")
-        newData[item] = defaultData[item];
-      else fixData(defaultData[item], newData[item]);
+
+function fixData(obj, mergeFrom) {
+  for (const item in mergeFrom) {
+    const thing = mergeFrom[item];
+    if (typeof thing === "object") {
+      fixData(obj[item], thing);
     } else {
-      if (newData[item] === undefined) newData[item] = defaultData[item];
+      obj[item] = thing;
     }
   }
 }
-
 /**
  * Saves player data to localStorage.
  */
 function save() {
+  console.log("saving triggered");
   localStorage.setItem(SAVE_KEY, JSON.stringify(player));
 }
 
 /**
  * Laads save from localStorage if it exsists, else default save is loaded.
  */
-function load() {
-  const save = JSON.parse(localStorage.getItem(SAVE_KEY));
-  if (!save) player = startPlayer();
-  else player = Object.assign(startPlayer(), save);
-  fixData(startPlayer(), player);
+export function load() {
+  const data = localStorage.getItem(SAVE_KEY);
+  let save;
+  if (!data) return;
+  try {
+    save = JSON.parse(data);
+  } catch (e) {
+    console.error("Your save is invalid.");
+    return;
+  }
+  fixData(player, save);
 }
 
 /**
@@ -57,7 +46,6 @@ function load() {
 export function importSave() {
   player = JSON.parse(prompt("input your save here"));
   save();
-  window.location.reload();
 }
 
 /*
@@ -78,5 +66,3 @@ export async function exportSave() {
 interval
 */
 export const saveInterval = setInterval(save, 5000);
-
-load();

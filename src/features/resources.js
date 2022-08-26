@@ -1,32 +1,44 @@
 import { player, production } from "./player.js";
 import { D } from "../utils/break_eternity.js";
-// D is named, not default
 import { computed } from "https://unpkg.com/vue@3.2.37/dist/vue.esm-browser.js";
-
+// D is named, not default
 export class Resource {
-  constructor({ name, src, prodFunc }) {
+  constructor({ name, color, src, prodFunc }) {
     this.name = name;
-    this.src = src ?? (() => D(0));
-    this.prodFunc = prodFunc ?? computed(() => D(0));
-    // you're making it waaaaaaaaaaay more implicit
-    // now you have to go to 10 different files to find where it is
-    RESOURCES[this.name] = this;
+    this.color = color ?? "var(--font-color)";
+    this.src = src; ///{parent, id} -> data
+    this.prodFunc = computed(() => prodFunc());
   }
+
   get amount() {
-    return D(this.src());
+    return D(this.src.parent()[this.src.id]);
   }
   get production() {
     return D(this.prodFunc.value);
   }
+
+  set(x) {
+    this.src.parent()[this.src.id] = D(x);
+  }
+  add(x) {
+    return this.set(this.amount.add(x));
+  }
+  sub(x) {
+    return this.set(this.amount.sub(x));
+  }
+  gte(x) {
+    return this.amount.gte(x);
+  }
 }
 
-export const RESOURCES = {};
-
-new Resource({
-  name: "Coins",
-  src() {
-    return player.points;
-  },
-  // production is a computed value ,not a function
-  prodFunc: production
-});
+export const RESOURCES = {
+  dirt: new Resource({
+    name: "Dirt",
+    color: "gold",
+    src: {
+      parent: () => player,
+      id: "points"
+    },
+    prodFunc: production
+  })
+};

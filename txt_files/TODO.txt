@@ -6,12 +6,12 @@ How this works:
 TODO:
 Save system - done - downvoid
 Player system - done - mkey
-Layer class - done - mkey
+Layer class - done - mkey / Aarex
 Upgrade class - doing - incremental_gamer
 Milestone class - done - mkey
 Challenge class - done - downvoid
 Toggle class - doing - mkey
 Text-input class - doing - mkey
-Tab class - NEEDS DONE
+Tab class - done - ??? / Aarex
 Achievement class - done - downvoid
 Interaction system - planning - incremental_gamer

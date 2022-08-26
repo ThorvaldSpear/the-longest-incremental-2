@@ -27,7 +27,10 @@ export class Layer {
     LAYERS.push(this);
     new Resource({
       name: currency,
-      src: (_) => this.amount
+      src: {
+        parent: (_) => this,
+        src: "amt"
+      }
     });
   }
   get player() {
