@@ -12,6 +12,7 @@ Milestone class - done - mkey
 Challenge class - done - downvoid
 Toggle class - doing - mkey
 Text-input class - doing - mkey
-Tab class - done - ??? / Aarex
+Tab class - done - incremental_gamer / Aarex
 Achievement class - done - downvoid
-Interaction system - planning - incremental_gamer
+Interaction system - done - incremental_gamer
+Notifications  - doing - incremental_gamer

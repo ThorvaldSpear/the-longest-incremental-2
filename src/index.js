@@ -4,19 +4,20 @@ import { BUYABLES } from "./features/miners.js";
 import { RESOURCES } from "./features/resources.js";
 import { format } from "./utils/format.js";
 import { load } from "./utils/saveload.js";
+import { notifications, removeNotify } from "./features/notify.js";
 
 // VERY MUCH FOR TESTING
 const TABS = {
-  Main: ["Miners", "Test"],
+  Main: ["Miners", "Pickaxes"],
   Miners: [],
-  Test: []
+  Pickaxes: []
 };
-
 createApp()
   .component("main-app", {
     // change it when you're done
     template: `
-      <tab-internal tab="Main" />
+      <notifications />
+      <tab tab="Main" />
     `,
     mounted() {
       load();
@@ -28,7 +29,49 @@ createApp()
       };
     }
   })
-  .component("tab-internal", {
+  .component("notifications", {
+    data() {
+      return {
+        int: undefined
+      };
+    },
+    template: `
+      <div id="notifyarea">
+        <div
+          v-for="(notify, i) in notif"
+          class="notification"
+          :key="notify.time"
+          @click="removeNotify(i)"
+        >
+          {{notify.message}}
+        </div>
+      </div>
+    `,
+    mounted() {
+      this.int = setInterval(() => {
+        for (const [i, notif] of this.notifications.entries()) {
+          if ((Date.now() - notif.time) / 1000 > 15) {
+            this.removeNotify(i);
+          }
+        }
+      }, 100);
+    },
+    beforeUnmount() {
+      clearInterval(this.int);
+    },
+    computed: {
+      notif() {
+        return this.notifications.slice().reverse();
+      }
+    },
+    setup() {
+      return {
+        notifications,
+        removeNotify
+      };
+    }
+  })
+  .component("tab", {
     props: ["tab"],
     data() {
       return {
@@ -38,13 +81,19 @@ createApp()
     template: `
       <div class="tab">
         <component :is="tab"/>
-      </div><div v-if="tabs.length > 0">
+      </div>
+      <div v-if="tabs.length > 0">
         <div class='tab_navigator' v-if="tabs.length > 1">
-          <button v-for="subtab of tabs" @click="tabClicked = subtab" :tabrole="subtab.toLowerCase()">{{subtab}}</button>
+          <button 
+            :key="subtab" 
+            v-for="subtab of tabs" 
+            @click="tabClicked = subtab" 
+            :tabrole="subtab.toLowerCase()"
+          >{{subtab}}</button>
         </div>
         <br>
         <div v-for="subtab of tabs">
-          <tab-internal v-if="tabClicked === subtab" :tab="tabClicked" />
+          <tab :key="subtab" v-if="tabClicked === subtab" :tab="tabClicked" />
         </div>
       </div>
     `,
@@ -64,6 +113,11 @@ createApp()
       Miners: {
         template: `
           <buyables group='Miners'/>
+        `
+      },
+      Options: {
+        template: `
+          <h2>Options. Nothing yet :troll:</h2>
         `
       }
     },
@@ -94,10 +148,11 @@ createApp()
   .component("buyable", {
     props: ["group", "value"],
     template: `
-      <tr v-if="key.unl.value">
-        <td style='width: 240px'><b>{{key.name}}</b>:</td>
-        <td>{{key.amt}}</td>
-        <td style='font-size: 8px'>({{key.desc.value}})</td>
+      <tr v-if="key.unl.value" :minerole="key.name.toLowerCase()">
+        <td>
+          <b>{{key.amt}}× {{key.name}}:</b><br/>
+          <span style="font-size: .75em">{{key.desc.value}}</span>
+        </td>
         <td><button @click="key.buy()">Cost: {{format(key.cost.value)}}</button></td>
       </tr>
     `,

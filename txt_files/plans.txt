@@ -1,3 +1,39 @@
+------------------------------------ *** LAYER 0 - START *** ------------------------------------
+You have 4 kinds of Miners. Each kind has unique abilities:
+1. Starter: Mines blocks.
+2. Efficient: Mines softer blocks at 200% efficient.
+3. Hard: Mines harder blocks at 300% efficient.
+4. Ranged: Mines blocks with a higher range.
+
+You have a 10x10 quarry.
+You can assign Miners to mine blocks for you.
+Each following row decreases the efficiency of Miners.
+
+You can sell blocks for Gold or Platinum.
+There's a chance that a treasure appears, which gives you gold, blocks, and artifacts.
+Gold can used to buy Miners and Platinum can be used to buy Upgrades.
+
+------------------------------------ *** LAYER 1 - DEEPEN *** ------------------------------------
+(formerly Boosters)
+Deepening resets your progress, and will extend Quarry by 1 row. Deepening cancels Depth's nerf by 1 depth worth.
+
+Deepening Milestones:
+- 1 Deepen: Unlock Auto-Assignation.
+- 2 Deepens: Unlock Platinum.
+- 3 Deepens: Unlock a new kind of Miner.
+- 4 Deepens: Extend Quarry by 1 column, up to 20 total columns.
+
+Platinum Upgrades:
+  (Platinum doesn't lose on Deepning)
+- ???
+
+Artifacts:
+- Equip a specific kind of Miners with Artifacts which upgrade them with better abilities!
+
+Consumption:
+- Require a specific depth to spawn Dark Blocks.
+- Dark Blocks can be sold for Dark Energy.
+
 ------------------------------------ *** LAYER 2 - DARKEN *** ------------------------------------
 Do not implement these L2 features below until L3.
 

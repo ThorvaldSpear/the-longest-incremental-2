@@ -3,7 +3,6 @@ import { getMinerEff } from "./miners.js";
 import { RESOURCES } from "./resources.js";
 import { D } from "../utils/break_eternity.js";
 
-
 export function generatePlayer() {
   return {
     points: D(0),
@@ -14,7 +13,7 @@ export function generatePlayer() {
       max: 0,
       history: [] //for global history
     }
-  }
+  };
 }
 export const player = (window.player = reactive(generatePlayer()));
 
@@ -24,7 +23,7 @@ export function production() {
   prod = prod.plus(getMinerEff(0));
   prod = prod.plus(getMinerEff(1));
   prod = prod.plus(getMinerEff(2));
-  prod = prod.mul(getMinerEff(3));
+  prod = prod.plus(getMinerEff(3));
 
   return prod;
 }

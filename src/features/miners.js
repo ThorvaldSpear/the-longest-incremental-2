@@ -24,7 +24,7 @@ class Buyable {
     return BUYABLES[this.group].player();
   }
   get amt() {
-    return D(this.player[this.name] ?? 0);
+    return D(this.player[this.name.toLowerCase()] ?? 0);
   }
 
   canBuy() {
@@ -34,7 +34,7 @@ class Buyable {
     if (!this.unl.value) return;
     if (!this.canBuy()) return;
     this.res.sub(this.cost.value);
-    this.player[this.name] = this.amt.add(1);
+    this.player[this.name.toLowerCase()] = this.amt.add(1);
   }
 }
 
@@ -61,7 +61,7 @@ export const BUYABLES = {
     data: [
       // @type {Array<Buyable>}
       new Buyable({
-        name: "Starter Miner",
+        name: "Novice Miner",
         cost: (lvl) => (D(lvl).eq(0) ? D(0) : D(1.4).pow(lvl).mul(5)),
         eff: (lvl) => D(lvl),
         desc(eff) {
@@ -71,9 +71,9 @@ export const BUYABLES = {
         group: "Miners"
       }),
       new Buyable({
-        name: "Hard Miner",
-        cost: (lvl) => D(1.6).pow(lvl).mul(100),
-        eff: (lvl) => D(lvl).mul(10),
+        name: "Efficient Miner",
+        cost: (lvl) => D(1.4).pow(lvl).mul(100),
+        eff: (lvl) => D(lvl).mul(3),
         desc(eff) {
           return `+${format(eff)}/s`;
         },
@@ -81,9 +81,9 @@ export const BUYABLES = {
         group: "Miners"
       }),
       new Buyable({
-        name: "Ranged Miner",
-        cost: (lvl) => D(1.8).pow(lvl).mul(1e3),
-        eff: (lvl) => D(lvl).mul(30),
+        name: "Strong Miner",
+        cost: (lvl) => D(1.6).pow(lvl).mul(1e3),
+        eff: (lvl) => D(lvl).mul(10),
         desc(eff) {
           return `+${format(eff)}/s`;
         },
@@ -91,11 +91,11 @@ export const BUYABLES = {
         group: "Miners"
       }),
       new Buyable({
-        name: "Efficient Miner",
-        cost: (lvl) => D(1e4).mul(D(10).pow(lvl)),
-        eff: (lvl) => D(2).pow(lvl), // funky effector
+        name: "Ranged Miner",
+        cost: (lvl) => D(1.8).pow(lvl).mul(1e4),
+        eff: (lvl) => D(lvl).mul(30),
         desc(eff) {
-          return `x${format(eff)}`;
+          return `+${format(eff)}/s`;
         },
         unl: computed(() => getMiner(2).amt.gt(1)),
         group: "Miners"

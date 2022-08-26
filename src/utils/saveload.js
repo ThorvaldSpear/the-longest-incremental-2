@@ -1,4 +1,5 @@
-import { player, generatePlayer } from "../features/player.js";
+import { player } from "../features/player.js";
+import { notify } from "../features/notify.js";
 const SAVE_KEY = "the_longest_incremental_2";
 /**
  * Recursively merges defaultData with newData.
@@ -19,8 +20,8 @@ function fixData(obj, mergeFrom) {
 /**
  * Saves player data to localStorage.
  */
-function save() {
-  console.log("saving triggered");
+function save(manual) {
+  if (!manual) notify("Game saved.");
   localStorage.setItem(SAVE_KEY, JSON.stringify(player));
 }
 
@@ -34,9 +35,10 @@ export function load() {
   try {
     save = JSON.parse(data);
   } catch (e) {
-    console.error("Your save is invalid.");
+    notify("Your save is invalid. Sorry!");
     return;
   }
+  notify("Game loaded.");
   fixData(player, save);
 }
 
@@ -65,4 +67,5 @@ export async function exportSave() {
  * autoSave interval
 interval
 */
-export const saveInterval = setInterval(save, 5000);
+export const saveInterval = setInterval(save, 3e4);
+window.onbeforeunload = save;
