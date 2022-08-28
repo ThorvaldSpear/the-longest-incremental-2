@@ -4,6 +4,9 @@ How this works:
 -Feel free to add items to this list when needed
 
 TODO:
+Recolor the miners
+Implement the quarry
+
 Save system - done - downvoid
 Player system - done - mkey
 Layer class - done - mkey / Aarex

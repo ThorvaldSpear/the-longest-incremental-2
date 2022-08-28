@@ -9,11 +9,7 @@ export class Challenge {
   }) {
     this.title = title;
     this.description = description;
-    this.complete =
-      complete ??
-      function () {
-        return false;
-      };
+    this.complete = complete ?? (() => false);
     this.onEnter = onEnter ?? function () {};
     this.rewardDescription = rewardDescription;
   }

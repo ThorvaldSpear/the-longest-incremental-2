@@ -92,10 +92,9 @@ export function format(decimal, precision = 2) {
   }
   if (decimal.gte(ee6)) return exponentialFormat(decimal, 0, false);
   if (decimal.gte(ee4)) return exponentialFormat(decimal, 0);
+  if (decimal.gte(e36))
+    return exponentialFormat(decimal, Math.max(precision, 2));
   if (decimal.gte(e6)) {
-    if (decimal.gte(e36) || true) {
-      return exponentialFormat(decimal, Math.max(precision, 2));
-    }
     const decimalE = decimal.log10().floor().toNumber();
     const exp3 = Math.floor(decimalE / 3);
     return `${decimal
@@ -124,8 +123,14 @@ export function formatWhole(decimal) {
   return format(decimal, 0);
 }
 
+export function formatChange(decimal) {
+  decimal = new Decimal(decimal);
+  if (decimal.gt(10)) return format(decimal) + "x";
+  return format(decimal.sub(1).mul(100), 0) + "%";
+}
+
 export function formatTime(s, type) {
-  s = D(s);
+  s = new Decimal(s);
   if (s.gte(86400 * 365 * 10)) return format(s.div(86400 * 365)) + "y";
   if (s.gte(86400 * 365))
     return (
@@ -166,11 +171,15 @@ export function formatTime(s, type) {
 }
 
 // Will also display very small numbers
-function formatSmall(num, precision = 2) {
+/*function formatSmall(num, precision = 2) {
   return format(num, precision, true);
-}
+}*/
 
 function invertOOM(x) {
   const e = x.log10().ceil();
   return Decimal.dTen.pow(e.neg()).times(x.div(Decimal.dTen.pow(e)));
 }
+
+/*Decimal.prototype.format = function (precision) {
+  return format(this, precision);
+};*/

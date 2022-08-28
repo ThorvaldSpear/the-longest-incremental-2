@@ -1,7 +1,8 @@
-import { D } from "./break_eternity.js";
-import { RESOURCES, Resource } from "./resources.js";
+import { D } from "../utils/break_eternity.js";
+import { Resource } from "./resources.js";
+import { player } from "../../player.js";
 
-export const LAYERS = [null];
+export const LAYERS = [];
 export class Layer {
   constructor({
     name,
@@ -88,11 +89,13 @@ function setupLayer(x) {
 
 function doLayerReset(layer, force) {
   if (!force) {
-    const layerPlayer = layerExist(layer) ? layerPlayer(layer) : setupLayer(x);
+    const layerPlayer = layerExist(layer)
+      ? layerPlayer(layer)
+      : setupLayer(layer);
     layerPlayer.did = true;
   }
-  for (const toReset = x; toReset > 0; toReset--) {
-    doLayerResetStats(layer, toReset, force);
+  for (const toReset = layer; toReset > 0; toReset--) {
+    recordLayerStats(layer, toReset, force);
     if (toReset > 1 && layerExist(toReset - 1)) {
       const priorLayerPlayer = layerPlayer(toReset - 1);
       delete priorLayerPlayer.amt;

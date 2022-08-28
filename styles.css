@@ -9,8 +9,6 @@ body {
   font-family: var(--font);
   color: var(--font-color);
   margin: 0;
-}
-* {
   text-align: center;
   box-sizing: border-box;
 }
@@ -56,13 +54,43 @@ h3 {
   color: #003f7f;
 }
 .tab_navigator {
-  background: #fff7;
   width: 100%;
   height: 20%;
+  padding-top: 5px;
+  overflow: hidden;
+  box-shadow: inset 0 -20px 8px -20px #07f7;
+}
+.tab_navigator span {
+  margin: 0 2px;
+}
+.tab_navigator button {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.tab_navigator[role="layers"] button {
+  font-size: 16px;
+  padding: 6px 8px;
 }
 .tab {
+  position: relative;
   width: 100%;
 }
+
+/*#menu_btn {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+}
+#menu_tab {
+  position: fixed;
+  background: #719dcc;
+  top: 10%;
+  right: 0;
+  z-index: 1;
+
+  width: calc(100% - 60px);
+  height: 100%;
+}*/
 
 button {
   background: linear-gradient(white, #7fcfff);
@@ -70,7 +98,7 @@ button {
   box-shadow: 3px 3px 6px #07f7;
   border: 0px;
   border-radius: 5px;
-  padding: 6px;
+  padding: 5px 7px;
   font-family: var(--font);
   transition: all 0.3s ease;
   transform: scale(1);
@@ -83,45 +111,35 @@ button:active {
 }
 
 .buyables {
-  border-spacing: 0;
+  display: grid;
+  align-items: center;
+  grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
 }
 
-.buyables td {
+.buyable {
+  text-align: left;
+  display: flex;
+  flex-direction: row;
   text-align: left;
   padding: 0px;
 }
-.buyables td:first-child {
-  width: 320px;
+.buyable > div:first-child {
   padding: 5px 8px;
+  flex-grow: 1;
 }
-.buyables td:last-child {
-  padding: 5px 8px;
+.buyable > div:first-child b {
+  font-size: 18px;
 }
-
-button[tabrole="pickaxes"] {
-  background: linear-gradient(white, #c093ed);
+.buyable > div:first-child span {
+  display: inline-block;
+  min-height: 34px;
+  padding-top: 2px;
+  font-size: 13.3333px;
 }
-
-/* ok just tell me if you ever need new version =) */
-/* nah i think the layout needs some change */
-/* ducdat i can make different image version as i have it saved as svg*/
-.buyables tr:is([minerole="strong miner"], [minerole="ranged miner"]) {
-  background: url("images/Tether_BG.png");
-  background-position: auto 25%;
-  background-size: cover;
-  color: white;
-}
-
-.buyables button {
-  width: 120px;
-}
-
-/* eh it's fine*/
-/* i think for buttons with image bg shouldn't have hover effect but idk really */
-.buyables tr:is([minerole="strong miner"], [minerole="ranged miner"]) button {
-  box-shadow: 3px 3px 6px #0107;
-  color: white;
-  background: linear-gradient(#0e8f00, transparent);
+.buyable button {
+  width: 180px;
+  height: calc(100% - 12px);
+  margin: 6px;
 }
 
 #notifyarea {
@@ -141,4 +159,83 @@ button[tabrole="pickaxes"] {
   text-align: center;
   border-radius: 6px 0 0 6px;
   z-index: 1;
+}
+
+#hardreset {
+  background: linear-gradient(red, black);
+  color: white;
+  box-shadow: 3px 3px 6px red;
+}
+
+/* GAME */
+.buyable:is([role="strong miner"]) {
+  background: url("images/StrongMiner_BG_LQ.png");
+  background-position: auto 25%;
+  background-size: cover 20%;
+  color: white;
+}
+
+.buyable:is([role="ranged miner"]) {
+  background: url("images/RangedMiner_BG_LQ.png");
+  background-position: auto 10%;
+  background-size: cover 20%;
+  color: white;
+}
+
+/*.buyable:is([erole="strong miner"]) button {
+  box-shadow: 3px 3px 6px #0107;
+  color: white;
+  background: linear-gradient(#9aaa98, transparent);
+}
+
+.buyable:is([role="ranged miner"]) button {
+  box-shadow: 3px 3px 6px #0107;
+  color: white;
+  background: linear-gradient(#0e8f00, transparent);
+}*/
+
+button[role="equipment"] {
+  background: linear-gradient(white, #c093ed);
+}
+button[role="greenpapers"] {
+  background: linear-gradient(white, #bfb);
+}
+
+.canbuy {
+  background: linear-gradient(#bfb, #7f7);
+  color: #570;
+  transition: all 0.8s ease;
+}
+.cannotbuy {
+  background: linear-gradient(grey, #533);
+  color: #200;
+  transition: all 0.8s ease;
+}
+
+.tooltip {
+  position: relative;
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -60px;
+  background-color: black;
+  color: #ffffff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+  pointer-events: none;
+
+  /* Position the tooltip text - see examples below! */
+  position: absolute;
+  z-index: 1;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+  visibility: visible;
 }

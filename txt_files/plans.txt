@@ -1,40 +1,82 @@
 ------------------------------------ *** LAYER 0 - START *** ------------------------------------
-You have 4 kinds of Miners. Each kind has unique abilities:
-1. Starter: Mines blocks.
+This is a isekai-medieval themed.
+(Medieval people are transported to work with King's needs)
+
+You have 6 kinds of Miners. Each kind has unique abilities:
+1. Novice: Mines blocks.
 2. Efficient: Mines softer blocks at 200% efficient.
-3. Hard: Mines harder blocks at 300% efficient.
-4. Ranged: Mines blocks with a higher range.
+3. Strong: Mines harder blocks at 300% efficient.
+4. Surface: Mines surface blocks more frequently.
+5. Veining: Mines layer blocks more frequently.
+6. Ranged: Mines blocks with a higher range.
 
-You have a 10x10 quarry.
-You can assign Miners to mine blocks for you.
-Each following row decreases the efficiency of Miners.
+Quarry:
+- You have a 10x10 quarry.
+- You can assign Miners to mine blocks for you.
+- Each following row (depth) increases block healths.
+- You can't go down until you mine the first row.
+- There's a maximum depth: 20.
 
-You can sell blocks for Gold or Platinum.
-There's a chance that a treasure appears, which gives you gold, blocks, and artifacts.
-Gold can used to buy Miners and Platinum can be used to buy Upgrades.
+Biomes:
+- There's a chance that other biomes appear with different blocks.
+- All biomes have specific depth ranges.
 
------------------------------------- *** LAYER 1 - DEEPEN *** ------------------------------------
+Treasure:
+- There's a chance that a treasure appears, which gives you Green Papers, ores, maps, and artifacts.
+- Maps are dependent on the depth and biome you are in.
+- Maps always respawn on completion.
+
+Selling:
+- You can sell blocks for Green Papers.
+- Green Papers can be used to buy Upgrades.
+- Stone and Bronze can be used to craft Pickaxes.
+
+Pickaxes:
+- You can use Stone and Bronze to create Pickaxes.
+- Pickaxes boost speed (from Bronze) and increase efficiency.
+- Higher-tier Pickaxes require higher-tier materials.
+
+( WIP ) Green Papers:
+- Gained from selling any mineral.
+- Green Papers can be used to buy special Upgrades and Ores.
+
+------------------------------------ *** LAYER 1 - COLLAPSE *** ------------------------------------
 (formerly Boosters)
-Deepening resets your progress, and will extend Quarry by 1 row. Deepening cancels Depth's nerf by 1 depth worth.
+Collapse resets your progress, and will extend Quarry by 1 row.
+Collapse Milestones:
+- 1 Collapse: Unlock Auto-Assignation.
+- 2 Collapses: Extend Quarry by 1 column, up to 20 total columns.
+- ??? Collapses: Unlock new Upgrades.
+- ??? Collapses: Unlock Artifacts.
 
-Deepening Milestones:
-- 1 Deepen: Unlock Auto-Assignation.
-- 2 Deepens: Unlock Platinum.
-- 3 Deepens: Unlock a new kind of Miner.
-- 4 Deepens: Extend Quarry by 1 column, up to 20 total columns.
-
-Platinum Upgrades:
-  (Platinum doesn't lose on Deepning)
-- ???
+- ??? Collapses: Miners are more efficient.
+- ??? Collapses: Increase the luck on Ores.
+- ??? Collapses: Gain more Green Papers.
 
 Artifacts:
 - Equip a specific kind of Miners with Artifacts which upgrade them with better abilities!
+-- Burning: Passively damages blocks.
+-- Critical: Damages blocks more rarely.
+-- Fortune: Gives you more blocks on mining.
+-- Possession: Damages multiple blocks at once.
+-- Strength: Damages harder blocks more.
+-- Weaken: Reduces the health of a block.
+-- Midas: Increases the gains for Stone, Bronze, Gold, and Platinum.
+- Or craft artifacts with Platinum to unlock new Miners.
 
-Consumption:
-- Require a specific depth to spawn Dark Blocks.
-- Dark Blocks can be sold for Dark Energy.
+Dimensions:
+- Require a specific depth to spawn new blocks.
+- Dimensions have barriers, which require teamwork for your Miners.
+- The first dimension is called Consumption with Dark Blocks.
+-- Dark Blocks can be sold for Dark Energy.
+-- Dark Energy works the same as TLI^1.
+-- Consumption stops at the strongest material: AV-308. (Not even Collapse extends the limit)
+- Other dimensions nerf efficiency for block gaining and miner's efficiency.
 
 ------------------------------------ *** LAYER 2 - DARKEN *** ------------------------------------
+With AV-308, you can darken the Sun. This resets your progress for Purple / Dark Tokens.
+You will also unlock new features: Dark Biomes, Dark Recall, Dark Alloying, and Challenges.
+
 Do not implement these L2 features below until L3.
 
 - (Aarex) Elemental Essences
