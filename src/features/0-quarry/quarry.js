@@ -373,8 +373,8 @@ function incrementQuarryRow() {
 }
 
 export function doQuarryTick(diff) {
-  for (const [key, miner] of BUYABLES.Miners.data.entries()) {
-    miner.hit(diff, key);
+  for (const miner of BUYABLES.Miners.data) {
+    miner.hit(diff);
   }
 
   let empty = true;
@@ -402,7 +402,10 @@ TABS.QuarrySite = {
         </div>
         <div style="flex: 1 0 320px">
           You are currently in Depth {{format(player.quarry.depth, 0)}} / 100.<br>
-          <grid type="QuarryBlock" :width="QUARRY_SIZE.width" :height="QUARRY_SIZE.height" />` +
+          <grid type="QuarryBlock" 
+                :width="QUARRY_SIZE.width" 
+                :height="QUARRY_SIZE.height" 
+                style="border: 2px solid green" />` +
       /*<button>Maps</button><button>Collapse!</button>*/
       `</div>
         <div style="flex: 1 0 450px">

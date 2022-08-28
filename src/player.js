@@ -58,7 +58,7 @@ export function loadGame() {
 
 
 export function runGame() {
-  const  diff = (Date.now() - player.lastTick) / 1000;
+  const diff = (Date.now() - player.lastTick) / 1000;
   player.lastTick = Date.now();
 
   doMine(diff);
