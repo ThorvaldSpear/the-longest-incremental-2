@@ -86,26 +86,29 @@ export function getMinerEff(x) {
 }
 
 export function getOreGain(ore) {
-  let mul = getUpgradeEff("GreenPapers", 2);
-  if (ORE_DATA[ore].rarity < 10) getUpgradeEff("GreenPapers", 5);
+  let mul = getUpgradeEff("GreenPapers", 2).mul(
+    getUpgradeEff("GreenPapers", 9)
+  );
+  if (ORE_DATA[ore].rarity < 10)
+    mul = mul.times(getUpgradeEff("GreenPapers", 5));
   return mul;
 }
 
-RESOURCES.labor = new Resource({
-  name: "Labor",
+RESOURCES.mana = new Resource({
+  name: "Mana",
   color: "blue",
   src: {
     parent: () => player.miners,
     id: "mana"
   },
   prodFunc() {
-    return D(player.quarry.depth).div(60).plus(1).pow(3).sub(1);
+    return D(1e3).pow(D(player.quarry.depth).div(50)).sub(1).div(100);
   },
   based: "Quarry Depth"
 });
 
 BUYABLES.Miners = {
-  res: "labor",
+  res: "mana",
   player: () => player.miners.amt,
   data: [
     // @type {Array<Buyable>}
@@ -132,18 +135,6 @@ BUYABLES.Miners = {
       x: 1
     }),
     new Miner({
-      name: "Veining Miner",
-      cost: (lvl) => lvl.add(1).pow(4).add(29),
-      eff: (lvl) => D(lvl).mul(2),
-      desc(eff) {
-        return `to 1 block on the 1st layer`;
-      },
-      unl: () => getMiner(1).amt.gte(1),
-      group: "Miners",
-      speed: 0.8,
-      x: 2
-    }),
-    new Miner({
       name: "Efficient Miner",
       cost: (lvl) => lvl.add(1).pow(4).add(99),
       eff: (lvl) => D(lvl),
@@ -153,7 +144,7 @@ BUYABLES.Miners = {
       unl: () => getMiner(2).amt.gte(1),
       group: "Miners",
       speed: 3,
-      x: 3
+      x: 2
     }),
     new Miner({
       name: "Ranged Miner",
@@ -165,7 +156,7 @@ BUYABLES.Miners = {
       unl: () => getMiner(3).amt.gte(1),
       group: "Miners",
       speed: 0.125,
-      x: 4
+      x: 3
     })
   ]
 };

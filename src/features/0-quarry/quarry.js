@@ -52,9 +52,9 @@ export const LAYER_DATA = {
     color: "#bf5f00",
     range: [190, 200, 210, 210],
     rarity: 1,
-    sparseness: 8,
-    worth: 0.04,
-    health: 10
+    sparseness: 18,
+    worth: 0.1,
+    health: 20
   },
   Bedrock: {
     color: "black",
@@ -71,39 +71,39 @@ export const ORE_DATA = {
     color: "#CD7F32",
     range: [2, 75],
     rarity: 5,
-    sparseness: 100,
-    worth: 1,
+    sparseness: 1,
+    worth: 2,
     health: 1.5
   },
   Silver: {
     color: "#f2f0f0",
     range: [4, 100],
     rarity: 10,
-    sparseness: 120,
-    worth: 3,
+    sparseness: 4,
+    worth: 8,
     health: 2
   },
   Gold: {
     color: "#ffe600",
     range: [10, 150],
     rarity: 15,
-    sparseness: 180,
-    worth: 8,
-    health: 3
+    sparseness: 2,
+    worth: 10,
+    health: 2
   },
   Platinum: {
     color: "#e9ffd4",
     range: [50, 190],
     rarity: 40,
-    sparseness: 500,
-    worth: 50,
-    health: 5
+    sparseness: 4e3,
+    worth: 2400,
+    health: 2
   },
   Diamond: {
     color: "#91fffa",
     range: [75, 190],
     rarity: 20,
-    sparseness: 500,
+    sparseness: 2e3,
     worth: 25,
     health: 10
   },
@@ -455,7 +455,7 @@ TABS.QuarrySite = {
       `
       <div style="display: flex; flex-direction: row; vertical-align: top">
         <div style="flex: 1 0 33.33%">
-          <resource name="labor" />
+          <resource name="mana" />
           <buyables group="Miners" />
         </div>
         <div style="flex: 1 0 33.33%">
