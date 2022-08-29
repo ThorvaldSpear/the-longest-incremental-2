@@ -124,8 +124,11 @@ export function formatWhole(decimal) {
 
 export function formatChange(decimal, prec = 0) {
   decimal = new Decimal(decimal);
-  if (decimal.gt(10)) return format(decimal, prec) + "x";
-  return format(decimal.sub(1).mul(100), prec) + "%";
+  const isPositive = decimal.gt(0) ? "+" : "";
+  if (decimal.gt(10)) return isPositive + format(decimal, prec) + "x";
+  return (
+    (decimal.gt(1) ? "+" : "") + format(decimal.sub(1).mul(100), prec) + "%"
+  );
 }
 
 export function formatPrecise(decimal) {

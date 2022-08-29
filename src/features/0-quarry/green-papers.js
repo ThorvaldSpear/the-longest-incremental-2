@@ -89,7 +89,7 @@ UPGRADES.GreenPapers = {
       eff: (lvl) => D(1.015).pow(lvl).recip(),
       max: 100,
       desc(eff) {
-        return `Block health is reduced by ${formatChange(eff, 2)}<br>
+        return `Block health is now ${formatChange(eff, 2)}<br>
         Everyone deserves more progress!`;
       },
       group: "GreenPapers",
@@ -127,8 +127,10 @@ UPGRADES.GreenPapers = {
       eff: (lvl) =>
         D(lvl).gte(1) ? RESOURCES.greenPaper.amt.add(10).log10() : 1,
       desc(eff) {
-        return `Gain ${format(eff)}x the Green Papers based on your GP.<br>
-        yes hashing an internet protocol in medival age...`;
+        return `Gain ${format(
+          eff
+        )}x more Green Papers based on your GP but raise resource buy cost as well.<br>
+        Yes hashing an internet protocol in medival age...`;
       },
       group: "GreenPapers",
       unl: () => getUpgrade("GreenPapers", 7).amt.gte(1)

@@ -20,7 +20,7 @@ const TREASURE_DATA = {
     range: [25, Infinity],
     rarity: 5,
     obtain(depth) {
-      notify("You have obtained a new map! Depth: " + format(depth, 0));
+      notify("You have obtained a new map at depth: " + format(depth, 0) + "!");
     }
   }
   /*artifact1: {

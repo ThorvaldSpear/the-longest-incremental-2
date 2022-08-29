@@ -5,18 +5,9 @@ import { setupVue } from "./setup.js";
 // what the heck  is this now
 import { loadGame } from "./player.js";
 
-// import "./utils/gradient.js";
-import { DATA } from "./tmp.js";
-
 import "./features/import-layer.js";
 /* --- CODE START --- */
-export const app = createApp({
-  setup() {
-    return {
-      DATA
-    };
-  }
-})
+export const app = createApp()
   .component("main-app", {
     template: `
       <version />

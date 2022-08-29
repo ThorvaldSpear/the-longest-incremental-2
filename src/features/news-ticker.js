@@ -4,5 +4,3 @@ const newsMessages = [
     () => true
   ]
 ];
-
-return newsMessages; //soon

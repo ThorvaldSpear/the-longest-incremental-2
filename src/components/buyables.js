@@ -73,10 +73,11 @@ setupVue.buyable = {
           cannotbuy: !key_data.canBuy()
         }">
           <b>{{key_group.buyPhrase ?? "Buy"}} +1</b><br>
-          +{{
+          {{
             key_data.desc(key.eff.value).includes("%") ? 
-            formatChange(key.levelDiff.value.add(1)) 
-            : format(key.levelDiff.value)
+            formatChange(key.levelDiff.value.add(1), 2) 
+            : ((Decimal.gt(key.levelDiff.value, 0) ? "+" : "")
+             + format(key.levelDiff.value))
           }} {{key_data.diffDesc}}<br>
           {{format(key.cost.value)}} {{key_data.res.name}}
         </button>
@@ -92,7 +93,8 @@ setupVue.buyable = {
       key_group,
       key_data,
       format,
-      formatChange
+      formatChange,
+      Decimal
     };
   }
 };
@@ -150,10 +152,11 @@ setupVue.upgrade = {
           <span v-if="!key_data.maxed">
             <b>{{key_group.buyPhrase ?? "Buy"}} {{Decimal.eq(key_data.max, 1) ? "" : "+1"}}</b><br>
             <span v-if="Decimal.gt(key_data.max, 1)">
-              +{{
+              {{
                 key_data.desc(key.eff.value).includes("%") 
-                ? formatChange(key.levelDiff.value.add(1)) 
-                : format(key.levelDiff.value)
+                ? formatChange(key.levelDiff.value.add(1), 2) 
+                : ((Decimal.gt(key.levelDiff.value, 0) ? "+" : "")
+                + format(key.levelDiff.value))
               }} {{key_data.diffDesc}}<br>
             </span>
             {{format(key.cost.value)}} {{key_data.res.name}}

@@ -295,16 +295,22 @@ function getBlockAmount(index) {
 }
 
 function sellBlock(index) {
-  RESOURCES.greenPaper.add(getBlockAmount(index).mul(BLOCK_DATA[index].worth));
+  RESOURCES.greenPaper.add(
+    getBlockAmount(index)
+      .mul(BLOCK_DATA[index].worth)
+      .mul(getUpgradeEff("GreenPapers", 8))
+  );
   RESOURCES[index.toLowerCase()].set(0);
 }
 
 function blockCost(index) {
-  return Decimal.mul(BLOCK_DATA[index].worth, 1.5);
+  return Decimal.mul(BLOCK_DATA[index].worth, 1.5).mul(
+    getUpgradeEff("GreenPapers", 8)
+  );
 }
 
 function buyBlock(index) {
-  const worth = Decimal.mul(blockCost(index), 1.5);
+  const worth = blockCost(index);
   if (RESOURCES.greenPaper.gte(worth)) {
     RESOURCES.greenPaper.sub(worth);
     RESOURCES[index.toLowerCase()].add(1);

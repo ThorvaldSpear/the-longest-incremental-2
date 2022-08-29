@@ -160,7 +160,7 @@ BUYABLES.Miners = {
       cost: (lvl) => lvl.add(1).pow(4).add(299),
       eff: (lvl) => D(lvl).mul(5),
       desc(eff) {
-        return `to 1 block on the topmost layer + 50% more damage to 4 adjacent blocks`;
+        return `to 1 block on the topmost layer + 1/2 damage to 4 adjacent blocks`;
       },
       unl: () => getMiner(3).amt.gte(1),
       group: "Miners",
