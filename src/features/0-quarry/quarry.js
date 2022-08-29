@@ -8,7 +8,11 @@ import { setupVue } from "../../setup.js";
 
 import { TABS } from "../../components/tabs.js";
 import { Resource, RESOURCES } from "../../components/resources.js";
-import { BUYABLES, hasUpgrade } from "../../components/buyables.js";
+import {
+  BUYABLES,
+  getUpgradeEff,
+  hasUpgrade
+} from "../../components/buyables.js";
 
 export const LAYER_DATA = {
   Dirt: {
@@ -268,7 +272,8 @@ function getBlockStrength(depth) {
 function getBlockHealth(depth, layer, ore) {
   return getBlockStrength(depth)
     .mul(LAYER_DATA[layer].health)
-    .mul(ORE_DATA[ore]?.health ?? 1);
+    .mul(ORE_DATA[ore]?.health ?? 1)
+    .mul(getUpgradeEff("GreenPapers", 6));
 }
 
 function getBlockAmount(index) {
@@ -415,11 +420,11 @@ TABS.QuarrySite = {
     template:
       `
       <div style="display: flex; flex-direction: row; vertical-align: top">
-        <div style="flex: 1 0 450px">
+        <div style="flex: 1 0 33.33%">
           <resource name="mana" />
           <buyables group="Miners" />
         </div>
-        <div style="flex: 1 0 450px">
+        <div style="flex: 1 0 33.33%">
           You are currently in Depth {{format(player.quarry.depth, 0)}} / 100.<br><br>
           <grid type="QuarryBlock" 
                 :width="QUARRY_SIZE.width" 
@@ -427,7 +432,7 @@ TABS.QuarrySite = {
                 style="border: 2px solid green" />` +
       /*<button>Exit Map</button>*/
       `</div>
-        <div style="flex: 1 0 450px">
+        <div style="flex: 1 0 33.33%">
           <resource name="greenPaper" />
           <table class="resourceTable">
             <tr 
@@ -491,6 +496,7 @@ setupVue.QuarryBlock = {
 
       if (health > 0)
         return {
+          // why linear gradient on the _same_ thing
           background: `
             linear-gradient(#000a, #000a),
             linear-gradient(#000a, #000a),

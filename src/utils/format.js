@@ -123,10 +123,10 @@ export function formatWhole(decimal) {
   return format(decimal, 0);
 }
 
-export function formatChange(decimal) {
+export function formatChange(decimal, prec = 0) {
   decimal = new Decimal(decimal);
-  if (decimal.gt(10)) return format(decimal) + "x";
-  return format(decimal.sub(1).mul(100), 0) + "%";
+  if (decimal.gt(10)) return format(decimal, prec) + "x";
+  return format(decimal.sub(1).mul(100), prec) + "%";
 }
 
 export function formatTime(s, type) {

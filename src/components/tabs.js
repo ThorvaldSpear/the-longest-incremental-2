@@ -105,7 +105,7 @@ export function initTabs() {
       <div class='tab_navigator' v-if="tabs.subtabs !== undefined && tabs.subtabs.length > 1" :role="tab.toLowerCase()">
         <br>
         <span v-for="subtab of tabs.subtabs">
-          <button 
+          <button v-if="!tab.requirements || tab.requirements()" 
             :key="subtab"
             :role="subtab.toLowerCase()"
             @click="tabClicked = subtab"

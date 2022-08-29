@@ -5,6 +5,9 @@ import { hasUpgrade } from "../../components/buyables.js";
 
 TABS.Equipment = {
   parent: "Quarry",
+  requirements() {
+    return hasUpgrade("GreenPapers", 3);
+  },
   // aarex list element does not exist
   // it exists for cosmetic decorations.
   // ???
@@ -30,7 +33,7 @@ TABS.Equipment = {
       <b>Maps</b><br>
       <Inventory group="map"/>
       <b>Pickaxes</b><br>
-      <button v-if="false && hasUpgrade('GreenPapers', 3)">Create Pickaxe</button>
+      <button v-if="">Create Pickaxe</button>
       <Inventory group="pickaxe"/>
       <b>Artifacts</b><br>
       <Inventory group="artifact"/>

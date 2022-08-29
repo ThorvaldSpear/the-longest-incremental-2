@@ -53,11 +53,11 @@ UPGRADES.GreenPapers = {
       unl: () => getUpgrade("GreenPapers", 1).amt.gte(1)
     }),
     new Upgrade({
-      name: "Anviling",
+      name: "Forgery",
       cost: () => D(100),
       eff: () => 1,
       desc() {
-        return `You can create better Pickaxes with Bronze and Silver.`;
+        return `You can create better Pickaxes with Bronze and Silver. (NOT IMPLEMENTED)`;
       },
       group: "GreenPapers",
       unl: () => getUpgrade("GreenPapers", 2).amt.gte(1)
@@ -89,9 +89,7 @@ UPGRADES.GreenPapers = {
       eff: (lvl) => D(1.015).pow(lvl).recip(),
       max: 100,
       desc(eff) {
-        return `Block health is reduced by ${formatChange(
-          Decimal.sub(1, eff)
-        )}<br>
+        return `Block health is reduced by ${formatChange(eff, 2)}<br>
         Everyone deserves more progress!`;
       },
       group: "GreenPapers",
@@ -101,16 +99,18 @@ UPGRADES.GreenPapers = {
       name: "Coordination",
       cost: () => D(25000),
       // tbd
-      eff: () =>
-        getMiner(0)
-          .amt.add(getMiner(1).amt)
-          .add(getMiner(2).amt)
-          .add(getMiner(3).amt)
-          .add(getMiner(4).amt)
-          .add(10)
-          .log10(),
+      eff: (lvl) =>
+        D(lvl).gte(1)
+          ? getMiner(0)
+              .amt.add(getMiner(1).amt)
+              .add(getMiner(2).amt)
+              .add(getMiner(3).amt)
+              .add(getMiner(4).amt)
+              .add(10)
+              .log10()
+          : 1,
       desc(eff) {
-        return `+${format(
+        return `${format(
           eff
         )}x to miner effectiveness based on amount of miners.<br>
         Teamwork?`;
@@ -119,12 +119,12 @@ UPGRADES.GreenPapers = {
       unl: () => getUpgrade("GreenPapers", 6).amt.gte(1)
     }),
     new Upgrade({
-      name: "SSH Hashing",
+      name: "Establish Mining Corporation",
       cost: () => D(125000),
-      eff: () => RESOURCES.greenPaper.amt.add(10).log10(),
+      eff: (lvl) =>
+        D(lvl).gte(1) ? RESOURCES.greenPaper.amt.add(10).log10() : 1,
       desc(eff) {
-        return `Gain ${format(eff)}x the Green Papers based on your GP.<br>
-        #SSH Hashing (^-^)`;
+        return `Gain ${format(eff)}x the Green Papers based on your GP.`;
       },
       group: "GreenPapers",
       unl: () => getUpgrade("GreenPapers", 7).amt.gte(1)
@@ -132,9 +132,10 @@ UPGRADES.GreenPapers = {
     new Upgrade({
       name: "More Pain, Ore Gain",
       cost: () => D(5000000),
-      eff: () => D(10).pow(D(player.quarry.depth).div(50)),
+      eff: (lvl) =>
+        D(lvl).gte(1) ? D(10).pow(D(player.quarry.depth).div(50)) : 1,
       desc(eff) {
-        return `Gain ${formatChange(eff)} ores based on depth`;
+        return `Gain ${format(eff)} ores based on depth`;
       },
       group: "GreenPapers",
       unl: () => getUpgrade("GreenPapers", 8).amt.gte(1)

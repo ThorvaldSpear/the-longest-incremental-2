@@ -110,7 +110,7 @@ export class Upgrade extends Buyable {
 }
 export const UPGRADES = {};
 export function getUpgrade(group, x) {
-  return UPGRADES[group].data[x];
+  return UPGRADES[group]?.data[x];
 }
 export function getUpgradeEff(group, x) {
   return DATA.setup

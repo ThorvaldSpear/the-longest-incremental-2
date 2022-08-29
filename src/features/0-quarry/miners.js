@@ -20,7 +20,10 @@ class Miner extends Buyable {
     super(obj);
     this.x = obj.x;
     this._eff = this.eff;
-    this.eff = () => this._eff(this.amt).mul(getUpgradeEff("GreenPapers", 0));
+    this.eff = () =>
+      this._eff(this.amt).mul(
+        getUpgradeEff("GreenPapers", 0).mul(getUpgradeEff("GreenPapers", 7))
+      );
     this._desc = this.desc;
     this.desc = (eff) =>
       `${format(eff)} damage / ${format(
@@ -31,7 +34,7 @@ class Miner extends Buyable {
   }
   hit(diff) {
     if (Decimal.eq(this.player[this.name.toLowerCase()] ?? 0, 0)) return;
-    // eff of miner????
+
     const speed = getMinerSpeed(this.x).mul(this.speed);
     this.progress = this.progress.plus(speed.mul(diff));
     const hits = this.progress.floor();

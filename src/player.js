@@ -25,7 +25,6 @@ export function setupPlayer() {
     miners: {
       amt: {}
     },
-    quarry: initQuarry(),
 
     ver: ver,
     lastTick: Date.now(),
@@ -52,8 +51,11 @@ export function fixPlayer(obj) {}
 export let interval;
 export function loadGame() {
   initTabs();
-  load();
   setupData();
+  if (player.quarry === undefined) {
+    player.quarry = initQuarry();
+  }
+  load();
   app.mount("#app");
   interval = setInterval(runGame, 50);
 }
