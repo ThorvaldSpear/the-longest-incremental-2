@@ -108,7 +108,7 @@ BUYABLES.Miners = {
       cost: (lvl) => (D(lvl).eq(0) ? D(0) : lvl.pow(4).add(9)),
       eff: (lvl) => D(lvl),
       desc(eff) {
-        return `to 1 block`;
+        return `to 1 block on the topmost layer`;
       },
       group: "Miners",
       x: 0
@@ -118,7 +118,7 @@ BUYABLES.Miners = {
       cost: (lvl) => lvl.add(1).pow(4).add(9),
       eff: (lvl) => D(lvl).mul(2),
       desc(eff) {
-        return `to 1 non-ore`;
+        return `to 1 non-ore on the topmost layer`;
       },
       unl: () => getMiner(0).amt.gte(1),
       group: "Miners",
@@ -130,7 +130,7 @@ BUYABLES.Miners = {
       cost: (lvl) => lvl.add(1).pow(4).add(29),
       eff: (lvl) => D(lvl).mul(2),
       desc(eff) {
-        return `to 1 block on the highest column`;
+        return `to 1 block on the 1st layer`;
       },
       unl: () => getMiner(1).amt.gte(1),
       group: "Miners",
@@ -142,7 +142,7 @@ BUYABLES.Miners = {
       cost: (lvl) => lvl.add(1).pow(4).add(99),
       eff: (lvl) => D(lvl),
       desc(eff) {
-        return `to 1 ore block`;
+        return `to 1 ore on the topmost layer`;
       },
       unl: () => getMiner(2).amt.gte(1),
       group: "Miners",
@@ -154,7 +154,7 @@ BUYABLES.Miners = {
       cost: (lvl) => lvl.add(1).pow(4).add(299),
       eff: (lvl) => D(lvl).mul(5),
       desc(eff) {
-        return `to 1 block + 50% more damage to 2 adjacent blocks`;
+        return `to 1 block on the topmost layer + 50% more damage to 4 adjacent blocks`;
       },
       unl: () => getMiner(3).amt.gte(1),
       group: "Miners",

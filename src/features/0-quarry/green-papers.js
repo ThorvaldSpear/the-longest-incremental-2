@@ -138,7 +138,7 @@ UPGRADES.GreenPapers = {
       eff: (lvl) =>
         D(lvl).gte(1) ? D(10).pow(D(player.quarry.depth).div(50)) : 1,
       desc(eff) {
-        return `Gain ${format(eff)} ores based on depth`;
+        return `Gain ${format(eff)}x the ores based on depth`;
       },
       group: "GreenPapers",
       unl: () => getUpgrade("GreenPapers", 8).amt.gte(1)
