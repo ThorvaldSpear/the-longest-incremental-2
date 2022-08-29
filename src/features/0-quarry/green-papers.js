@@ -43,7 +43,7 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "Fortune Mining",
-      cost: (lvl) => Decimal.pow(2, lvl).mul(5),
+      cost: (lvl) => Decimal.pow(2, lvl).mul(25),
       eff: (lvl) => D(lvl).div(10).add(1),
       max: 20,
       desc(eff) {
@@ -119,7 +119,10 @@ UPGRADES.GreenPapers = {
       unl: () => getUpgrade("GreenPapers", 6).amt.gte(1)
     }),
     new Upgrade({
-      name: "Establish Mining Corporation",
+      name: "SSH Hashing", // DONT CHANGE MY GIVEN GP NAMES
+                           // DIDN'T META SAY NO CRYPTOCURRENCY REFERENCES?
+                           // ALSO HOW DO YOU HASH AN INTERNET PROTOCOL
+                           // SSH HASHING ISNT CRYPTO REFRENCE ITS A METHOD TO VALIDATE DATA PACKETS FROM SOURCES THEY COME FROM
       cost: () => D(125000),
       eff: (lvl) =>
         D(lvl).gte(1) ? RESOURCES.greenPaper.amt.add(10).log10() : 1,

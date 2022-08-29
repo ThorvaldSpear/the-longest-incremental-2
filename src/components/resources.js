@@ -1,6 +1,6 @@
 import { setupVue } from "../setup.js";
 import { DATA } from "../tmp.js";
-import { D } from "../utils/break_eternity.js";
+import Decimal, { D } from "../utils/break_eternity.js";
 import { format } from "../utils/format.js";
 
 export class Resource {
@@ -45,9 +45,14 @@ setupVue.resource = {
     <div>
       <span class="resource">
         <b :style="{ color: resource_data.color }">
-          {{format(resource.amt.value)}}
+          {{format(resource.amt.value)}} 
         </b>
-        {{resource_data.name}}
+        {{resource_data.name}} 
+        <span v-if="Decimal.gt(resource.prod.value, 0)" 
+              :style="{ color: resource_data.color }"
+              style="font-size: 90%">
+          (+{{format(resource.prod.value)}}/sec)
+        </span>
       </span>
     </div>
   `,
@@ -57,6 +62,7 @@ setupVue.resource = {
     const resource = DATA.resources[props.name];
     const resource_data = RESOURCES[props.name];
     return {
+      Decimal,
       resource,
       resource_data,
       format

@@ -241,14 +241,15 @@ button[role="greenpapers"] {
 /* Tooltip text */
 .tooltip .tooltiptext {
   visibility: hidden;
-  width: 120px;
-  bottom: 100%;
+  width: max-content;
+  max-width: 400px;
+  bottom: calc(100% + 8px);
   left: 50%;
-  margin-left: -60px;
+  transform: translateX(-50%);
   background-color: black;
   color: #ffffff;
   text-align: center;
-  padding: 5px 0;
+  padding: 5px 8px;
   border-radius: 6px;
   pointer-events: none;
 

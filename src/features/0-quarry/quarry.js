@@ -285,6 +285,16 @@ function sellBlock(index) {
   RESOURCES[index.toLowerCase()].set(0);
 }
 
+function blockCost(index) {
+  return Decimal.mul(BLOCK_DATA[index].worth, 1.5);
+}
+function buyBlock(index) {
+  const worth = Decimal.mul(blockCost(index), 1.5);
+  if (RESOURCES.greenPaper.gte(worth)) {
+    RESOURCES.greenPaper.sub(worth);
+    RESOURCES[index.toLowerCase()].add(1);
+  }
+}
 function getTotalBlocks(x) {
   let ret = D(0);
   for (const value of Object.values(player.miners.ores)) ret = ret.add(value);
@@ -320,10 +330,9 @@ function generateBlock(depth) {
   }
 
   let ore = "";
-  random = Math.random();
   for (const [index, key] of Object.entries(ORE_DATA)) {
     if (depth.lt(key.range[0]) || depth.gt(key.range[1])) continue;
-    if (1 / random >= key.rarity) ore = index;
+    if (1 / Math.random() >= key.rarity) ore = index;
   }
   if (depth.gt(100)) {
     layer = "Bedrock";
@@ -444,7 +453,7 @@ TABS.QuarrySite = {
                   Sell for {{format(getBlockAmount(index).mul(key.worth))}} GP
                 </button>
                 <button v-if="hasUpgrade('GreenPapers', 5)" @click="buyBlock(index)">
-                  Buy 1 for {{format(Decimal.mul(key.worth, 1.5))}} GP
+                  Buy 1 for {{format(blockCost(index))}} GP
                 </button>
               </td>
             </tr>
@@ -464,7 +473,9 @@ TABS.QuarrySite = {
         hasUpgrade,
 
         getBlockAmount,
-        sellBlock
+        sellBlock,
+        buyBlock,
+        blockCost
       };
     }
   }
@@ -498,8 +509,8 @@ setupVue.QuarryBlock = {
         return {
           // why linear gradient on the _same_ thing
           background: `
-            linear-gradient(#000a, #000a),
-            linear-gradient(#000a, #000a),
+            linear-gradient(#0003, #0003),
+            linear-gradient(#0003, #0003),
             linear-gradient(${oreColor}, ${oreColor}),
             linear-gradient(${layerColor}, ${layerColor}),
             linear-gradient(${treasureColor}, ${treasureColor}),
@@ -531,9 +542,9 @@ setupVue.QuarryBlock = {
     <div class="tooltip">
       <div :style="style" style="width: 32px; height: 32px; transition: background-size .5s"></div>
       <span v-if="Decimal.gt(block.health, 0) && block.name !== 'Bedrock'" class="tooltiptext">
-        <b style='font-size: 16px'>Block Type: {{block.layer}}</b><br>
+        <b style='font-size: 16px'>Block Type: {{block.layer}}</b>
         <span v-if="block.ore !== ''">
-          Ore: {{block.ore}} ({{getRarity(ORE_DATA[block.ore].rarity)}})
+          <br>Ore: {{block.ore}} ({{getRarity(ORE_DATA[block.ore].rarity)}})
         </span><br>
         Health: {{format(block.health)}}/{{format(health)}}<br>
         <b v-if="block.treasure" style='color: gold'>Treasure inside!</b>

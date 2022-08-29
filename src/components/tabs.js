@@ -7,7 +7,7 @@ export const TABS = (window.TABS = {
     subtabs: ["Quarry", "Menu"]
   },
   Menu: {
-    subtabs: ["Options", "Achievements", "Statistics", "About"]
+    subtabs: ["Options", /* "Achievements", "Statistics", */ "About"]
   },
   Options: {
     component: {
@@ -105,7 +105,7 @@ export function initTabs() {
       <div class='tab_navigator' v-if="tabs.subtabs !== undefined && tabs.subtabs.length > 1" :role="tab.toLowerCase()">
         <br>
         <span v-for="subtab of tabs.subtabs">
-          <button v-if="!tab.requirements || tab.requirements()" 
+          <button v-if="console.log(subtab, TABS[subtab]) || TABS[subtab].unl()"
             :key="subtab"
             :role="subtab.toLowerCase()"
             @click="tabClicked = subtab"
@@ -132,6 +132,7 @@ export function initTabs() {
     },
     setup(props) {
       return {
+        console,
         TABS
       };
     },
