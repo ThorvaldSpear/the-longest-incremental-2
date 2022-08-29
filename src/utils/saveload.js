@@ -1,5 +1,7 @@
 import { player, setupPlayer } from "../player.js";
 import { notify } from "./notify.js";
+import LZString from "./lz-string.js";
+
 const SAVE_KEY = "the_longest_incremental_2";
 /**
  * Recursively merges defaultData with newData.
@@ -19,6 +21,13 @@ function fixData(obj, mergeFrom) {
   }
 }
 
+function compress() {
+  return LZString.compressToBase64(JSON.stringify(player));
+}
+
+function decompress(save) {
+  return JSON.parse(LZString.decompressFromBase64(save));
+}
 /**
  * Saves player data to localStorage.
  */
@@ -31,7 +40,7 @@ export function save(manual) {
     return;
   }
   if (manual) notify("Game saved.");
-  localStorage.setItem(SAVE_KEY, JSON.stringify(player));
+  localStorage.setItem(SAVE_KEY, compress());
 }
 
 /**
@@ -43,7 +52,7 @@ export function load(save) {
   // can only be null if it is not found
   if (data === null || data === "") return;
   try {
-    const save = JSON.parse(data);
+    const save = data[0] === "{" ? JSON.parse(data) : decompress(data);
     // wrong way
     // you will merge player
     fixData(player, save);
@@ -68,7 +77,7 @@ export function importSave() {
  */
 export async function exportSave() {
   try {
-    await navigator.clipboard.writeText(JSON.stringify(player));
+    await navigator.clipboard.writeText(compress());
     notify("Save exported!");
   } catch (error) {
     notify("For some reason the game failed to export your save.");
