@@ -7,7 +7,7 @@ import { initTabs } from "./components/tabs.js";
 import { RESOURCES } from "./components/resources.js";
 import { setupData } from "./tmp.js";
 import { reactive } from "https://unpkg.com/vue@3.2.37/dist/vue.esm-browser.js";
-import { initQuarry, incrementQuarryRow } from "./features/0-quarry/quarry.js";
+import { initQuarry } from "./features/0-quarry/quarry.js";
 import { doMine } from "./features/0-quarry/miners.js";
 
 // not going to work

@@ -91,7 +91,8 @@ setupVue.buyable = {
       key,
       key_group,
       key_data,
-      format
+      format,
+      formatChange
     };
   }
 };

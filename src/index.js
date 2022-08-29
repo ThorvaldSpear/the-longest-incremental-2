@@ -3,11 +3,10 @@ import { createApp } from "https://unpkg.com/vue@3.2.37/dist/vue.esm-browser.js"
 import { setupVue } from "./setup.js";
 
 // what the heck  is this now
-import { loadGame, interval } from "./player.js";
+import { loadGame } from "./player.js";
 
 // import "./utils/gradient.js";
 import { DATA } from "./tmp.js";
-import { notify } from "./utils/notify.js";
 
 import "./features/import-layer.js";
 /* --- CODE START --- */
