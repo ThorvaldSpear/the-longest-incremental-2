@@ -9,6 +9,7 @@ TABS.Equipment = {
   // ???
   component: {
     template: `
+    <div>
       <div class="buyables">
         <div class="buyable">
           <div><b>Novice Miner</b></div>
@@ -30,6 +31,7 @@ TABS.Equipment = {
       <Inventory group="pickaxe"/>
       <b>Artifacts</b><br>
       <Inventory group="artifact"/>
+    </div>
     `
   }
 };

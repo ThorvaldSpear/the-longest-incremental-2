@@ -54,7 +54,7 @@ const ORE_DATA = {
     range: [2, 75],
     rarity: 5,
     worth: 0.25,
-    health: 25
+    health: 10
   },
   Silver: {
     color: "#f2f0f0",
@@ -450,8 +450,18 @@ TABS.QuarrySite = {
 
 setupVue.QuarryBlock = {
   props: ["width", "height", "x", "y"],
-  methods: {
-    style(y) {
+  computed: {
+    block() {
+      return player.quarry.map[this.y][this.x];
+    },
+    health() {
+      return getBlockHealth(
+        Decimal.add(player.quarry.depth, this.y),
+        this.block.layer,
+        this.block.ore
+      );
+    },
+    style() {
       const layerColor = LAYER_DATA[this.block.layer].color ?? "white";
       const oreColor = ORE_DATA[this.block.ore]?.color ?? "transparent";
       return {
@@ -474,24 +484,14 @@ setupVue.QuarryBlock = {
       };
     }
   },
-  computed: {
-    block() {
-      return player.quarry.map[this.y][this.x];
-    },
-    health() {
-      return getBlockHealth(
-        Decimal.add(player.quarry.depth, this.y),
-        this.block.layer,
-        this.block.ore
-      );
-    }
-  },
   template: `
     <div class="tooltip">
-      <div :style="style(y)" style="width: 32px; height: 32px"></div>
+      <div :style="style" style="width: 32px; height: 32px"></div>
       <span v-if="Decimal.gt(block.health, 0) && block.name !== 'Bedrock'" class="tooltiptext">
-        <b style='font-size: 16px'>Layer: {{block.layer}}</b><br>
-        <span v-if="block.ore !== ''">Ore: {{block.ore}} ({{getRarity(ORE_DATA[block.ore].rarity)}})</span><br>
+        <b style='font-size: 16px'>Block Type: {{block.layer}}</b><br>
+        <span v-if="block.ore !== ''">
+          Ore: {{block.ore}} ({{getRarity(ORE_DATA[block.ore].rarity)}})
+        </span><br>
         Health: {{format(block.health)}}/{{format(health)}}<br>
         <b v-if="block.treasure" style='color: gold'>Treasure inside!</b>
       </span>

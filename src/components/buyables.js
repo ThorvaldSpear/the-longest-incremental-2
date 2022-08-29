@@ -106,7 +106,7 @@ export class Upgrade extends Buyable {
   constructor(d) {
     super(d);
     this.upg = true;
-    this.max = d.max ?? 1
+    this.max = d.max ?? 1;
   }
 }
 export const UPGRADES = {};
@@ -127,18 +127,25 @@ setupVue.upgrade = {
   template: `
     <div class="buyable" v-if="key_data.unl()">
       <div :role="key_data.name.toLowerCase()">
-        <b>({{format(key.amt.value, 0)}} / {{format(key_data.max, 0)}}) {{key_data.name}}:</b><br>
+        <b>
+          ({{format(key.amt.value, 0)}} 
+          / {{format(key_data.max, 0)}}) 
+          {{key_data.name}}:
+        </b><br>
         <span v-html="key_data.desc(key.eff.value)" />
       </div>
-      <div v-if="!key_data.maxed">
+      <div>
         <button @click="key_data.buy()" 
         :class="{
           canbuy: key_data.canBuy(), 
           cannotbuy: !key_data.canBuy()
         }">
-          <b>{{key_group.buyPharse ?? "Buy"}} +1</b><br>
-          Cost: {{format(key.cost.value)}}
-          {{key_data.res.name}}
+          <b>{{key_group.buyPhrase ?? "Buy"}} +1</b><br>
+          Cost: 
+          <span v-if="!key_data.maxed">
+            {{format(key.cost.value)}}
+            {{key_data.res.name}}</span>
+          <span v-else>MAXED</span>
         </button>
       </div>
     </div>
@@ -159,7 +166,7 @@ setupVue.upgrades = {
   props: ["group"],
   template: `
     <div class="buyables" align=center>
-      <upgrade v-for="(_,key) in UPGRADES[group].data" :group=group :value="key"/>
+      <upgrade v-for="(_,key) in UPGRADES[group].data" :group=group :value="key" />
     </div>
   `,
   setup() {

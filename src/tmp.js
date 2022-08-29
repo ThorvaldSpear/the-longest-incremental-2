@@ -46,18 +46,3 @@ export function setupData() {
 
   DATA.setup = true;
 }
-
-/*
-const computedMap = new Map()
-function assignComputed(key, func) {
-  computedMap.set(key, computed(() => func()))
-  Object.defineProperty(tmp, key, {
-    value() {
-      return computedMap.get(key).value
-    },
-    enumeratable: true
-  })
-}
- */
-// note: could you use it for storing computed? yes.
-// okay

@@ -51,9 +51,9 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "Anviling",
-      cost: (lvl) => D(10),
-      eff: (lvl) => 1,
-      desc(eff) {
+      cost: () => D(10),
+      eff: () => 1,
+      desc() {
         return `You can create better Pickaxes with Bronze and Silver.`;
       },
       group: "GreenPapers",
@@ -61,9 +61,9 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "Refinery",
-      cost: (lvl) => D(10),
-      eff: (lvl) => 1,
-      desc(eff) {
+      cost: () => D(10),
+      eff: () => 1,
+      desc() {
         return `You can buy blocks with Green Papers.`;
       },
       group: "GreenPapers",
@@ -96,9 +96,9 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "Coordination",
-      cost: (lvl) => D(500),
+      cost: () => D(500),
       // tbd
-      eff: (lvl) => 1,
+      eff: () => 1,
       desc(eff) {
         return `+${format(
           eff
@@ -120,7 +120,7 @@ UPGRADES.GreenPapers = {
       unl: () => getUpgrade("GreenPapers", 7).amt.gte(1)
     }),
     new Upgrade({
-      name: "More Pain, More Gain",
+      name: "More Pain, Ore Gain",
       cost: () => D(500),
       eff: () => 1,
       desc(eff) {

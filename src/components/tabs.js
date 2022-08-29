@@ -56,7 +56,10 @@ export const TABS = (window.TABS = {
       template: `
       <div>
         <h1>The Longest Incremental<sup>2</sup></h1>
-        The official sequel to <a href="https://unsoftcapped3.github.io/the-longest-incremental/">The Longest Incremental.</a>
+        The official sequel to 
+        <a href="https://unsoftcapped3.github.io/the-longest-incremental/">
+          The Longest Incremental
+        </a>
 
         <h2>Credits</h2>
         Hosted by meta.
