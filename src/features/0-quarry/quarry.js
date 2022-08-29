@@ -1,5 +1,5 @@
 import Decimal, { D } from "../../utils/break_eternity.js";
-import { format } from "../../utils/format.js";
+import { format, formatPrecise } from "../../utils/format.js";
 import { generateGradient } from "../../utils/gradient.js";
 
 import { DATA } from "../../tmp.js";
@@ -8,6 +8,7 @@ import { setupVue } from "../../setup.js";
 
 import { TABS } from "../../components/tabs.js";
 import { Resource, RESOURCES } from "../../components/resources.js";
+import { getOreGain } from "./miners.js";
 import {
   BUYABLES,
   getUpgradeEff,
@@ -41,7 +42,15 @@ export const LAYER_DATA = {
   },
   Basalt: {
     color: "#3f4f5f",
-    range: [80, 100, Infinity, Infinity],
+    range: [80, 100, 190, 200],
+    rarity: 1,
+    sparseness: 8,
+    worth: 0.04,
+    health: 10
+  },
+  Magma: {
+    color: "#bf5f00",
+    range: [190, 200, 210, 210],
     rarity: 1,
     sparseness: 8,
     worth: 0.04,
@@ -84,83 +93,83 @@ export const ORE_DATA = {
   },
   Platinum: {
     color: "#e9ffd4",
-    range: [75, 200],
+    range: [50, 190],
     rarity: 100,
-    sparseness: 250,
+    sparseness: 1e6,
     worth: 50,
-    health: 5
+    health: 30
   },
   Diamond: {
     color: "#91fffa",
-    range: [100, 200],
+    range: [75, 190],
     rarity: 30,
-    sparseness: 200,
-    worth: 50,
-    health: 10
+    sparseness: 1e6,
+    worth: 10,
+    health: 100
   },
   Adamantite: {
     color: "#c93030",
     range: [125, 175],
-    rarity: 20,
-    sparseness: 500,
-    worth: 100,
-    health: 15
+    rarity: 100,
+    sparseness: 200,
+    worth: 20,
+    health: 100
   },
   Mythril: {
     color: "#23db8b",
     range: [175, 200],
-    rarity: 200,
-    sparseness: 1000,
-    worth: 250,
-    health: 20
+    rarity: 50,
+    sparseness: 100,
+    worth: 200,
+    health: 50
   },
   Orichalcum: {
     color: "#ff52c8",
-    range: [1e3, 5e3],
-    rarity: 225,
+    range: [100, 200],
+    rarity: 200,
     sparseness: 2000,
-    health: 30
+    health: 20
   },
   Titanium: {
     color: "#b6abff",
-    range: [1e4, 3e4],
+    range: [75, 300],
     rarity: 600,
     sparseness: 2500,
     health: 50
   },
   Uranium: {
-    range: [6e4, 3e5],
-    rarity: 1150,
+    range: [150, 190],
+    rarity: 10,
     sparseness: 4500,
     health: 100
   },
   Biluth: {
-    range: [1e5, 8e5],
-    rarity: 2500,
+    range: [125, 150],
+    rarity: 1000,
     sparseness: 3500,
-    health: 300
-  },
-  Cystalium: {
-    range: [1e6, 5e6],
-    rarity: 4700,
-    sparseness: 5000,
-    health: 1000
+    health: 1e3
   },
   Chromium: {
-    range: [1e8, 5e8],
-    rarity: 10000,
+    range: [150, 175],
+    rarity: 1000,
     sparseness: 1e4,
-    health: 1e4
+    health: 500
+  },
+  Cystalium: {
+    range: [175, 200],
+    rarity: 1000,
+    sparseness: 5000,
+    health: 300
   },
   "Black Diamond": {
-    range: [1e10, 1e11],
-    rarity: 50e3,
+    range: [190, 200],
+    rarity: 10,
     sparseness: 2e5,
     health: 1e5
   },
   Brimstone: {
-    range: [1e13, 1e15],
-    rarity: 1e4,
+    range: [190, 250],
+    rarity: 50,
     sparseness: 5e6,
     health: 1e6
   }
@@ -293,6 +302,7 @@ function sellBlock(index) {
 function blockCost(index) {
   return Decimal.mul(BLOCK_DATA[index].worth, 1.5);
 }
+
 function buyBlock(index) {
   const worth = Decimal.mul(blockCost(index), 1.5);
   if (RESOURCES.greenPaper.gte(worth)) {
@@ -300,11 +310,12 @@ function buyBlock(index) {
     RESOURCES[index.toLowerCase()].add(1);
   }
 }
-function getTotalBlocks(x) {
+
+/*function getTotalBlocks(x) {
   let ret = D(0);
   for (const value of Object.values(player.miners.ores)) ret = ret.add(value);
   return ret;
-}
+}*/
 
 function getRangeMulti(value, range) {
   value = D(value);
@@ -345,7 +356,7 @@ function generateBlock(depth) {
   }
 
   let treasure = false;
-  if (ore.rarity > 10 && Math.random() < 0.3) treasure = true;
+  if (depth.lt(50) && !ore && Math.random() < 0.05) treasure = true;
 
   const health = getBlockHealth(depth, layer, ore);
   return {
@@ -459,8 +470,9 @@ TABS.QuarrySite = {
               <td style="width:calc(100%);text-align:left">
                 <resource :name="index.toLowerCase()"/>
                 <div style="font-size:13.3333px"> 
-                  (+{{format(Decimal.recip(key.sparseness ?? 1))}} per 1 damage dealt)<br>
-                  (+{{format(key.worth, 3)}} Green Papers per 1 {{index}})
+                  (+{{formatPrecise(Decimal.recip(key.sparseness ?? 1)
+                    .mul(index in ORE_DATA ? getOreGain(index) : 1))}} per 1 damage dealt)<br>
+                  (+{{formatPrecise(key.worth)}} Green Papers per 1 {{index}})
                 </div>
               </td>
               <td>
@@ -478,11 +490,14 @@ TABS.QuarrySite = {
     `,
     setup() {
       const resources = DATA.resources;
+      window.Decimal = Decimal;
       return {
         BLOCK_DATA,
+        ORE_DATA,
         QUARRY_SIZE,
         Decimal,
         format,
+        formatPrecise,
         player,
         resources,
         hasUpgrade,
@@ -490,7 +505,8 @@ TABS.QuarrySite = {
         getBlockAmount,
         sellBlock,
         buyBlock,
-        blockCost
+        blockCost,
+        getOreGain
       };
     }
   }

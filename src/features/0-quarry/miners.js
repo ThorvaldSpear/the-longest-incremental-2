@@ -13,6 +13,7 @@ import {
 import { Resource, RESOURCES } from "../../components/resources.js";
 
 import { ORE_DATA, LAYER_DATA, QUARRY_SIZE, doQuarryTick } from "./quarry.js";
+import { getTreasure } from "./treasures.js";
 
 //Make sure to add assignation too
 class Miner extends Buyable {
@@ -67,6 +68,7 @@ class Miner extends Buyable {
     if (pick.health.lte(0)) {
       pick.health = D(0);
       player.stats.mined++;
+      if (pick.treasure) getTreasure(player.quarry.depth);
     }
   }
 }

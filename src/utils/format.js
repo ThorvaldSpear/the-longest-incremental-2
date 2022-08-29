@@ -1,8 +1,9 @@
 import Decimal from "./break_eternity.js";
+import { countDecimals } from "./utils.js";
 
 const tenthousandth = new Decimal(0.0001),
   thousandth = new Decimal(0.001),
-  tenth = new Decimal(0.1),
+  //tenth = new Decimal(0.1),
   nearOne = new Decimal(0.99),
   e3 = new Decimal(1e3),
   e4 = new Decimal(1e4),
@@ -127,6 +128,9 @@ export function formatChange(decimal, prec = 0) {
   return format(decimal.sub(1).mul(100), prec) + "%";
 }
 
+export function formatPrecise(decimal) {
+  return format(decimal, Math.min(countDecimals(decimal), 5));
+}
 export function formatTime(s, type) {
   s = new Decimal(s);
   if (s.gte(86400 * 365 * 10)) return format(s.div(86400 * 365)) + "y";

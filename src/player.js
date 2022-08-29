@@ -12,7 +12,7 @@ import { doMine } from "./features/0-quarry/miners.js";
 
 // not going to work
 // computed() requires reactive source
-export const player = reactive(setupPlayer());
+export const player = (window.player = reactive(setupPlayer()));
 
 /**
  * Returns inital player data.
@@ -22,12 +22,18 @@ export function setupPlayer() {
     gp: {
       upg: {}
     },
-    miners: {
-      amt: {}
+    inventory: {
+      pickaxe: {},
+      map: {}
     },
+    miners: {
+      amt: {},
+      used: {}
+    },
+    quarry: initQuarry(),
+
     ver: ver,
     lastTick: Date.now(),
-    quarry: initQuarry(),
     stats: {
       time: 0,
       max: 0,
