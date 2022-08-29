@@ -90,7 +90,7 @@ BUYABLES.Miners = {
       cost: (lvl) => (D(lvl).eq(0) ? D(0) : lvl.pow(4)),
       eff: (lvl) => D(lvl),
       desc(eff) {
-        return `Deals ${format(eff)} damage`;
+        return `Deals ${format(eff)} damage to the topmost layer`;
       },
       group: "Miners",
       x: 0
@@ -100,7 +100,7 @@ BUYABLES.Miners = {
       cost: (lvl) => lvl.add(1).pow(4),
       eff: (lvl) => D(lvl),
       desc(eff) {
-        return `Deals ${format(eff)} damage to the first 3 rows`;
+        return `Deals ${format(eff)} damage to the first 3 layers`;
       },
       unl: () => getMiner(0).amt.gte(1),
       group: "Miners",
@@ -111,7 +111,7 @@ BUYABLES.Miners = {
       cost: (lvl) => lvl.add(1).pow(4).mul(2),
       eff: (lvl) => D(lvl).mul(3),
       desc(eff) {
-        return `Deals ${format(eff)} damage to 1 layer block`;
+        return `Deals ${format(eff)} damage to 1st column`;
       },
       unl: () => getMiner(1).amt.gte(1),
       group: "Miners",

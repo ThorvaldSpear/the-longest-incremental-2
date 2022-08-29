@@ -458,16 +458,7 @@ setupVue.QuarryBlock = {
         background: `radial-gradient(
           ${oreColor}, ${this.block.treasure ? "#ffefbf" : oreColor}
         ), linear-gradient(${layerColor}, ${layerColor})`,
-        opacity: D(this.block.health)
-          .div(
-            getBlockHealth(
-              player.quarry.depth,
-              this.block.layer,
-              this.block.ore
-            )
-          )
-          .pow(0.5)
-          .toNumber()
+        opacity: D(this.block.health).div(this.health).pow(0.5).toNumber()
 
         /*
         `radial-gradient(
@@ -486,6 +477,13 @@ setupVue.QuarryBlock = {
   computed: {
     block() {
       return player.quarry.map[this.y][this.x];
+    },
+    health() {
+      return getBlockHealth(
+        Decimal.add(player.quarry.depth, this.y),
+        this.block.layer,
+        this.block.ore
+      );
     }
   },
   template: `
@@ -494,7 +492,7 @@ setupVue.QuarryBlock = {
       <span v-if="Decimal.gt(block.health, 0) && block.name !== 'Bedrock'" class="tooltiptext">
         <b style='font-size: 16px'>Layer: {{block.layer}}</b><br>
         <span v-if="block.ore !== ''">Ore: {{block.ore}} ({{getRarity(ORE_DATA[block.ore].rarity)}})</span><br>
-        Health: {{format(block.health)}}<br>
+        Health: {{format(block.health)}}/{{format(health)}}<br>
         <b v-if="block.treasure" style='color: gold'>Treasure inside!</b>
       </span>
     </div>
