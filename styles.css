@@ -172,6 +172,21 @@ button:active {
   z-index: 1;
 }
 
+.criticalError #bg {
+  background: linear-gradient(red, #000000);
+}
+.criticalError #inner_bg {
+  background: black;
+}
+.criticalError #app,
+.criticalError #app * {
+  color: red !important;
+}
+.criticalError pre {
+  display: inline-block;
+  text-align: left;
+}
+
 #version {
   position: fixed;
   top: 0;

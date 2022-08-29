@@ -15,8 +15,7 @@ const SAVE_KEY = "the_longest_incremental_2";
 function fixData(obj, mergeFrom) {
   for (const item in mergeFrom) {
     const thing = mergeFrom[item];
-    // unknown key
-    if (typeof thing === "object") {
+    if (typeof thing === "object" && thing !== null) {
       fixData(obj[item], thing);
     } else {
       obj[item] = thing;
@@ -56,8 +55,6 @@ export function load(save) {
   if (data === null || data === "") return;
   try {
     const save = data[0] === "{" ? JSON.parse(data) : decompress(data);
-    // wrong way
-    // you will merge player
     fixData(player, save);
     notify("Game loaded.");
     updateVer();
@@ -66,8 +63,6 @@ export function load(save) {
     notify("Your save is invalid. Sorry!");
     //canSave = false;
   }
-  if (D(player.quarry.depth).eq(0) && D(player.quarry.map[0][0].health).gt(1))
-    player.quarry = initQuarry();
 }
 
 /**

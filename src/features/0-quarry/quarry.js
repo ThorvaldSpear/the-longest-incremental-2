@@ -19,6 +19,7 @@ export const LAYER_DATA = {
     color: "#7f5f3f",
     range: [0, 0, 4, 6],
     rarity: 1,
+    sparseness: 1,
     worth: 0.003,
     health: 1
   },
@@ -26,27 +27,31 @@ export const LAYER_DATA = {
     color: "grey",
     range: [3, 6, 45, 50],
     rarity: 1,
-    worth: 0.005,
+    sparseness: 2,
+    worth: 0.01,
     health: 3
   },
   Granite: {
     color: "#bf7f7f",
     range: [35, 50, 90, 100],
     rarity: 1,
-    worth: 0.005,
+    sparseness: 4,
+    worth: 0.02,
     health: 5
   },
   Basalt: {
     color: "#3f4f5f",
     range: [80, 100, Infinity, Infinity],
     rarity: 1,
-    worth: 0.005,
+    sparseness: 8,
+    worth: 0.04,
     health: 10
   },
   Bedrock: {
     color: "black",
     range: [Infinity, Infinity, Infinity, Infinity],
     rarity: 0,
+    sparseness: Infinity,
     worth: 0,
     health: Infinity
   }
@@ -273,7 +278,7 @@ function getBlockHealth(depth, layer, ore) {
   return getBlockStrength(depth)
     .mul(LAYER_DATA[layer].health)
     .mul(ORE_DATA[ore]?.health ?? 1)
-    .mul(getUpgradeEff("GreenPapers", 6));
+    .mul(DATA.setup ? getUpgradeEff("GreenPapers", 6) : 1);
 }
 
 function getBlockAmount(index) {
@@ -382,10 +387,10 @@ function generateQuarryRow(depth) {
     .map(() => generateBlock(depth));
   return array;
 }
-function generateQuarryMap(depthStart = 0) {
+function generateQuarryMap() {
   let array = Array(QUARRY_SIZE.height)
     .fill()
-    .map((_, i) => generateQuarryRow(depthStart + i));
+    .map((_, i) => generateQuarryRow(i));
   return array;
 }
 export function initQuarry() {
@@ -395,7 +400,7 @@ export function initQuarry() {
     map: generateQuarryMap()
   };
 }
-function incrementQuarryRow() {
+export function incrementQuarryRow() {
   player.quarry.depth = Decimal.add(player.quarry.depth, 1);
 
   player.quarry.map.splice(0, 1);
@@ -405,6 +410,9 @@ function incrementQuarryRow() {
 }
 
 export function doQuarryTick(diff) {
+  if (player.quarry === undefined) {
+    player.quarry = initQuarry();
+  }
   for (const miner of BUYABLES.Miners.data) {
     miner.hit(diff);
   }
@@ -430,7 +438,7 @@ TABS.QuarrySite = {
       `
       <div style="display: flex; flex-direction: row; vertical-align: top">
         <div style="flex: 1 0 33.33%">
-          <resource name="mana" />
+          <resource name="labor" />
           <buyables group="Miners" />
         </div>
         <div style="flex: 1 0 33.33%">
@@ -440,6 +448,7 @@ TABS.QuarrySite = {
                 :height="QUARRY_SIZE.height" 
                 style="border: 2px solid green" />` +
       /*<button>Exit Map</button>*/
+      // why does it not work???????????
       `</div>
         <div style="flex: 1 0 33.33%">
           <resource name="greenPaper" />
@@ -447,7 +456,13 @@ TABS.QuarrySite = {
             <tr 
               v-for="[index, key] of Object.entries(BLOCK_DATA).filter((x) => getBlockAmount(x[0]).gt(0))"
               :key="index">
-              <td style="width:calc(100%);text-align:left"><resource :name="index.toLowerCase()"/></td>
+              <td style="width:calc(100%);text-align:left">
+                <resource :name="index.toLowerCase()"/>
+                <div style="font-size:13.3333px"> 
+                  (+{{format(Decimal.recip(key.sparseness ?? 1))}} per 1 damage dealt)<br>
+                  (+{{format(key.worth, 3)}} Green Papers per 1 {{index}})
+                </div>
+              </td>
               <td>
                 <button @click="sellBlock(index)">
                   Sell for {{format(getBlockAmount(index).mul(key.worth))}} GP

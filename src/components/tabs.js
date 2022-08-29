@@ -33,7 +33,7 @@ export const TABS = (window.TABS = {
           id="offline"
           @click="player.options.off = !player.options.off"
         >
-          Offline: {{player.options.off ? "ON" : "OFF" }}</button
+          Offline Progresssion: {{player.options.off ? "ON" : "OFF" }}</button
         ><br />
 
         <h2>Discord</h2>
@@ -104,8 +104,8 @@ export function initTabs() {
       <component class="tab" :is="tab" />
       <div class='tab_navigator' v-if="tabs.subtabs !== undefined && tabs.subtabs.length > 1" :role="tab.toLowerCase()">
         <br>
-        <span v-for="subtab of tabs.subtabs">
-          <button v-if="console.log(subtab, TABS[subtab]) || TABS[subtab].unl()"
+        <span v-for="subtab of tabs.subtabs" :key="subtab">
+          <button v-if="TABS[subtab].unl()"
             :key="subtab"
             :role="subtab.toLowerCase()"
             @click="tabClicked = subtab"

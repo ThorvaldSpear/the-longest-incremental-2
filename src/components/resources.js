@@ -4,11 +4,12 @@ import Decimal, { D } from "../utils/break_eternity.js";
 import { format } from "../utils/format.js";
 
 export class Resource {
-  constructor({ name, color, src, prodFunc }) {
+  constructor({ name, color, src, prodFunc, based }) {
     this.name = name;
     this.color = color ?? "var(--font-color)";
     this.src = src; ///{parent, id} -> data
     this.prodFunc = prodFunc ?? (() => D(0));
+    this.based = based;
   }
 
   get amt() {
@@ -43,7 +44,7 @@ setupVue.resource = {
   props: ["name"],
   template: `
     <div>
-      <span class="resource">
+      <span class="resource tooltip">
         <b :style="{ color: resource_data.color }">
           {{format(resource.amt.value)}} 
         </b>
@@ -52,6 +53,9 @@ setupVue.resource = {
               :style="{ color: resource_data.color }"
               style="font-size: 90%">
           (+{{format(resource.prod.value)}}/sec)
+        </span>
+        <span class="tooltiptext" v-if="resource_data.based">
+          Based on: {{resource_data.based}}
         </span>
       </span>
     </div>

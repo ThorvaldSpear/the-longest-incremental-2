@@ -19,7 +19,8 @@ export function setupData() {
       subdata[id] = {
         amt: computed(() => key.amt),
         cost: computed(() => key.cost(key.amt)),
-        eff: computed(() => key.eff(key.amt))
+        eff: computed(() => key.eff(key.amt)),
+        levelDiff: computed(() => key.levelDiff)
       };
     }
     DATA.upgrades[id_group] = subdata;
@@ -31,7 +32,8 @@ export function setupData() {
       subdata[id] = {
         amt: computed(() => key.amt),
         cost: computed(() => key.cost(key.amt)),
-        eff: computed(() => key.eff(key.amt))
+        eff: computed(() => key.eff(key.amt)),
+        levelDiff: computed(() => key.levelDiff)
       };
     }
     DATA.buyables[id_group] = subdata;

@@ -2,13 +2,13 @@ import { setupVue } from "../setup.js";
 import { DATA } from "../tmp.js";
 import { RESOURCES } from "./resources.js";
 import Decimal, { D } from "../utils/break_eternity.js";
-import { format } from "../utils/format.js";
+import { format, formatChange } from "../utils/format.js";
 
 /**
  * The Buyable class for creating buyables.
  */
 export class Buyable {
-  constructor({ name, group, unl, max, cost, eff, defer, desc }) {
+  constructor({ name, group, unl, max, cost, eff, defer, desc, diffDesc }) {
     this.name = name;
     this.group = group;
     this.unl = unl ?? (() => true);
@@ -17,6 +17,10 @@ export class Buyable {
     this.eff = eff;
     this.defer = defer ?? D(0);
     this.desc = desc;
+    this.diffDesc = diffDesc ?? "to effect";
+  }
+  get levelDiff() {
+    return this.eff(this.amt.add(1)).sub(this.eff(this.amt));
   }
 
   get groupData() {
@@ -69,6 +73,11 @@ setupVue.buyable = {
           cannotbuy: !key_data.canBuy()
         }">
           <b>{{key_group.buyPhrase ?? "Buy"}} +1</b><br>
+          +{{
+            key_data.desc(key.eff.value).includes("%") ? 
+            formatChange(key.levelDiff.value.add(1)) 
+            : format(key.levelDiff.value)
+          }} {{key_data.diffDesc}}<br>
           {{format(key.cost.value)}} {{key_data.res.name}}
         </button>
       </div>
@@ -90,7 +99,7 @@ setupVue.buyables = {
   props: ["group"],
   template: `
     <div class="buyables" align=center>
-      <buyable v-for="(_,key) in BUYABLES[group].data" :group=group :value="key"/>
+      <buyable v-for="(_,key) in BUYABLES[group].data" :group="group" :value="key" />
     </div>
   `,
   setup() {
@@ -139,6 +148,13 @@ setupVue.upgrade = {
         }">
           <span v-if="!key_data.maxed">
             <b>{{key_group.buyPhrase ?? "Buy"}} {{Decimal.eq(key_data.max, 1) ? "" : "+1"}}</b><br>
+            <span v-if="Decimal.gt(key_data.max, 1)">
+              +{{
+                key_data.desc(key.eff.value).includes("%") 
+                ? formatChange(key.levelDiff.value.add(1)) 
+                : format(key.levelDiff.value)
+              }} {{key_data.diffDesc}}<br>
+            </span>
             {{format(key.cost.value)}} {{key_data.res.name}}
           </span>
           <span v-else>
@@ -157,6 +173,7 @@ setupVue.upgrade = {
       key_group,
       key_data,
       format,
+      formatChange,
       Decimal
     };
   }

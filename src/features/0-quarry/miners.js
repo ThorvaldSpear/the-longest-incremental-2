@@ -12,7 +12,7 @@ import {
 } from "../../components/buyables.js";
 import { Resource, RESOURCES } from "../../components/resources.js";
 
-import { ORE_DATA, QUARRY_SIZE, doQuarryTick } from "./quarry.js";
+import { ORE_DATA, LAYER_DATA, QUARRY_SIZE, doQuarryTick } from "./quarry.js";
 
 //Make sure to add assignation too
 class Miner extends Buyable {
@@ -20,17 +20,18 @@ class Miner extends Buyable {
     super(obj);
     this.x = obj.x;
     this._eff = this.eff;
-    this.eff = () =>
-      this._eff(this.amt).mul(
+    this.eff = (amt) =>
+      this._eff(amt).mul(
         getUpgradeEff("GreenPapers", 0).mul(getUpgradeEff("GreenPapers", 7))
       );
     this._desc = this.desc;
     this.desc = (eff) =>
-      `${format(eff)} damage / ${format(
-        getMinerSpeed(this.x).mul(this.speed).recip()
-      )} seconds<br>${this._desc(eff)}`;
+      `${format(eff)} damage/hit × ${format(
+        getMinerSpeed(this.x).mul(this.speed)
+      )} hits/sec<br>${this._desc(eff)}`;
     this.progress = Decimal.dZero;
     this.speed = obj.speed || 1;
+    this.diffDesc = "damage/hit";
   }
   hit(diff) {
     if (Decimal.eq(this.player[this.name.toLowerCase()] ?? 0, 0)) return;
@@ -56,7 +57,9 @@ class Miner extends Buyable {
     const eff = getBuyableEff(this.group, this.x);
     const damage = eff.mul(hits).min(pick.health);
     pick.health = Decimal.sub(pick.health, damage);
-    RESOURCES[pick.layer.toLowerCase()].add(damage);
+    RESOURCES[pick.layer.toLowerCase()].add(
+      damage.div(LAYER_DATA[pick.layer].sparseness)
+    );
     if (pick.ore)
       RESOURCES[pick.ore.toLowerCase()].add(
         damage.div(ORE_DATA[pick.ore].sparseness).mul(getOreGain(pick.ore))
@@ -86,20 +89,21 @@ export function getOreGain(ore) {
   return mul;
 }
 
-RESOURCES.mana = new Resource({
-  name: "Mana",
+RESOURCES.labor = new Resource({
+  name: "Labor",
   color: "blue",
   src: {
     parent: () => player.miners,
     id: "mana"
   },
   prodFunc() {
-    return D(player.quarry.depth).div(60);
-  }
+    return D(player.quarry.depth).plus(1).div(60);
+  },
+  based: "Quarry Depth"
 });
 
 BUYABLES.Miners = {
-  res: "mana",
+  res: "labor",
   player: () => player.miners.amt,
   data: [
     // @type {Array<Buyable>}
@@ -118,7 +122,7 @@ BUYABLES.Miners = {
       cost: (lvl) => lvl.add(1).pow(4).add(9),
       eff: (lvl) => D(lvl).mul(2),
       desc(eff) {
-        return `to 1 non-ore on the topmost layer`;
+        return `to 1 non-ore block on the topmost layer`;
       },
       unl: () => getMiner(0).amt.gte(1),
       group: "Miners",

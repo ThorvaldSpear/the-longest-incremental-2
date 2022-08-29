@@ -40,14 +40,4 @@ export const app = createApp({
 
 for (const [index, key] of Object.entries(setupVue)) app.component(index, key);
 
-window.onerror = (event, source, lineno, colno, error) => {
-  clearInterval(interval);
-  // \n won't work
-  console.error(error.toString());
-  notify(
-    `Your game has run into a error: ${error.toString()}. Please check the console...`,
-    { dismissable: false }
-  );
-};
-
 loadGame();

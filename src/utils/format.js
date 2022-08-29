@@ -73,8 +73,6 @@ function commaFormat(num, precision) {
 }
 
 function regularFormat(num, precision) {
-  if (num.lt(tenthousandth)) return (0).toFixed(precision);
-  if (num.lt(tenth) && precision !== 0) precision = Math.max(precision, 4);
   return num.toStringWithDecimalPlaces(precision);
 }
 

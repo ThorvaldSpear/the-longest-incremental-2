@@ -120,14 +120,15 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "SSH Hashing", // DONT CHANGE MY GIVEN GP NAMES
-                           // DIDN'T META SAY NO CRYPTOCURRENCY REFERENCES?
-                           // ALSO HOW DO YOU HASH AN INTERNET PROTOCOL
-                           // SSH HASHING ISNT CRYPTO REFRENCE ITS A METHOD TO VALIDATE DATA PACKETS FROM SOURCES THEY COME FROM
+      // DIDN'T META SAY NO CRYPTOCURRENCY REFERENCES?
+      // ALSO HOW DO YOU HASH AN INTERNET PROTOCOL
+      // SSH HASHING ISNT CRYPTO REFRENCE ITS A METHOD TO VALIDATE DATA PACKETS FROM SOURCES THEY COME FROM
       cost: () => D(125000),
       eff: (lvl) =>
         D(lvl).gte(1) ? RESOURCES.greenPaper.amt.add(10).log10() : 1,
       desc(eff) {
-        return `Gain ${format(eff)}x the Green Papers based on your GP.`;
+        return `Gain ${format(eff)}x the Green Papers based on your GP.<br>
+        yes hashing an internet protocol in medival age...`;
       },
       group: "GreenPapers",
       unl: () => getUpgrade("GreenPapers", 7).amt.gte(1)

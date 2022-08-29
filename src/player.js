@@ -7,12 +7,12 @@ import { initTabs } from "./components/tabs.js";
 import { RESOURCES } from "./components/resources.js";
 import { setupData } from "./tmp.js";
 import { reactive } from "https://unpkg.com/vue@3.2.37/dist/vue.esm-browser.js";
-import { initQuarry } from "./features/0-quarry/quarry.js";
+import { initQuarry, incrementQuarryRow } from "./features/0-quarry/quarry.js";
 import { doMine } from "./features/0-quarry/miners.js";
 
 // not going to work
 // computed() requires reactive source
-export let player = (window.player = reactive(setupPlayer()));
+export const player = reactive(setupPlayer());
 
 /**
  * Returns inital player data.
@@ -25,9 +25,9 @@ export function setupPlayer() {
     miners: {
       amt: {}
     },
-
     ver: ver,
     lastTick: Date.now(),
+    quarry: initQuarry(),
     stats: {
       time: 0,
       max: 0,
@@ -52,10 +52,8 @@ export let interval;
 export function loadGame() {
   initTabs();
   setupData();
-  if (player.quarry === undefined) {
-    player.quarry = initQuarry();
-  }
   load();
+  fixPlayer(player);
   app.mount("#app");
   interval = setInterval(runGame, 50);
 }

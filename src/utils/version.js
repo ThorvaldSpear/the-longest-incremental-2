@@ -4,7 +4,7 @@ import { notify } from "./notify.js";
 
 export const ver = {
   phase: "delta",
-  dev: 4,
+  dev: 5,
 
   release: 0,
   layers: 0,
