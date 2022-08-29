@@ -4,11 +4,44 @@ import { setupVue } from "../../setup.js";
 
 TABS.Equipment = {
   parent: "Quarry",
+  // aarex list element does not exist
+  // it exists for cosmetic decorations.
+  // ???
   component: {
-    template: `<span>Soon</span>`
+    template: `
+      <div class="buyables">
+        <div class="buyable">
+          <div><b>Novice Miner</b></div>
+          <div>
+            Equipping...<br>
+            <ul>
+              <li>Starter Pickaxe</li>
+              <li></li>
+              <li></li>
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <b>Maps</b><br>
+      <Inventory group="map"/>
+      <b>Pickaxes</b><br>
+      <Inventory group="pickaxe"/>
+      <b>Artifacts</b><br>
+      <Inventory group="artifact"/>
+    `
   }
 };
 
 setupVue.Inventory = {
-  template: ``
+  props: ["group"],
+  template: `
+    <b>5/5</b><br>
+    <div style='border: 2px solid grey; height: 30px; width: 30px'></div>
+    <div style='border: 2px solid grey; height: 30px; width: 30px'></div>
+    <div style='border: 2px solid grey; height: 30px; width: 30px'></div>
+    <div style='border: 2px solid grey; height: 30px; width: 30px'></div>
+    <div style='border: 2px solid grey; height: 30px; width: 30px'></div>
+  `
 };

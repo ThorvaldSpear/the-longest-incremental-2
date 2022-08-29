@@ -1,10 +1,9 @@
-import { formatChange } from "../../utils/format.js";
+import { formatChange, format } from "../../utils/format.js";
 import Decimal, { D } from "../../utils/break_eternity.js";
 import { player } from "../../player.js";
 import { Resource, RESOURCES } from "../../components/resources.js";
 import { Upgrade, UPGRADES, getUpgrade } from "../../components/buyables.js";
 import { TABS } from "../../components/tabs.js";
-
 RESOURCES.greenPaper = new Resource({
   name: "Green Papers",
   color: "lime",
@@ -84,10 +83,12 @@ UPGRADES.GreenPapers = {
     new Upgrade({
       name: "Softer Atoms",
       cost: (lvl) => Decimal.pow(2.25, lvl).mul(200),
-      eff: (lvl) => D(1.015).pow(lvl),
+      eff: (lvl) => D(1.015).pow(lvl).recip(),
       max: 100,
       desc(eff) {
-        return `Block health is reduced by ${formatChange(eff)}<br>
+        return `Block health is reduced by ${formatChange(
+          Decimal.sub(1, eff)
+        )}<br>
         Everyone deserves more progress!`;
       },
       group: "GreenPapers",
@@ -99,9 +100,9 @@ UPGRADES.GreenPapers = {
       // tbd
       eff: (lvl) => 1,
       desc(eff) {
-        return `+${formatChange(
+        return `+${format(
           eff
-        )} to miner effectiveness based on amount of miners.<br>
+        )}x to miner effectiveness based on amount of miners.<br>
         Teamwork?`;
       },
       group: "GreenPapers",
@@ -112,24 +113,32 @@ UPGRADES.GreenPapers = {
       cost: () => D(225),
       eff: () => 1,
       desc(eff) {
-        return `Gain ${formatChange(
-          eff
-        )} more Green Papers based on your GP.<br>
+        return `Gain ${format(eff)}x the Green Papers based on your GP.<br>
         #SSH Hashing (^-^)`;
       },
       group: "GreenPapers",
       unl: () => getUpgrade("GreenPapers", 7).amt.gte(1)
     }),
     new Upgrade({
+      name: "More Pain, More Gain",
+      cost: () => D(500),
+      eff: () => 1,
+      desc(eff) {
+        return `Gain ${format(eff)}x ores based on depth`;
+      },
+      group: "GreenPapers",
+      unl: () => getUpgrade("GreenPapers", 8).amt.gte(1)
+    }),
+    new Upgrade({
       name: "Into The Deep",
       cost: () => D(1000),
       eff: () => 1,
       desc(eff) {
-        return `Unlock Collapse reset.<br>
+        return `Unlock Collapse.<br>
         Requires 100 Depth!`;
       },
       group: "GreenPapers",
-      unl: () => getUpgrade("GreenPapers", 8).amt.gte(1)
+      unl: () => getUpgrade("GreenPapers", 9).amt.gte(1)
     })
   ]
 };

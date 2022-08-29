@@ -2,12 +2,12 @@ import { app } from "../index.js";
 import { player } from "../player.js";
 import { save, exportSave, importSave, hardReset } from "../utils/saveload.js";
 
-export const TABS = window.TABS = {
+export const TABS = (window.TABS = {
   Layers: {
     subtabs: ["Quarry", /*"Statistics",*/ "Options"]
   },
   Options: {
-    subtabs: ["OptionsMain", "About"],
+    subtabs: ["OptionsMain", "About"]
   },
   OptionsMain: {
     disp: "Options",
@@ -69,8 +69,12 @@ export const TABS = window.TABS = {
     }
   },
 
-  Quarry: {}
-};
+  Quarry: {
+    /*component: {
+      template: `<button>Collapse!</button>`
+    }*/
+  }
+});
 
 export function initTabs() {
   const extraComps = {};
@@ -114,18 +118,18 @@ export function initTabs() {
       tab: {
         immediate: true,
         handler(newVal) {
-          this.tabClicked = TABS?.[this.tab]?.subtabs?.[0]
+          this.tabClicked = TABS?.[this.tab]?.subtabs?.[0];
         }
       }
     },
     computed: {
       tabs() {
-        return TABS[this.tab] ?? {}
+        return TABS[this.tab] ?? {};
       }
     },
     setup(props) {
       return {
-        TABS,
+        TABS
       };
     },
     components: extraComps

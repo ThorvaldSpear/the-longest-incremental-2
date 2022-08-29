@@ -305,17 +305,20 @@ function generateBlock(depth) {
     if (depth.lt(key.range[0]) || depth.gt(key.range[1])) continue;
     if (1 / random >= key.rarity) ore = index;
   }
-  // LMAO
   if (depth.gt(100)) {
     layer = "Bedrock";
     ore = "";
   }
-  const health = getBlockHealth(depth, layer, ore);
 
+  let treasure = false;
+  if (ore.rarity > 10 && Math.random() < 0.3) treasure = true;
+
+  const health = getBlockHealth(depth, layer, ore);
   return {
     layer,
     ore,
-    health
+    health,
+    treasure
     // not needed, can be computed
   };
 }
@@ -406,7 +409,7 @@ TABS.QuarrySite = {
                 :width="QUARRY_SIZE.width" 
                 :height="QUARRY_SIZE.height" 
                 style="border: 2px solid green" />` +
-      /*<button>Maps</button><button>Collapse!</button>*/
+      /*<button>Exit Map</button>*/
       `</div>
         <div style="flex: 1 0 450px">
           <resource name="greenPaper" />
@@ -452,8 +455,8 @@ setupVue.QuarryBlock = {
       const layerColor = LAYER_DATA[this.block.layer].color ?? "white";
       const oreColor = ORE_DATA[this.block.ore]?.color ?? "transparent";
       return {
-        background: `linear-gradient(
-          ${oreColor}, ${oreColor}
+        background: `radial-gradient(
+          ${oreColor}, ${this.block.treasure ? "#ffefbf" : oreColor}
         ), linear-gradient(${layerColor}, ${layerColor})`,
         opacity: D(this.block.health)
           .div(
@@ -490,8 +493,9 @@ setupVue.QuarryBlock = {
       <div :style="style(y)" style="width: 32px; height: 32px"></div>
       <span v-if="Decimal.gt(block.health, 0) && block.name !== 'Bedrock'" class="tooltiptext">
         <b style='font-size: 16px'>Layer: {{block.layer}}</b><br>
-        <span v-if="block.ore !== ''">Ore: {{block.ore}}</span><br>
-        Health: {{format(block.health)}}
+        <span v-if="block.ore !== ''">Ore: {{block.ore}} ({{getRarity(ORE_DATA[block.ore].rarity)}})</span><br>
+        Health: {{format(block.health)}}<br>
+        <b v-if="block.treasure" style='color: gold'>Treasure inside!</b>
       </span>
     </div>
   `,

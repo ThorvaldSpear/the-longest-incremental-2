@@ -182,6 +182,10 @@ button:active {
   color: white;
 }
 
+.upgrade:is([role="miner power"]) {
+  background: url("images/SSH_Hashing.png");
+}
+
 /*.buyable:is([erole="strong miner"]) button {
   box-shadow: 3px 3px 6px #0107;
   color: white;
