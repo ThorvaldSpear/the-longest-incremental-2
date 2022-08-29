@@ -72,42 +72,42 @@ export const ORE_DATA = {
     range: [2, 75],
     rarity: 5,
     sparseness: 1,
-    worth: 2,
+    worth: 0.02,
     health: 1.5
   },
   Silver: {
     color: "#f2f0f0",
     range: [4, 100],
     rarity: 10,
-    sparseness: 4,
-    worth: 8,
+    sparseness: 2,
+    worth: 0.08,
     health: 2
   },
   Gold: {
     color: "#ffe600",
     range: [10, 150],
     rarity: 15,
-    sparseness: 2,
-    worth: 10,
+    sparseness: 3,
+    worth: 0.12,
     health: 2
   },
   Platinum: {
     color: "#e9ffd4",
     range: [50, 190],
     rarity: 40,
-    sparseness: 4e3,
-    worth: 2400,
-    health: 2
+    sparseness: 8e3,
+    worth: 80,
+    health: 3
   },
   Diamond: {
     color: "#91fffa",
     range: [75, 190],
     rarity: 20,
-    sparseness: 2e3,
-    worth: 25,
-    health: 10
-  },
-  Adamantite: {
+    sparseness: 2e5,
+    worth: 2e3,
+    health: 5
+  }
+  /*Adamantite: {
     color: "#c93030",
     range: [125, 175],
     rarity: 100,
@@ -173,7 +173,7 @@ export const ORE_DATA = {
     sparseness: 5e6,
     health: 1e6
   }
-  /*Hakalium: {
+  Hakalium: {
     range: [1e18, 5e20],
     rarity: 4e6,
     health: 1e31
@@ -476,9 +476,9 @@ TABS.QuarrySite = {
               <td style="width:calc(100%);text-align:left">
                 <resource :name="index.toLowerCase()"/>
                 <div style="font-size:13.3333px"> 
-                  (+{{formatPrecise(Decimal.recip(key.sparseness ?? 1)
+                  (+{{format(Decimal.recip(key.sparseness ?? 1)
                     .mul(index in ORE_DATA ? getOreGain(index) : 1))}} per 1 damage dealt)<br>
-                  (+{{formatPrecise(key.worth)}} Green Papers per 1 {{index}})
+                  (+{{format(key.worth)}} Green Papers per 1 {{index}})
                 </div>
               </td>
               <td>

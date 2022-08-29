@@ -89,7 +89,7 @@ export function getOreGain(ore) {
   let mul = getUpgradeEff("GreenPapers", 2).mul(
     getUpgradeEff("GreenPapers", 9)
   );
-  if (ORE_DATA[ore].rarity < 10)
+  if (ORE_DATA[ore].rarity <= 10)
     mul = mul.times(getUpgradeEff("GreenPapers", 5));
   return mul;
 }
