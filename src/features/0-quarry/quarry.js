@@ -94,60 +94,60 @@ export const ORE_DATA = {
   Platinum: {
     color: "#e9ffd4",
     range: [50, 190],
-    rarity: 100,
+    rarity: 40,
     sparseness: 1e6,
     worth: 50,
-    health: 30
+    health: 5
   },
   Diamond: {
     color: "#91fffa",
     range: [75, 190],
-    rarity: 30,
+    rarity: 20,
     sparseness: 1e6,
-    worth: 10,
-    health: 100
+    worth: 25,
+    health: 10
   },
   Adamantite: {
     color: "#c93030",
     range: [125, 175],
     rarity: 100,
-    sparseness: 200,
+    sparseness: 1e6,
     worth: 20,
-    health: 100
+    health: 5
   },
   Mythril: {
     color: "#23db8b",
     range: [175, 200],
     rarity: 50,
-    sparseness: 100,
-    worth: 200,
-    health: 50
+    sparseness: 1e6,
+    worth: 10,
+    health: 10
   },
   Orichalcum: {
     color: "#ff52c8",
     range: [100, 200],
     rarity: 200,
-    sparseness: 2000,
-    health: 20
+    sparseness: 1e6,
+    health: 10
   },
   Titanium: {
     color: "#b6abff",
     range: [75, 300],
     rarity: 600,
-    sparseness: 2500,
-    health: 50
+    sparseness: 1e6,
+    health: 10
   },
   Uranium: {
     range: [150, 190],
     rarity: 10,
-    sparseness: 4500,
-    health: 100
+    sparseness: 1e6,
+    health: 5
   },
   Biluth: {
     range: [125, 150],
     rarity: 1000,
-    sparseness: 3500,
-    health: 1e3
+    sparseness: 1e6,
+    health: 20
   },
   Chromium: {
     range: [150, 175],
@@ -479,7 +479,7 @@ TABS.QuarrySite = {
                 <button @click="sellBlock(index)">
                   Sell for {{format(getBlockAmount(index).mul(key.worth))}} GP
                 </button>
-                <button v-if="hasUpgrade('GreenPapers', 5)" @click="buyBlock(index)">
+                <button v-if="hasUpgrade('GreenPapers', 4)" @click="buyBlock(index)">
                   Buy 1 for {{format(blockCost(index))}} GP
                 </button>
               </td>
