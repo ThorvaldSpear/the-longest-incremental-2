@@ -11,10 +11,10 @@ export class Resource {
     this.prodFunc = prodFunc ?? (() => D(0));
   }
 
-  get amount() {
+  get amt() {
     return D(this.src.parent()?.[this.src.id] ?? 0);
   }
-  set amount(x) {
+  set amt(x) {
     if (D(x).eq(0)) delete this.src.parent()[this.src.id];
     else this.src.parent()[this.src.id] = D(x);
     // to do: implement reactive Decimal.prototype.set
@@ -24,16 +24,16 @@ export class Resource {
   }
 
   set(x) {
-    this.amount = x;
+    this.amt = x;
   }
   add(x) {
-    this.amount = this.amount.add(x);
+    this.amt = this.amt.add(x);
   }
   sub(x) {
-    this.amount = this.amount.sub(x);
+    this.amt = this.amt.sub(x);
   }
   gte(x) {
-    return this.amount.gte(x);
+    return this.amt.gte(x);
   }
 }
 
@@ -43,8 +43,8 @@ setupVue.resource = {
   props: ["name"],
   template: `
     <div>
-      <span style='font-size: 18px'>
-        <b style='font-size: 24px' :style="{ color: resource_data.color }">
+      <span class="resource">
+        <b :style="{ color: resource_data.color }">
           {{format(resource.amt.value)}}
         </b>
         {{resource_data.name}}

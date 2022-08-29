@@ -1,6 +1,9 @@
 import { player, setupPlayer } from "../player.js";
 import { notify } from "./notify.js";
+import { updateVer } from "./version.js";
 import LZString from "./lz-string.js";
+import { D } from "./break_eternity.js";
+import { initQuarry } from "../features/0-quarry/quarry.js";
 
 const SAVE_KEY = "the_longest_incremental_2";
 /**
@@ -57,11 +60,14 @@ export function load(save) {
     // you will merge player
     fixData(player, save);
     notify("Game loaded.");
+    updateVer();
   } catch (e) {
     console.error(e);
     notify("Your save is invalid. Sorry!");
     //canSave = false;
   }
+  if (D(player.quarry.depth).eq(0) && D(player.quarry.map[0][0].health).gt(1))
+    player.quarry = initQuarry();
 }
 
 /**
@@ -85,8 +91,9 @@ export async function exportSave() {
   }
 }
 
-export function hardReset() {
+export function hardReset(force = false) {
   if (
+    !force &&
     !confirm(
       "Are you sure? This is not the soft reset you are looking for. " +
         "THIS WILL RESET THE ENTIRE GAME WITH NO REWARD."
@@ -94,7 +101,7 @@ export function hardReset() {
   )
     return;
   Object.assign(player, setupPlayer());
-  notify("Hard reset performed.");
+  if (!force) notify("Welcome back to the beginning.");
   save();
 }
 window.hardReset = hardReset;

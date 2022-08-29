@@ -39,7 +39,7 @@ export function setupData() {
 
   for (const [id, key] of Object.entries(RESOURCES)) {
     DATA.resources[id] = {
-      amt: computed(() => key.amount),
+      amt: computed(() => key.amt),
       prod: computed(() => key.production)
     };
   }

@@ -10,33 +10,33 @@ import { TABS } from "../../components/tabs.js";
 import { Resource, RESOURCES } from "../../components/resources.js";
 import { BUYABLES, hasUpgrade } from "../../components/buyables.js";
 
-const LAYER_DATA = {
+export const LAYER_DATA = {
   Dirt: {
     color: "#7f5f3f",
     range: [0, 0, 4, 6],
     rarity: 1,
-    worth: 0.03,
+    worth: 0.003,
     health: 1
   },
   Stone: {
     color: "grey",
     range: [3, 6, 45, 50],
     rarity: 1,
-    worth: 0.05,
+    worth: 0.005,
     health: 3
   },
   Granite: {
     color: "#bf7f7f",
     range: [35, 50, 90, 100],
     rarity: 1,
-    worth: 0.05,
+    worth: 0.005,
     health: 5
   },
   Basalt: {
     color: "#3f4f5f",
     range: [80, 100, Infinity, Infinity],
     rarity: 1,
-    worth: 0.05,
+    worth: 0.005,
     health: 10
   },
   Bedrock: {
@@ -48,97 +48,112 @@ const LAYER_DATA = {
   }
 };
 
-const ORE_DATA = {
+export const ORE_DATA = {
   Bronze: {
     color: "#CD7F32",
     range: [2, 75],
     rarity: 5,
-    worth: 0.25,
-    health: 10
+    sparseness: 100,
+    worth: 1,
+    health: 1.5
   },
   Silver: {
     color: "#f2f0f0",
     range: [4, 100],
     rarity: 10,
-    worth: 0.5,
-    health: 15
+    sparseness: 120,
+    worth: 3,
+    health: 2
   },
   Gold: {
     color: "#ffe600",
     range: [10, 150],
     rarity: 15,
-    worth: 1,
-    health: 20
+    sparseness: 180,
+    worth: 8,
+    health: 3
   },
   Platinum: {
     color: "#e9ffd4",
     range: [75, 200],
     rarity: 100,
-    worth: 5,
-    health: 30
+    sparseness: 250,
+    worth: 50,
+    health: 5
   },
   Diamond: {
     color: "#91fffa",
     range: [100, 200],
     rarity: 30,
-    worth: 2,
-    health: 50
+    sparseness: 200,
+    worth: 50,
+    health: 10
   },
   Adamantite: {
     color: "#c93030",
     range: [125, 175],
     rarity: 20,
-    worth: 3,
-    health: 75
+    sparseness: 500,
+    worth: 100,
+    health: 15
   },
   Mythril: {
     color: "#23db8b",
     range: [175, 200],
     rarity: 200,
-    worth: 10,
-    health: 200
+    sparseness: 1000,
+    worth: 250,
+    health: 20
   },
   Orichalcum: {
     color: "#ff52c8",
     range: [1e3, 5e3],
     rarity: 225,
-    health: 1e4
+    sparseness: 2000,
+    health: 30
   },
   Titanium: {
     color: "#b6abff",
     range: [1e4, 3e4],
     rarity: 600,
-    health: 1e5
+    sparseness: 2500,
+    health: 50
   },
   Uranium: {
     range: [6e4, 3e5],
     rarity: 1150,
-    health: 1e7
+    sparseness: 4500,
+    health: 100
   },
   Biluth: {
     range: [1e5, 8e5],
     rarity: 2500,
-    health: 1e9
+    sparseness: 3500,
+    health: 300
   },
   Cystalium: {
     range: [1e6, 5e6],
     rarity: 4700,
-    health: 1e12
+    sparseness: 5000,
+    health: 1000
   },
   Chromium: {
     range: [1e8, 5e8],
     rarity: 10000,
-    health: 1e15
+    sparseness: 1e4,
+    health: 1e4
   },
   "Black Diamond": {
     range: [1e10, 1e11],
     rarity: 50e3,
-    health: 1e20
+    sparseness: 2e5,
+    health: 1e5
   },
   Brimstone: {
     range: [1e13, 1e15],
     rarity: 1e4,
-    health: 1e27
+    sparseness: 5e6,
+    health: 1e6
   }
   /*Hakalium: {
     range: [1e18, 5e20],
@@ -285,8 +300,8 @@ function generateBlock(depth) {
 
   let layer = "";
   let sum = 0;
-  for (const [_, key] of Object.entries(LAYER_DATA)) {
-    sum += +getRangeMulti(depth, key.range);
+  for (const value of Object.values(LAYER_DATA)) {
+    sum += +getRangeMulti(depth, value.range);
   }
 
   let random = Math.random();
@@ -401,10 +416,11 @@ TABS.QuarrySite = {
       `
       <div style="display: flex; flex-direction: row; vertical-align: top">
         <div style="flex: 1 0 450px">
+          <resource name="mana" />
           <buyables group="Miners" />
         </div>
-        <div style="flex: 1 0 320px">
-          You are currently in Depth {{format(player.quarry.depth, 0)}} / 100.<br>
+        <div style="flex: 1 0 450px">
+          You are currently in Depth {{format(player.quarry.depth, 0)}} / 100.<br><br>
           <grid type="QuarryBlock" 
                 :width="QUARRY_SIZE.width" 
                 :height="QUARRY_SIZE.height" 
@@ -413,19 +429,19 @@ TABS.QuarrySite = {
       `</div>
         <div style="flex: 1 0 450px">
           <resource name="greenPaper" />
-          <table>
+          <table class="resourceTable">
             <tr 
               v-for="[index, key] of Object.entries(BLOCK_DATA).filter((x) => getBlockAmount(x[0]).gt(0))"
               :key="index">
-              <td><resource :name="index.toLowerCase()"/></td>
-              <td><button @click="sellBlock(index)">
-                Sell!<br>
-                (+ {{format(getBlockAmount(index).mul(key.worth))}} Green Papers)
-              </button></td>
-              <td><button v-if="hasUpgrade('GreenPapers', 5)" @click="buyBlock(index)">
-                Buy!<br>
-                (Cost: {{format(key.worth.mul(1.5))}} Green Papers)
-              </button></td>
+              <td style="width:calc(100%);text-align:left"><resource :name="index.toLowerCase()"/></td>
+              <td>
+                <button @click="sellBlock(index)">
+                  Sell for {{format(getBlockAmount(index).mul(key.worth))}} GP
+                </button>
+                <button v-if="hasUpgrade('GreenPapers', 5)" @click="buyBlock(index)">
+                  Buy 1 for {{format(Decimal.mul(key.worth, 1.5))}} GP
+                </button>
+              </td>
             </tr>
           </table>
         </div>
@@ -436,8 +452,9 @@ TABS.QuarrySite = {
       return {
         BLOCK_DATA,
         QUARRY_SIZE,
-        player,
+        Decimal,
         format,
+        player,
         resources,
         hasUpgrade,
 
@@ -464,29 +481,49 @@ setupVue.QuarryBlock = {
     style() {
       const layerColor = LAYER_DATA[this.block.layer].color ?? "white";
       const oreColor = ORE_DATA[this.block.ore]?.color ?? "transparent";
-      return {
-        background: `radial-gradient(
-          ${oreColor}, ${this.block.treasure ? "#ffefbf" : oreColor}
-        ), linear-gradient(${layerColor}, ${layerColor})`,
-        opacity: D(this.block.health).div(this.health).pow(0.5).toNumber()
+      const treasureColor = this.block.treasure ? "#ffefbf" : "#0003";
+      const health = D(this.block.health)
+        .div(this.health)
+        .pow(0.5)
+        .max(0)
+        .min(1)
+        .toNumber();
 
-        /*
-        `radial-gradient(
-          circle closest-side at center,
-          ${BLOCK_DATA[this.block.id].color ?? "white"},
-          rgb(${this.generateGradient(
-            [255, 20, 0],
-            [20, 255, 0],
-            Number.parseInt(this.height, 10) // this makes it smoother lmaooooo
-            // doing that will break things
-          )[y].join(", ")}))` // cool
-        */
-      };
+      if (health > 0)
+        return {
+          background: `
+            linear-gradient(#000a, #000a),
+            linear-gradient(#000a, #000a),
+            linear-gradient(${oreColor}, ${oreColor}),
+            linear-gradient(${layerColor}, ${layerColor}),
+            linear-gradient(${treasureColor}, ${treasureColor}),
+            linear-gradient(${layerColor}, ${layerColor})
+          `,
+          "background-position":
+            "center, center, center, center, center, center",
+          "background-size": `${(1 - health) * 100}% 2px, 2px ${
+            (1 - health) * 100
+          }%, 50% 50%, calc(100% - 2px) calc(100% - 2px), 100% 100%, 100% 100%`,
+          "background-repeat":
+            "no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat"
+        };
+      else
+        return {
+          background: `
+            linear-gradient(#0007, #0007),
+            linear-gradient(${layerColor}, ${layerColor}),
+            linear-gradient(${treasureColor}, ${treasureColor}),
+            linear-gradient(${layerColor}, ${layerColor})
+          `,
+          "background-position": "center, center, center, center",
+          "background-size": `100% 100%, calc(100% - 2px) calc(100% - 2px), 100% 100%, 100% 100%`,
+          "background-repeat": "no-repeat, no-repeat, no-repeat, no-repeat"
+        };
     }
   },
   template: `
     <div class="tooltip">
-      <div :style="style" style="width: 32px; height: 32px"></div>
+      <div :style="style" style="width: 32px; height: 32px; transition: background-size .5s"></div>
       <span v-if="Decimal.gt(block.health, 0) && block.name !== 'Bedrock'" class="tooltiptext">
         <b style='font-size: 16px'>Block Type: {{block.layer}}</b><br>
         <span v-if="block.ore !== ''">

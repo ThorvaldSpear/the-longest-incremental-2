@@ -4,18 +4,18 @@ import { save, exportSave, importSave, hardReset } from "../utils/saveload.js";
 
 export const TABS = (window.TABS = {
   Layers: {
-    subtabs: ["Quarry", /*"Statistics",*/ "Options"]
+    subtabs: ["Quarry", "Menu"]
+  },
+  Menu: {
+    subtabs: ["Options", "Achievements", "Statistics", "About"]
   },
   Options: {
-    subtabs: ["OptionsMain", "About"]
-  },
-  OptionsMain: {
-    disp: "Options",
     component: {
       template: `
       <div>
         <h2>Save</h2>
         <button @click="save(true)">Save</button>
+        <button @click="">Load (not implemented yet)</button>
         <button @click="exportSave()">Export</button>
         <button @click="">Download (not implemented yet)</button>
         <button @click="importSave()">Import</button>

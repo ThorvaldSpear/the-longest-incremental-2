@@ -4,9 +4,12 @@ import { player } from "../../player.js";
 import { Resource, RESOURCES } from "../../components/resources.js";
 import { Upgrade, UPGRADES, getUpgrade } from "../../components/buyables.js";
 import { TABS } from "../../components/tabs.js";
+
+import { getMiner } from "./miners.js";
+
 RESOURCES.greenPaper = new Resource({
   name: "Green Papers",
-  color: "lime",
+  color: "green",
   src: {
     parent: () => player.gp,
     id: "amt"
@@ -19,9 +22,9 @@ UPGRADES.GreenPapers = {
   data: [
     new Upgrade({
       name: "Miner Power",
-      cost: (lvl) => Decimal.pow(1.5, lvl).mul(2),
-      eff: (lvl) => D(lvl).div(5).add(1),
-      max: 5,
+      cost: (lvl) => Decimal.pow(1.3, lvl).mul(1),
+      eff: (lvl) => D(lvl).div(10).add(1),
+      max: 20,
       desc(eff) {
         return `Miner effectiveness is increased by ${formatChange(eff)}<br>`;
       },
@@ -29,9 +32,9 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "Speed Mining",
-      cost: (lvl) => Decimal.pow(1.25, lvl).mul(3),
-      eff: (lvl) => D(lvl).div(5).add(1),
-      max: 5,
+      cost: (lvl) => Decimal.pow(1.6, lvl).mul(5),
+      eff: (lvl) => D(lvl).div(10).add(1),
+      max: 20,
       desc(eff) {
         return `Miner speed is increased by ${formatChange(eff)}`;
       },
@@ -40,9 +43,9 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "Fortune Mining",
-      cost: (lvl) => Decimal.pow(1.25, lvl).mul(5),
+      cost: (lvl) => Decimal.pow(2, lvl).mul(5),
       eff: (lvl) => D(lvl).div(10).add(1),
-      max: 10,
+      max: 20,
       desc(eff) {
         return `You get ${formatChange(eff)} more ores`;
       },
@@ -51,7 +54,7 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "Anviling",
-      cost: () => D(10),
+      cost: () => D(100),
       eff: () => 1,
       desc() {
         return `You can create better Pickaxes with Bronze and Silver.`;
@@ -61,7 +64,7 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "Refinery",
-      cost: () => D(10),
+      cost: () => D(250),
       eff: () => 1,
       desc() {
         return `You can buy blocks with Green Papers.`;
@@ -71,7 +74,7 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "Ore Luck",
-      cost: (lvl) => Decimal.pow(1.5, lvl).mul(20),
+      cost: (lvl) => Decimal.pow(3, lvl).mul(1000),
       eff: (lvl) => D(lvl).div(20).add(1),
       max: 20,
       desc(eff) {
@@ -82,7 +85,7 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "Softer Atoms",
-      cost: (lvl) => Decimal.pow(2.25, lvl).mul(200),
+      cost: (lvl) => Decimal.pow(5, lvl).mul(5000),
       eff: (lvl) => D(1.015).pow(lvl).recip(),
       max: 100,
       desc(eff) {
@@ -96,9 +99,16 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "Coordination",
-      cost: () => D(500),
+      cost: () => D(25000),
       // tbd
-      eff: () => 1,
+      eff: () =>
+        getMiner(0)
+          .amt.add(getMiner(1).amt)
+          .add(getMiner(2).amt)
+          .add(getMiner(3).amt)
+          .add(getMiner(4).amt)
+          .add(10)
+          .log10(),
       desc(eff) {
         return `+${format(
           eff
@@ -110,8 +120,8 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "SSH Hashing",
-      cost: () => D(225),
-      eff: () => 1,
+      cost: () => D(125000),
+      eff: () => RESOURCES.greenPaper.amt.add(10).log10(),
       desc(eff) {
         return `Gain ${format(eff)}x the Green Papers based on your GP.<br>
         #SSH Hashing (^-^)`;
@@ -121,17 +131,17 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "More Pain, Ore Gain",
-      cost: () => D(500),
-      eff: () => 1,
+      cost: () => D(5000000),
+      eff: () => D(10).pow(D(player.quarry.depth).div(50)),
       desc(eff) {
-        return `Gain ${format(eff)}x ores based on depth`;
+        return `Gain ${formatChange(eff)} ores based on depth`;
       },
       group: "GreenPapers",
       unl: () => getUpgrade("GreenPapers", 8).amt.gte(1)
     }),
     new Upgrade({
       name: "Into The Deep",
-      cost: () => D(1000),
+      cost: () => D(100000000),
       eff: () => 1,
       desc(eff) {
         return `Unlock Collapse.<br>

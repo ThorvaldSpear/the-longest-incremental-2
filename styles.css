@@ -110,12 +110,23 @@ button:active {
   transform: scale(1);
 }
 
+.resource {
+  font-size: 18px;
+}
+.resource b {
+  font-size: 24px;
+  text-shadow: 0 1px 6px #07f7;
+}
+
+.resourceTable td:not(:first-child) button {
+  width: 180px;
+}
+
 .buyables {
   display: grid;
   align-items: center;
   grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
 }
-
 .buyable {
   text-align: left;
   display: flex;
@@ -132,7 +143,7 @@ button:active {
 }
 .buyable > div:first-child span {
   display: inline-block;
-  min-height: 34px;
+  min-height: 50px;
   padding-top: 2px;
   font-size: 13.3333px;
 }
@@ -161,6 +172,13 @@ button:active {
   z-index: 1;
 }
 
+#version {
+  position: fixed;
+  top: 0;
+  right: 0;
+  text-align: right;
+  opacity: 0.5;
+}
 #hardreset {
   background: linear-gradient(red, black);
   color: white;
@@ -168,7 +186,7 @@ button:active {
 }
 
 /* GAME */
-.buyable:is([role="strong miner"]) {
+.buyable:is([role="efficient miner"]) {
   background: url("images/StrongMiner_BG_LQ.png");
   background-position: auto 25%;
   background-size: cover 20%;

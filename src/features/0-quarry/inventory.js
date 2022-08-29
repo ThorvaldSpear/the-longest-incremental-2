@@ -1,6 +1,7 @@
 import { TABS } from "../../components/tabs.js";
 import { setupVue } from "../../setup.js";
-//TODO: Implement pickaxes, equipment
+
+import { hasUpgrade } from "../../components/buyables.js";
 
 TABS.Equipment = {
   parent: "Quarry",
@@ -25,14 +26,21 @@ TABS.Equipment = {
         </div>
       </div>
 
+      You can hold up to 5 unique items for each type.<br>
       <b>Maps</b><br>
       <Inventory group="map"/>
       <b>Pickaxes</b><br>
+      <button v-if="false && hasUpgrade('GreenPapers', 3)">Create Pickaxe</button>
       <Inventory group="pickaxe"/>
       <b>Artifacts</b><br>
       <Inventory group="artifact"/>
     </div>
     `
+  },
+  setup() {
+    return {
+      hasUpgrade
+    };
   }
 };
 

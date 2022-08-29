@@ -1,5 +1,6 @@
 import { app } from "./index.js";
 import { load } from "./utils/saveload.js";
+import { ver } from "./utils/version.js";
 
 import { DATA } from "./tmp.js";
 import { initTabs } from "./components/tabs.js";
@@ -26,6 +27,7 @@ export function setupPlayer() {
     },
     quarry: initQuarry(),
 
+    ver: ver,
     lastTick: Date.now(),
     stats: {
       time: 0,
@@ -55,7 +57,6 @@ export function loadGame() {
   app.mount("#app");
   interval = setInterval(runGame, 50);
 }
-
 
 export function runGame() {
   const diff = (Date.now() - player.lastTick) / 1000;

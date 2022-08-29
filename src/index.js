@@ -20,6 +20,7 @@ export const app = createApp({
 })
   .component("main-app", {
     template: `
+      <version />
       <notifications />
       <tab tab="Layers" />
     `

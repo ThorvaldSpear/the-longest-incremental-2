@@ -1,7 +1,7 @@
 import { setupVue } from "../setup.js";
 import { DATA } from "../tmp.js";
 import { RESOURCES } from "./resources.js";
-import { D } from "../utils/break_eternity.js";
+import Decimal, { D } from "../utils/break_eternity.js";
 import { format } from "../utils/format.js";
 
 /**
@@ -36,7 +36,7 @@ export class Buyable {
   }
 
   canBuy() {
-    return this.res.amount.gte(this.cost(this.amt)) && !this.maxed;
+    return this.res.amt.gte(this.cost(this.amt)) && !this.maxed;
   }
   buy() {
     if (!this.unl()) return;
@@ -59,7 +59,7 @@ setupVue.buyable = {
   template: `
     <div class="buyable" v-if="key_data.unl()">
       <div :role="key_data.name.toLowerCase()">
-        <b>({{format(key.amt.value, 0)}}x) {{key_data.name}}:</b><br>
+        <b>({{format(key.amt.value, 0)}}x) {{key_data.name}}</b><br>
         <span v-html="key_data.desc(key.eff.value)" />
       </div>
       <div>
@@ -69,8 +69,7 @@ setupVue.buyable = {
           cannotbuy: !key_data.canBuy()
         }">
           <b>{{key_group.buyPhrase ?? "Buy"}} +1</b><br>
-          Cost: {{format(key.cost.value)}}
-          {{key_data.res.name}}
+          {{format(key.cost.value)}} {{key_data.res.name}}
         </button>
       </div>
     </div>
@@ -128,9 +127,7 @@ setupVue.upgrade = {
     <div class="buyable" v-if="key_data.unl()">
       <div :role="key_data.name.toLowerCase()">
         <b>
-          ({{format(key.amt.value, 0)}} 
-          / {{format(key_data.max, 0)}}) 
-          {{key_data.name}}:
+          ({{format(key.amt.value, 0)}} / {{format(key_data.max, 0)}}) {{key_data.name}}
         </b><br>
         <span v-html="key_data.desc(key.eff.value)" />
       </div>
@@ -140,12 +137,13 @@ setupVue.upgrade = {
           canbuy: key_data.canBuy(), 
           cannotbuy: !key_data.canBuy()
         }">
-          <b>{{key_group.buyPhrase ?? "Buy"}} +1</b><br>
-          Cost: 
           <span v-if="!key_data.maxed">
-            {{format(key.cost.value)}}
-            {{key_data.res.name}}</span>
-          <span v-else>MAXED</span>
+            <b>{{key_group.buyPhrase ?? "Buy"}} {{Decimal.eq(key_data.max, 1) ? "" : "+1"}}</b><br>
+            {{format(key.cost.value)}} {{key_data.res.name}}
+          </span>
+          <span v-else>
+            <b>{{Decimal.eq(key_data.max, 1) ? "Bought" : "Maxed"}}</b>
+          </span>
         </button>
       </div>
     </div>
@@ -158,7 +156,8 @@ setupVue.upgrade = {
       key,
       key_group,
       key_data,
-      format
+      format,
+      Decimal
     };
   }
 };
