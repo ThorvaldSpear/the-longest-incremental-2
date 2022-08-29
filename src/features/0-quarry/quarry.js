@@ -95,7 +95,7 @@ export const ORE_DATA = {
     color: "#e9ffd4",
     range: [50, 190],
     rarity: 40,
-    sparseness: 1e6,
+    sparseness: 500,
     worth: 50,
     health: 5
   },
@@ -103,7 +103,7 @@ export const ORE_DATA = {
     color: "#91fffa",
     range: [75, 190],
     rarity: 20,
-    sparseness: 1e6,
+    sparseness: 500,
     worth: 25,
     health: 10
   },
@@ -111,7 +111,7 @@ export const ORE_DATA = {
     color: "#c93030",
     range: [125, 175],
     rarity: 100,
-    sparseness: 1e6,
+    sparseness: 2500,
     worth: 20,
     health: 5
   },
@@ -119,7 +119,7 @@ export const ORE_DATA = {
     color: "#23db8b",
     range: [175, 200],
     rarity: 50,
-    sparseness: 1e6,
+    sparseness: 10000,
     worth: 10,
     health: 10
   },
@@ -127,14 +127,14 @@ export const ORE_DATA = {
     color: "#ff52c8",
     range: [100, 200],
     rarity: 200,
-    sparseness: 1e6,
+    sparseness: 50000,
     health: 10
   },
   Titanium: {
     color: "#b6abff",
     range: [75, 300],
     rarity: 600,
-    sparseness: 1e6,
+    sparseness: 300000,
     health: 10
   },
   Uranium: {

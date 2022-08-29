@@ -99,7 +99,7 @@ RESOURCES.labor = new Resource({
     id: "mana"
   },
   prodFunc() {
-    return D(player.quarry.depth).plus(1).div(60);
+    return D(player.quarry.depth).div(60).plus(1).pow(3).sub(1);
   },
   based: "Quarry Depth"
 });
