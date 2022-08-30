@@ -8,7 +8,7 @@ const TREASURE_DATA = {
     range: [0, Infinity],
     rarity: 1,
     worth(depth) {
-      return D(1e3).pow(D(depth).div(50));
+      return D(1e3).pow(D(depth).div(50)).mul(D(depth).div(50).add(1)).div(3);
     },
     obtain(depth) {
       const worth = this.worth(depth);

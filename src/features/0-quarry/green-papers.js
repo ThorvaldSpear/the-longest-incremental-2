@@ -78,7 +78,7 @@ UPGRADES.GreenPapers = {
       eff: (lvl) => D(lvl).div(20).add(1),
       max: 20,
       desc(eff) {
-        return `You get ${formatChange(eff)} more common ores`;
+        return `Ores spawn ${formatChange(eff)} more frequently`;
       },
       group: "GreenPapers",
       unl: () => getUpgrade("GreenPapers", 4).amt.gte(1)
@@ -105,7 +105,6 @@ UPGRADES.GreenPapers = {
               .amt.add(getMiner(1).amt)
               .add(getMiner(2).amt)
               .add(getMiner(3).amt)
-              .add(getMiner(4).amt)
               .add(10)
               .log10()
           : 1,
@@ -136,15 +135,16 @@ UPGRADES.GreenPapers = {
       unl: () => getUpgrade("GreenPapers", 7).amt.gte(1)
     }),
     new Upgrade({
-      name: "More Pain, Ore Gain",
+      name: "More Pain, More Greed",
       cost: () => D(5000000),
       eff: (lvl) =>
-        D(lvl).gte(1) ? D(10).pow(D(player.quarry.depth).div(50)) : 1,
+        D(lvl).gte(1) ? D(1e3).pow(D(player.quarry.depth).sub(75).div(200)) : 1,
       desc(eff) {
-        return `Gain ${format(eff)}x the ores based on depth`;
+        return `Gain ${format(eff)}x Ores based on depth`;
       },
       group: "GreenPapers",
-      unl: () => getUpgrade("GreenPapers", 8).amt.gte(1)
+      unl: () =>
+        getUpgrade("GreenPapers", 8).amt.gte(1) && D(player.quarry.depth).gt(75)
     }),
     new Upgrade({
       name: "Into The Deep",

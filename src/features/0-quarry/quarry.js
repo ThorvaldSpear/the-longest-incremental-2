@@ -8,7 +8,6 @@ import { setupVue } from "../../setup.js";
 
 import { TABS } from "../../components/tabs.js";
 import { Resource, RESOURCES } from "../../components/resources.js";
-import { getOreGain } from "./miners.js";
 import {
   BUYABLES,
   getUpgradeEff,
@@ -19,49 +18,41 @@ export const LAYER_DATA = {
   Dirt: {
     color: "#7f5f3f",
     range: [0, 0, 4, 6],
-    rarity: 1,
-    sparseness: 1,
-    worth: 0.003,
     health: 1
   },
   Stone: {
     color: "grey",
     range: [3, 6, 45, 50],
-    rarity: 1,
-    sparseness: 2,
-    worth: 0.01,
-    health: 3
+    health: 2
   },
   Granite: {
     color: "#bf7f7f",
-    range: [35, 50, 90, 100],
-    rarity: 1,
-    sparseness: 4,
-    worth: 0.02,
-    health: 5
+    range: [35, 50, 60, 70],
+    health: 4
   },
   Basalt: {
     color: "#3f4f5f",
-    range: [80, 100, 190, 200],
-    rarity: 1,
-    sparseness: 8,
-    worth: 0.04,
-    health: 10
+    range: [50, 70, 140, 150],
+    health: 8
+  },
+  Obsidian: {
+    color: "#0f0f3f",
+    range: [130, 150, 190, 200],
+    health: 16
   },
   Magma: {
     color: "#bf5f00",
     range: [190, 200, 210, 210],
-    rarity: 1,
-    sparseness: 18,
-    worth: 0.1,
-    health: 20
+    health: 64
+  },
+  Darkstone: {
+    color: "#5f00bf",
+    range: [200, 300, 300, 300],
+    health: 32
   },
   Bedrock: {
     color: "black",
     range: [Infinity, Infinity, Infinity, Infinity],
-    rarity: 0,
-    sparseness: Infinity,
-    worth: 0,
     health: Infinity
   }
 };
@@ -69,43 +60,33 @@ export const LAYER_DATA = {
 export const ORE_DATA = {
   Bronze: {
     color: "#CD7F32",
-    range: [2, 75],
-    rarity: 5,
-    sparseness: 1,
-    worth: 0.02,
-    health: 1.5
+    range: [2, 125],
+    density: 1.5,
+    rarity: 1
   },
   Silver: {
     color: "#f2f0f0",
-    range: [4, 100],
-    rarity: 10,
-    sparseness: 2,
-    worth: 0.08,
-    health: 2
+    range: [4, 150],
+    density: 4,
+    rarity: 2
   },
   Gold: {
     color: "#ffe600",
-    range: [10, 150],
-    rarity: 15,
-    sparseness: 3,
-    worth: 0.12,
-    health: 2
-  },
-  Platinum: {
-    color: "#e9ffd4",
-    range: [50, 190],
-    rarity: 40,
-    sparseness: 8e3,
-    worth: 80,
-    health: 3
+    range: [10, 100],
+    density: 6,
+    rarity: 3
   },
   Diamond: {
     color: "#91fffa",
-    range: [75, 190],
-    rarity: 20,
-    sparseness: 2e5,
-    worth: 2e3,
-    health: 5
+    range: [25, 190],
+    density: 8,
+    rarity: 2.5
+  },
+  Platinum: {
+    color: "#e9ffd4",
+    range: [50, 175],
+    density: 10,
+    rarity: 5
   }
   /*Adamantite: {
     color: "#c93030",
@@ -260,12 +241,8 @@ export const ORE_DATA = {
     health: D("1e400")
   }*/
 };
-const BLOCK_DATA = {
-  ...LAYER_DATA,
-  ...ORE_DATA
-};
 
-for (const [index, key] of Object.entries(BLOCK_DATA)) {
+for (const [index, key] of Object.entries(ORE_DATA)) {
   let fix = index.toLowerCase();
   RESOURCES[fix] = new Resource({
     name: index,
@@ -283,46 +260,22 @@ function getBlockStrength(depth) {
   return ret;
 }
 
-function getBlockHealth(depth, layer, ore) {
-  return getBlockStrength(depth)
-    .mul(LAYER_DATA[layer].health)
-    .mul(ORE_DATA[ore]?.health ?? 1)
-    .mul(DATA.setup ? getUpgradeEff("GreenPapers", 6) : 1);
-}
-
 function getBlockAmount(index) {
   return DATA.resources[index.toLowerCase()].amt.value;
 }
 
-function sellBlock(index) {
-  RESOURCES.greenPaper.add(
-    getBlockAmount(index)
-      .mul(BLOCK_DATA[index].worth)
-      .mul(getUpgradeEff("GreenPapers", 8))
-  );
-  RESOURCES[index.toLowerCase()].set(0);
-}
+function getBlockHealth(depth, layer, ore) {
+  let ret = getBlockStrength(depth).mul(LAYER_DATA[layer].health);
+  ret = ret.mul(DATA.setup ? getUpgradeEff("GreenPapers", 6) : 1);
 
-function blockCost(index) {
-  return Decimal.mul(BLOCK_DATA[index].worth, 1.5).mul(
-    getUpgradeEff("GreenPapers", 8)
-  );
-}
-
-function buyBlock(index) {
-  const worth = blockCost(index);
-  if (RESOURCES.greenPaper.gte(worth)) {
-    RESOURCES.greenPaper.sub(worth);
-    RESOURCES[index.toLowerCase()].add(1);
+  if (ore !== "") {
+    ret = ret.mul(ORE_DATA[ore].density);
+    ret = ret.div(ORE_DATA[ore].rarity);
   }
+  return ret;
 }
 
-/*function getTotalBlocks(x) {
-  let ret = D(0);
-  for (const value of Object.values(player.miners.ores)) ret = ret.add(value);
-  return ret;
-}*/
-
+//Layers
 function getRangeMulti(value, range) {
   value = D(value);
   if (value.gte(range[1]) && value.lte(range[2])) return 1;
@@ -332,13 +285,56 @@ function getRangeMulti(value, range) {
   return 1 - Number(value.sub(range[2]).div(D(range[3]).sub(range[2])));
 }
 
+//Ores
+function getOreSparseness(ore) {
+  return getBlockStrength(ORE_DATA[ore].range[0]);
+}
+
+export function getOreGain(ore) {
+  let mul = getUpgradeEff("GreenPapers", 2).mul(
+    getUpgradeEff("GreenPapers", 9)
+  );
+  mul = mul.div(getOreSparseness(ore));
+
+  return mul;
+}
+
+function getOreWorth(ore) {
+  return getOreSparseness(ore)
+    .mul(ORE_DATA[ore].rarity)
+    .mul(getUpgradeEff("GreenPapers", 8));
+}
+
+function getOreCost(ore) {
+  return getOreWorth(ore).mul(1.5);
+}
+
+function sellOre(ore) {
+  RESOURCES.greenPaper.add(getBlockAmount(ore).mul(getOreWorth(ore)));
+  RESOURCES[ore.toLowerCase()].set(0);
+}
+
+function buyOre(ore) {
+  const worth = getOreCost(ore);
+  if (RESOURCES.greenPaper.gte(worth)) {
+    RESOURCES.greenPaper.sub(worth);
+    RESOURCES[ore.toLowerCase()].add(1);
+  }
+}
+
+/*function getTotalBlocks(x) {
+  let ret = D(0);
+  for (const value of Object.values(player.miners.ores)) ret = ret.add(value);
+  return ret;
+}*/
+
 function generateBlock(depth) {
   depth = D(depth).round();
 
   let layer = "";
   let sum = 0;
   for (const value of Object.values(LAYER_DATA)) {
-    sum += +getRangeMulti(depth, value.range);
+    sum += getRangeMulti(depth, value.range);
   }
 
   let random = Math.random();
@@ -351,20 +347,24 @@ function generateBlock(depth) {
     }
   }
 
+  let rarity = 5;
+  if (DATA.setup) rarity /= getUpgradeEff("GreenPapers", 5).toNumber();
+
   let ore = "";
   for (const [index, key] of Object.entries(ORE_DATA)) {
     if (depth.lt(key.range[0]) || depth.gt(key.range[1])) continue;
-    if (1 / Math.random() >= key.rarity) ore = index;
+    if (1 / Math.random() >= rarity * key.rarity) ore = index;
   }
-  if (depth.gt(100)) {
+  if (depth.gte(100)) {
     layer = "Bedrock";
     ore = "";
   }
 
   let treasure = false;
-  if (depth.lt(50) && !ore && Math.random() < 0.05) treasure = true;
+  if (depth.gt(25) && ore === "" && layer !== "Bedrock" && Math.random() < 0.05)
+    treasure = true;
 
-  const health = getBlockHealth(depth, layer, ore);
+  let health = getBlockHealth(depth, layer, ore);
   return {
     layer,
     ore,
@@ -375,16 +375,15 @@ function generateBlock(depth) {
 }
 
 function getRarity(x) {
-  if (x > 10 ** 4.5) return "Almighty";
-  if (x > 10 ** 4) return "Divine";
-  if (x > 10 ** 3.5) return "Mythical";
-  if (x > 10 ** 3) return "Legendary";
-  if (x > 10 ** 2.5) return "Epic";
-  if (x > 10 ** 2) return "Unique";
-  if (x > 10 ** 1.5) return "Rare";
-  if (x > 10 ** 1) return "Uncommon";
-  if (x > 10 ** 0.5) return "Common";
-  return "Supplementary";
+  if (x > 10 ** 4) return "Almighty";
+  if (x > 10 ** 3.5) return "Divine";
+  if (x > 10 ** 3) return "Mythical";
+  if (x > 10 ** 2.5) return "Legendary";
+  if (x > 10 ** 2) return "Epic";
+  if (x > 10 ** 1.5) return "Unique";
+  if (x > 10 ** 1) return "Rare";
+  if (x > 10 ** 0.5) return "Uncommon";
+  return "Common";
 }
 
 /*
@@ -471,22 +470,21 @@ TABS.QuarrySite = {
           <resource name="greenPaper" />
           <table class="resourceTable">
             <tr 
-              v-for="[index, key] of Object.entries(BLOCK_DATA).filter((x) => getBlockAmount(x[0]).gt(0))"
+              v-for="[index, key] of Object.entries(ORE_DATA).filter((x) => getBlockAmount(x[0]).gt(0))"
               :key="index">
               <td style="width:calc(100%);text-align:left">
                 <resource :name="index.toLowerCase()"/>
                 <div style="font-size:13.3333px"> 
-                  (+{{format(Decimal.recip(key.sparseness ?? 1)
-                    .mul(index in ORE_DATA ? getOreGain(index) : 1))}} per 1 damage dealt)<br>
-                  (+{{format(key.worth)}} Green Papers per 1 {{index}})
+                  (+1 per {{format(getOreGain(index).recip())}} damage dealt)<br>
+                  (+{{format(getOreWorth(index))}} Green Papers per 1 {{index}})
                 </div>
               </td>
               <td>
-                <button @click="sellBlock(index)">
-                  Sell for {{format(getBlockAmount(index).mul(key.worth))}} GP
+                <button @click="sellOre(index)">
+                  Sell for {{format(getBlockAmount(index).mul(getOreWorth(index)))}} GP
                 </button>
-                <button v-if="hasUpgrade('GreenPapers', 4)" @click="buyBlock(index)">
-                  Buy 1 for {{format(blockCost(index))}} GP
+                <button v-if="hasUpgrade('GreenPapers', 4)" @click="buyOre(index)">
+                  Buy ??? for with 50% GP
                 </button>
               </td>
             </tr>
@@ -498,7 +496,6 @@ TABS.QuarrySite = {
       const resources = DATA.resources;
       window.Decimal = Decimal;
       return {
-        BLOCK_DATA,
         ORE_DATA,
         QUARRY_SIZE,
         Decimal,
@@ -509,10 +506,12 @@ TABS.QuarrySite = {
         hasUpgrade,
 
         getBlockAmount,
-        sellBlock,
-        buyBlock,
-        blockCost,
-        getOreGain
+        getOreWorth,
+        getOreCost,
+        getOreGain,
+
+        sellOre,
+        buyOre
       };
     }
   }
@@ -578,7 +577,7 @@ setupVue.QuarryBlock = {
   template: `
     <div class="tooltip">
       <div :style="style" style="width: 32px; height: 32px; transition: background-size .5s"></div>
-      <span v-if="Decimal.gt(block.health, 0) && block.name !== 'Bedrock'" class="tooltiptext">
+      <span v-if="Decimal.gt(block.health, 0) && block.layer !== 'Bedrock'" class="tooltiptext">
         <b style='font-size: 16px'>Block Type: {{block.layer}}</b>
         <span v-if="block.ore !== ''">
           <br>Ore: {{block.ore}} ({{getRarity(ORE_DATA[block.ore].rarity)}})

@@ -40,7 +40,6 @@ function verName(x) {
   if (x.phase === "beta") phases = ["β", "α"];
   if (x.phase === "alpha") phases = ["α", "δ"];
   if (x.phase === "delta") phases = ["δ", "build"];
-  console.log(x);
 
   return (
     phases[0] +

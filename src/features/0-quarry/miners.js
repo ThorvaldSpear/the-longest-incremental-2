@@ -12,7 +12,7 @@ import {
 } from "../../components/buyables.js";
 import { Resource, RESOURCES } from "../../components/resources.js";
 
-import { ORE_DATA, LAYER_DATA, QUARRY_SIZE, doQuarryTick } from "./quarry.js";
+import { QUARRY_SIZE, doQuarryTick, getOreGain } from "./quarry.js";
 import { getTreasure } from "./treasures.js";
 
 //Make sure to add assignation too
@@ -58,13 +58,9 @@ class Miner extends Buyable {
     const eff = getBuyableEff(this.group, this.x);
     const damage = eff.mul(hits).min(pick.health);
     pick.health = Decimal.sub(pick.health, damage);
-    RESOURCES[pick.layer.toLowerCase()].add(
-      damage.div(LAYER_DATA[pick.layer].sparseness)
-    );
-    if (pick.ore)
-      RESOURCES[pick.ore.toLowerCase()].add(
-        damage.div(ORE_DATA[pick.ore].sparseness).mul(getOreGain(pick.ore))
-      );
+    if (pick.ore) {
+      RESOURCES[pick.ore.toLowerCase()].add(damage.mul(getOreGain(pick.ore)));
+    }
     if (pick.health.lte(0)) {
       pick.health = D(0);
       player.stats.mined++;
@@ -83,15 +79,6 @@ export function getMinerSpeed(x) {
 
 export function getMinerEff(x) {
   return getBuyableEff("Miners", x);
-}
-
-export function getOreGain(ore) {
-  let mul = getUpgradeEff("GreenPapers", 2).mul(
-    getUpgradeEff("GreenPapers", 9)
-  );
-  if (ORE_DATA[ore].rarity <= 10)
-    mul = mul.times(getUpgradeEff("GreenPapers", 5));
-  return mul;
 }
 
 RESOURCES.mana = new Resource({
@@ -141,7 +128,7 @@ BUYABLES.Miners = {
       desc(eff) {
         return `to 1 ore on the topmost layer`;
       },
-      unl: () => getMiner(2).amt.gte(1),
+      unl: () => getMiner(1).amt.gte(1),
       group: "Miners",
       speed: 3,
       x: 2
@@ -153,7 +140,7 @@ BUYABLES.Miners = {
       desc(eff) {
         return `to 1 block on the topmost layer + 1/2 damage to 4 adjacent blocks`;
       },
-      unl: () => getMiner(3).amt.gte(1),
+      unl: () => getMiner(2).amt.gte(1),
       group: "Miners",
       speed: 0.125,
       x: 3

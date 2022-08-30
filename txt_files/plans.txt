@@ -1,44 +1,17 @@
+Miners, Quarry, Selling, Treasures, and Green Papers are done.
+
 ------------------------------------ *** LAYER 0 - START *** ------------------------------------
 This is a isekai-medieval themed.
 (Medieval people are transported to work with King's needs)
-
-You have 6 kinds of Miners. Each kind has unique abilities:
-1. Novice: Mines blocks.
-2. Efficient: Mines softer blocks at 200% efficient.
-3. Strong: Mines harder blocks at 300% efficient.
-4. Surface: Mines surface blocks more frequently.
-5. Veining: Mines layer blocks more frequently.
-6. Ranged: Mines blocks with a higher range.
-
-Quarry:
-- You have a 10x10 quarry.
-- You can assign Miners to mine blocks for you.
-- Each following row (depth) increases block healths.
-- You can't go down until you mine the first row.
-- There's a maximum depth: 20.
 
 Biomes:
 - There's a chance that other biomes appear with different blocks.
 - All biomes have specific depth ranges.
 
-Treasure:
-- There's a chance that a treasure appears, which gives you Green Papers, ores, maps, and artifacts.
-- Maps are dependent on the depth and biome you are in.
-- Maps always respawn on completion.
-
-Selling:
-- You can sell blocks for Green Papers.
-- Green Papers can be used to buy Upgrades.
-- Stone and Bronze can be used to craft Pickaxes.
-
 Pickaxes:
 - You can use Stone and Bronze to create Pickaxes.
 - Pickaxes boost speed (from Bronze) and increase efficiency.
 - Higher-tier Pickaxes require higher-tier materials.
-
-( WIP ) Green Papers:
-- Gained from selling any mineral.
-- Green Papers can be used to buy special Upgrades and Ores.
 
 ------------------------------------ *** LAYER 1 - COLLAPSE *** ------------------------------------
 (formerly Boosters)
