@@ -14,10 +14,10 @@ import {
 import { Resource, RESOURCES } from "../../components/resources.js";
 
 import {
-  QUARRY_SIZE,
   doQuarryTick,
   getOreGain,
-  getBlockHealth
+  getBlockHealth,
+  isExposed
 } from "./quarry.js";
 import { getTreasure } from "./treasures.js";
 
@@ -26,6 +26,7 @@ class Miner extends Buyable {
   constructor(obj) {
     super(obj);
     this.x = obj.x;
+
     this._eff = this.eff;
     this.eff = (amt) => {
       let mul = this._eff(amt).mul(getUpgradeEff("GreenPapers", 0));
@@ -33,11 +34,19 @@ class Miner extends Buyable {
         mul = mul.mul(getUpgradeEff("GreenPapers", 7));
       return mul;
     };
+
     this._desc = this.desc;
     this.desc = (eff) =>
       `${format(eff)} damage/hit × ${format(
         getMinerSpeed(this.x).mul(this.speed)
       )} hits/sec<br>${this._desc(eff)}`;
+
+    this.select =
+      obj.select ??
+      ((x, y, block) => {
+        return isExposed(x, y);
+      });
+
     this.progress = Decimal.dZero;
     this.speed = obj.speed || 1;
     this.diffDesc = "damage/hit";
@@ -54,15 +63,20 @@ class Miner extends Buyable {
     player.stats.hits = hits.add(player.stats.hits);
 
     let pick;
-    const choice = Array(QUARRY_SIZE.width)
-      .fill()
-      .map((_, ind) => {
-        let id = player.quarry.map
-          .map((i) => i[ind])
-          .findIndex((i) => Decimal.gt(i.health, 0));
-        return [id, player.quarry.map[id][ind]];
-      });
-    while (pick?.[1] === undefined) pick = random(choice);
+    const choice = [];
+    for (let y in player.quarry.map)
+      for (let x in player.quarry.map[y]) {
+        const block = player.quarry.map[y][x];
+        if (
+          block.layer !== "Bedrock" &&
+          Decimal.gt(block.health, 0) &&
+          this.select(x, y, block)
+        )
+          choice.push([y, block]);
+      }
+    console.log(choice);
+    if (!choice.length) return;
+    pick = random(choice);
 
     const eff = getBuyableEff(this.group, this.x);
     const maxHealth = getBlockHealth(
@@ -122,7 +136,7 @@ BUYABLES.Miners = {
       cost: (lvl) => (D(lvl).eq(0) ? D(0) : lvl.pow(4).add(9)),
       eff: (lvl) => D(lvl),
       desc(eff) {
-        return `to 1 block on the topmost layer`;
+        return `to 1 exposed block`;
       },
       group: "Miners",
       x: 0
@@ -132,7 +146,10 @@ BUYABLES.Miners = {
       cost: (lvl) => lvl.add(1).pow(4).add(9),
       eff: (lvl) => D(lvl).mul(2),
       desc(eff) {
-        return `to 1 non-ore block on the topmost layer`;
+        return `to 1 exposed non-ore block`;
+      },
+      select(x, y, block) {
+        return isExposed(x, y) && !block.ore;
       },
       unl: () => getMiner(0).amt.gte(1),
       group: "Miners",
@@ -140,11 +157,14 @@ BUYABLES.Miners = {
       x: 1
     }),
     new Miner({
-      name: "Efficient Miner",
-      cost: (lvl) => lvl.add(1).pow(4).add(99),
+      name: "Veining Miner",
+      cost: (lvl) => lvl.add(1).pow(4).mul(2).add(98),
       eff: (lvl) => D(lvl),
       desc(eff) {
-        return `to 1 ore on the topmost layer`;
+        return `to 1 block on the highest layer`;
+      },
+      select(x, y, block) {
+        return y === 0;
       },
       unl: () => getMiner(1).amt.gte(1),
       group: "Miners",
@@ -152,16 +172,31 @@ BUYABLES.Miners = {
       x: 2
     }),
     new Miner({
-      name: "Ranged Miner",
-      cost: (lvl) => lvl.add(1).pow(4).add(299),
-      eff: (lvl) => D(lvl).mul(5),
+      name: "Efficient Miner",
+      cost: (lvl) => lvl.add(1).pow(4).mul(4).add(996),
+      eff: (lvl) => D(lvl),
       desc(eff) {
-        return `to 1 block on the topmost layer + 1/2 damage to 4 adjacent blocks`;
+        return `to 1 exposed ore block`;
+      },
+      select(x, y, block) {
+        return isExposed(x, y) && block.ore;
       },
       unl: () => getMiner(2).amt.gte(1),
       group: "Miners",
-      speed: 0.125,
+      speed: 3,
       x: 3
+    }),
+    new Miner({
+      name: "Ranged Miner",
+      cost: (lvl) => lvl.add(1).pow(4).mul(8).add(9992),
+      eff: (lvl) => D(lvl).mul(5),
+      desc(eff) {
+        return `to 1 exposed block + 1/2 damage to 4 adjacent blocks`;
+      },
+      unl: () => getMiner(3).amt.gte(1),
+      group: "Miners",
+      speed: 0.125,
+      x: 4
     })
   ]
 };

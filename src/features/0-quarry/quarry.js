@@ -26,6 +26,15 @@ function getBlockAmount(index) {
   return DATA.resources[index.toLowerCase()].amt.value;
 }
 
+export function isExposed(x, y) {
+  return (
+    Decimal.lte(player.quarry.map[y - 1]?.[x]?.health ?? Decimal.dZero, 0) ||
+    Decimal.lte(player.quarry.map[y + 1]?.[x]?.health ?? Decimal.dInf, 0) ||
+    Decimal.lte(player.quarry.map[y]?.[x - 1]?.health ?? Decimal.dInf, 0) ||
+    Decimal.lte(player.quarry.map[y]?.[x + 1]?.health ?? Decimal.dInf, 0)
+  );
+}
+
 export function getBlockHealth(depth, layer, ore) {
   let ret = getBlockStrength(depth).mul(LAYER_DATA[layer].health);
   ret = ret.mul(DATA.setup ? getUpgradeEff("GreenPapers", 6) : 1);
@@ -634,7 +643,12 @@ setupVue.QuarryBlock = {
       const layerColor = LAYER_DATA[this.block.layer].color ?? "white";
       const oreColor = ORE_DATA[this.block.ore]?.color ?? "transparent";
       const treasureColor = this.block.treasure ? "#ffefbf" : "#0003";
-      const health = D(this.block.health).pow(0.5).toNumber();
+      const health = D(this.block.health)
+        .div(this.health)
+        .pow(0.5)
+        .max(0)
+        .min(1)
+        .toNumber();
 
       if (health > 0)
         return {
@@ -660,14 +674,13 @@ setupVue.QuarryBlock = {
           background: `
             linear-gradient(#0007, #0007),
             linear-gradient(${layerColor}, ${layerColor}),
-            linear-gradient(#0003, #0003),
+            linear-gradient(${treasureColor}, ${treasureColor}),
             linear-gradient(${layerColor}, ${layerColor})
           `,
           "background-position": "center, center, center, center",
           "background-size": `100% 100%, calc(100% - 2px) calc(100% - 2px), 100% 100%, 100% 100%`,
           "background-repeat": "no-repeat, no-repeat, no-repeat, no-repeat"
         };
-    }
   },
   template: `
     <div class="tooltip">

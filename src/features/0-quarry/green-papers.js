@@ -104,6 +104,7 @@ UPGRADES.GreenPapers = {
           .amt.add(getMiner(1).amt)
           .add(getMiner(2).amt)
           .add(getMiner(3).amt)
+          .add(getMiner(4).amt)
           .add(10)
           .log10(),
       desc(eff) {

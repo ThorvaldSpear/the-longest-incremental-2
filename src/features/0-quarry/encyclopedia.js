@@ -7,6 +7,9 @@ TABS["ore-stats"] = {
   component: {
     template: `<div>
     <h2>Ore Stats</h2>
+    <div>
+      Pretty self expanatory. Rarity divides block health but multiplies ore value.
+    </div>
     <ore-entry
       v-for="(_, i) in ORE_DATA"
       type="ore"
@@ -26,6 +29,12 @@ TABS["block-stats"] = {
   component: {
     template: `<div>
       <h2>Block Stats</h2>
+      <div>
+        Block spawn calculations work a bit differently.<br>
+        They are weighted and their weight increases up to "chance max" and then decreases
+        until it no longer spawns.
+        This scales linearly.
+      </div>
       <ore-entry
         v-for="(_, i) in LAYER_DATA"
         type="layer"

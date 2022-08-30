@@ -250,7 +250,9 @@ We'll go over the features of every element before Extend.
   * Imaginary numbered timelines will be unlocked at the 3rd upgrade in the time branch.
   * (these could make for good challenges)
   * Changing timelines forces an Elemental reset.
------------------------------------- *** LAYER 2 - DARKEN *** ------------------------------------
+
+  
+------------------------------------ *** LAYER 2 - DARKEN (POST ELEMENTAL) *** ------------------------------------
 Do not implement these L2 features below until L3.
 
 - (Aarex) Elemental Essences
