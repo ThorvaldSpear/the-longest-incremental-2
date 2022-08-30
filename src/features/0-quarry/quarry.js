@@ -583,6 +583,11 @@ TABS.QuarrySite = {
           <resource name="greenPaper" />
           <button @click="sellAllOres()">Sell all</button>
           <table class="resourceTable">
+            <tr>
+              <td colspan="2">
+                Note: quarry depth multiplies ore value but nerfs ore gain.
+              </td>
+            </tr>
             <tr 
               v-for="[index, key] of Object.entries(ORE_DATA).filter((x) => getBlockAmount(x[0]).gt(0))"
               :key="index">

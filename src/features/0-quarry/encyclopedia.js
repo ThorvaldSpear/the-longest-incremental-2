@@ -97,14 +97,16 @@ TABS.Story = {
   component: {
     template: `
       <h2>Welcome!</h2>
-      Where am I? Did I transported by the King?<br>
-      Let's just look around this settlement.
+      Where am I? How'd I get here? What am I doing here?<br>
+      Oh look, there's a village nearby.<br>
+      I'm just going to look around that settlement.
 
       <br><br>
-      Hmmm... A worker? Hey, can I talk for a moment?<br>
-      He questioned about this settlement. The worker said, "This is a quarry site, we mine for colony needs."<br>
-      He remembered how was his hard work years ago. It was unbearable.<br>
-      But he comes to a realization.
+      Hmmm... A worker? Maybe I can talk for a moment...<br>
+      I question about this settlement. 
+      The worker said, "This is a quarry site, we mine for the colony."<br>
+      I remember about how hard this was years ago. It was unbearable.<br>
+      But I come to a realization.
 
       <br><br>
       He was neither a brave worker, nor a slave.<br>
@@ -113,9 +115,9 @@ TABS.Story = {
       And so, the journey begins.
 
       <br><br>
-      Welcome to the Longest Incremental^2. Here, you can hire Miners with Mana.<br>
+      Welcome to the Longest Incremental<sup>2</sup>. Here, you can hire Miners with Mana.<br>
       Later on, you can sell ores for Green Papers which can be spent for Upgrades!<br>
-      Have fun!
+      Have fun <s>and don't forget about the void</s>!
     `
   }
 };

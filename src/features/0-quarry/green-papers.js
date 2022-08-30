@@ -32,7 +32,7 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "Speed Mining",
-      cost: (lvl) => Decimal.pow(1.6, lvl).mul(5),
+      cost: (lvl) => Decimal.pow(1.6, lvl).mul(10),
       eff: (lvl) => D(lvl).div(10).add(1),
       max: 20,
       desc(eff) {
@@ -43,7 +43,7 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "Fortune Mining",
-      cost: (lvl) => Decimal.pow(2, lvl).mul(25),
+      cost: (lvl) => Decimal.pow(2, lvl).mul(100),
       eff: (lvl) => D(lvl).div(10).add(1),
       max: 20,
       desc(eff) {
@@ -122,23 +122,22 @@ UPGRADES.GreenPapers = {
       // DIDN'T META SAY NO CRYPTOCURRENCY REFERENCES?
       // ALSO HOW DO YOU HASH AN INTERNET PROTOCOL
       // SSH HASHING ISNT CRYPTO REFRENCE ITS A METHOD TO VALIDATE DATA PACKETS FROM SOURCES THEY COME FROM
-      cost: () => D(125000),
+      cost: () => D(525000),
       eff: (lvl) => RESOURCES.greenPaper.amt.add(10).log10(),
       desc(eff) {
         return `Gain <span class="tooltip">
           ${format(
             eff
-          )}x more Green Papers based on your GP but raise resource buy cost as well.
+          )}x more Green Papers based on your GP... this also affects buy cost... how does this make any sense hashing and ssh doesn't even exist yet
           <span class="tooltiptext">log<sub>10</sub>(Green Papers + 10)</span>
-        </span><br>
-        Yes hashing an internet protocol in medival age...`;
+        </span><br>`;
       },
       group: "GreenPapers",
       unl: () => getUpgrade("GreenPapers", 7).amt.gte(1)
     }),
     new Upgrade({
       name: "More Pain, Ore Gain",
-      cost: () => D(5000000),
+      cost: () => D(50000000),
       eff: (lvl) => D(10).pow(D(player.quarry.depth).sub(75).div(50)),
       desc(eff) {
         return `Gain <span class="tooltip">

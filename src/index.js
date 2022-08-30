@@ -7,6 +7,7 @@ import { loadGame } from "./player.js";
 
 import "./features/news-ticker.js";
 import "./features/import-layer.js";
+import { random } from "./utils/utils.js";
 
 /* --- CODE START --- */
 export const app = createApp()
@@ -31,5 +32,13 @@ export const app = createApp()
   });
 
 for (const [index, key] of Object.entries(setupVue)) app.component(index, key);
+
+// Random title better than news ticker
+const titles = [
+  "Refactor I",
+  "The Deepest Shaft",
+  "The Incremental of Black Company"
+];
+document.title = "The Longest Incremental²: " + random(titles);
 
 loadGame();
