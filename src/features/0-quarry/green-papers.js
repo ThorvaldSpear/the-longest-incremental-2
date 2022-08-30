@@ -172,6 +172,8 @@ TABS.GreenPapers = {
   component: {
     template: `
     <div>
+      <div>Note: you can hover over upgrade description 
+      for some upgrades to see their formulas.</div>
       <resource name="greenPaper"/><br>
       <upgrades group="GreenPapers"/>
     </div>
