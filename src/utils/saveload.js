@@ -2,16 +2,14 @@ import { player, setupPlayer } from "../player.js";
 import { notify } from "./notify.js";
 import { updateVer } from "./version.js";
 import LZString from "./lz-string.js";
-import { D } from "./break_eternity.js";
-import { initQuarry } from "../features/0-quarry/quarry.js";
 
 const SAVE_KEY = "the_longest_incremental_2";
+
 /**
  * Recursively merges defaultData with newData.
  * @param {Record<PropertyKey, unkown>} defaultData Object containing the default data.
  * @param {Record<PropertyKey, unkown>} newData New data to merge with the default one.
  */
-
 function fixData(obj, mergeFrom) {
   for (const item in mergeFrom) {
     const thing = mergeFrom[item];
@@ -100,7 +98,7 @@ export function hardReset(force = false) {
   save();
 }
 window.hardReset = hardReset;
-// this could still technically work due to the fact that toJSON is a thign in classes
+// this could still technically work due to the fact that toJSON is a thing in classes
 // actually for any object toJSON works
 /**
  * autoSave interval

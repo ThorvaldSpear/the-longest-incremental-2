@@ -31,7 +31,7 @@ export class Resource {
     this.amt = this.amt.add(x);
   }
   sub(x) {
-    this.amt = this.amt.sub(x);
+    this.amt = this.amt.sub(x).max(0);
   }
   gte(x) {
     return this.amt.gte(x);

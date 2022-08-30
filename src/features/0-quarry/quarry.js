@@ -1,6 +1,7 @@
 import Decimal, { D } from "../../utils/break_eternity.js";
 import { format, formatPrecise } from "../../utils/format.js";
 import { generateGradient } from "../../utils/gradient.js";
+import { getRarity } from "../../utils/utils.js";
 
 import { DATA } from "../../tmp.js";
 import { player } from "../../player.js";
@@ -14,49 +15,217 @@ import {
   hasUpgrade
 } from "../../components/buyables.js";
 
+/* -=- BLOCKS -=- */
+function getBlockStrength(depth) {
+  let ret = D(1e3).pow(Decimal.div(depth, 50));
+  ret = ret.div(10).add(0.9);
+  return ret;
+}
+
+function getBlockAmount(index) {
+  return DATA.resources[index.toLowerCase()].amt.value;
+}
+
+export function getBlockHealth(depth, layer, ore) {
+  let ret = getBlockStrength(depth).mul(LAYER_DATA[layer].health);
+  ret = ret.mul(DATA.setup ? getUpgradeEff("GreenPapers", 6) : 1);
+
+  if (ore !== "") {
+    ret = ret.mul(ORE_DATA[ore].density);
+    ret = ret.div(ORE_DATA[ore].rarity);
+  }
+  return ret;
+}
+
+function generateBlock(depth) {
+  depth = D(depth).round();
+
+  let layer = "";
+  let sum = 0;
+  for (const value of Object.values(LAYER_DATA)) {
+    sum += getLayerRarity(depth, value.range);
+  }
+
+  let random = Math.random();
+  let sum2 = 0;
+  for (const [index, key] of Object.entries(LAYER_DATA)) {
+    sum2 += getLayerRarity(depth, key.range) / sum;
+    if (sum2 >= random) {
+      layer = index;
+      break;
+    }
+  }
+
+  let rarity = 5;
+  if (DATA.setup) rarity /= getUpgradeEff("GreenPapers", 5).toNumber();
+
+  let ore = "";
+  for (const [index, key] of Object.entries(ORE_DATA)) {
+    if (depth.lt(key.range[0]) || depth.gt(key.range[1])) continue;
+    if (1 / Math.random() >= rarity * key.rarity) ore = index;
+  }
+  if (depth.gte(100)) {
+    layer = "Bedrock";
+    ore = "";
+  }
+
+  let treasure = false;
+  if (depth.gt(25) && ore === "" && layer !== "Bedrock" && Math.random() < 0.05)
+    treasure = true;
+
+  return {
+    layer,
+    ore,
+    health: Decimal.dOne,
+    treasure
+  };
+}
+
+/*function getTotalBlocks(x) {
+  let ret = D(0);
+  for (const value of Object.values(player.miners.ores)) ret = ret.add(value);
+  return ret;
+}*/
+
+/* -=- LAYERS -=- */
+/*
+Guide to how this complicated stuff works.
+LAYER_DATA:
+  color: self expanatory, is the color of that resource
+  range: {
+    spawn: starts to spawn
+    full: max spawning rate
+    decrease: where spawn rate starts to decrease
+    despawn: never spawns again
+  }
+  health: multiplies health of block
+*/
 export const LAYER_DATA = {
   Dirt: {
     color: "#7f5f3f",
-    range: [0, 0, 4, 6],
+    range: {
+      spawn: 0,
+      full: 0,
+      decrease: 4,
+      despawn: 6
+    },
     health: 1
   },
   Stone: {
     color: "grey",
-    range: [3, 6, 45, 50],
+    range: {
+      spawn: 3,
+      full: 6,
+      decrease: 45,
+      despawn: 6
+    },
     health: 2
   },
   Granite: {
     color: "#bf7f7f",
-    range: [35, 50, 60, 70],
+    range: {
+      spawn: 35,
+      full: 50,
+      decrease: 60,
+      despawn: 70
+    },
     health: 4
   },
   Basalt: {
     color: "#3f4f5f",
-    range: [50, 70, 140, 150],
+    range: {
+      spawn: 50,
+      full: 70,
+      decrease: 140,
+      despawn: 150
+    },
     health: 8
   },
   Obsidian: {
     color: "#0f0f3f",
-    range: [130, 150, 190, 200],
+    range: {
+      spawn: 130,
+      full: 150,
+      decrease: 190,
+      despawn: 200
+    },
     health: 16
   },
   Magma: {
     color: "#bf5f00",
-    range: [190, 200, 210, 210],
+    range: {
+      spawn: 190,
+      full: 200,
+      decrease: 200,
+      despawn: 210
+    },
     health: 64
   },
   Darkstone: {
     color: "#5f00bf",
-    range: [200, 300, 300, 300],
+    range: {
+      spawn: 200,
+      full: 300,
+      decrease: 300,
+      despawn: 300
+    },
     health: 32
   },
   Bedrock: {
     color: "black",
-    range: [Infinity, Infinity, Infinity, Infinity],
+    range: {
+      spawn: Infinity,
+      full: Infinity,
+      decrease: Infinity,
+      despawn: Infinity
+    },
     health: Infinity
   }
 };
 
+function getLayerRarity(depth, range) {
+  //4 depths: [spawn, full, decrease, despawn]
+  //1st: where a layer starts.
+  //2nd: where a layer becomes most common.
+  //3rd: where a layer starts to become less common.
+  //4th: where a layer ends.
+
+  depth = D(depth);
+  // if between the two spawning ranges give normal weight
+  // chance is max
+  if (depth.gte(range.full) && depth.lte(range.decrease)) return 1;
+  // do not give weight if it is outside the spawning ranges
+  // chance is none
+  if (depth.lte(range.spawn) || depth.gte(range.despawn)) return 0;
+  if (depth.lt(range.full))
+    // if in first spawn range
+    // (depth-start)/(max-start)
+    return depth
+      .sub(range.spawn)
+      .div(D(range.full).sub(range.spawn))
+      .toNumber();
+  // second spawn range
+  // chance decreases
+  // 1- (depth-start)/(max-start)
+  return (
+    1 -
+    depth
+      .sub(range.decrease)
+      .div(D(range.despawn).sub(range.decrease))
+      .toNumber()
+  );
+}
+
+/* -=- ORES -=- */
+/*
+Guide to how this complicated stuff works.
+ORE_DATA:
+  color: self expanatory, is the color of that resource
+  range: beginning and end of spawn
+  density: multiplies health
+  rarity: makes the ore worth more, has less health, but also is more rarer
+*/
+// I don't think ore should despawn
 export const ORE_DATA = {
   Bronze: {
     color: "#CD7F32",
@@ -67,26 +236,26 @@ export const ORE_DATA = {
   Silver: {
     color: "#f2f0f0",
     range: [4, 150],
-    density: 4,
-    rarity: 2
+    density: 6,
+    rarity: 3
   },
   Gold: {
     color: "#ffe600",
     range: [10, 100],
-    density: 6,
-    rarity: 3
+    density: 17.5,
+    rarity: 7
   },
   Diamond: {
     color: "#91fffa",
     range: [25, 190],
-    density: 8,
-    rarity: 2.5
+    density: 45,
+    rarity: 15
   },
   Platinum: {
     color: "#e9ffd4",
     range: [50, 175],
-    density: 10,
-    rarity: 5
+    density: 70,
+    rarity: 20
   }
   /*Adamantite: {
     color: "#c93030",
@@ -254,59 +423,40 @@ for (const [index, key] of Object.entries(ORE_DATA)) {
   });
 }
 
-function getBlockStrength(depth) {
-  let ret = D(1e3).pow(Decimal.div(depth, 50));
-  ret = ret.div(10).add(0.9);
-  return ret;
-}
-
-function getBlockAmount(index) {
-  return DATA.resources[index.toLowerCase()].amt.value;
-}
-
-function getBlockHealth(depth, layer, ore) {
-  let ret = getBlockStrength(depth).mul(LAYER_DATA[layer].health);
-  ret = ret.mul(DATA.setup ? getUpgradeEff("GreenPapers", 6) : 1);
-
-  if (ore !== "") {
-    ret = ret.mul(ORE_DATA[ore].density);
-    ret = ret.div(ORE_DATA[ore].rarity);
-  }
-  return ret;
-}
-
-//Layers
-function getRangeMulti(value, range) {
-  value = D(value);
-  if (value.gte(range[1]) && value.lte(range[2])) return 1;
-  if (value.lte(range[0]) || value.gte(range[3])) return 0;
-  if (value.lt(range[1]))
-    return Number(value.sub(range[0]).div(D(range[1]).sub(range[0])));
-  return 1 - Number(value.sub(range[2]).div(D(range[3]).sub(range[2])));
-}
-
-//Ores
 function getOreSparseness(ore) {
   return getBlockStrength(ORE_DATA[ore].range[0]);
 }
 
-export function getOreGain(ore) {
-  let mul = getUpgradeEff("GreenPapers", 2).mul(
-    getUpgradeEff("GreenPapers", 9)
-  );
-  mul = mul.div(getOreSparseness(ore));
+export function getOreGain(ore, mult = false) {
+  let ret = getUpgradeEff("GreenPapers", 2);
+  if (hasUpgrade("GreenPapers", 9))
+    ret = ret.mul(getUpgradeEff("GreenPapers", 9));
+  if (!mult) ret = ret.div(getOreSparseness(ore));
 
+  return ret;
+}
+
+export function getOreWorthMul(ore) {
+  let mul = Decimal.dOne;
+  if (hasUpgrade("GreenPapers", 8))
+    mul = mul.mul(getUpgradeEff("GreenPapers", 8));
   return mul;
 }
 
 function getOreWorth(ore) {
   return getOreSparseness(ore)
+    .div(ORE_DATA[ore].density)
+    .div(5)
     .mul(ORE_DATA[ore].rarity)
-    .mul(getUpgradeEff("GreenPapers", 8));
+    .mul(getOreWorthMul());
 }
 
 function getOreCost(ore) {
   return getOreWorth(ore).mul(1.5);
+}
+
+function sellAllOres(ore) {
+  for (const index of Object.keys(ORE_DATA)) sellOre(index);
 }
 
 function sellOre(ore) {
@@ -314,78 +464,24 @@ function sellOre(ore) {
   RESOURCES[ore.toLowerCase()].set(0);
 }
 
-function buyOre(ore) {
+function buyOreAmount(ore) {
+  const halfGP = DATA.resources.greenPaper.amt.value.div(2);
   const worth = getOreCost(ore);
-  if (RESOURCES.greenPaper.gte(worth)) {
-    RESOURCES.greenPaper.sub(worth);
-    RESOURCES[ore.toLowerCase()].add(1);
+  return halfGP.div(worth).floor();
+}
+
+function buyOre(ore) {
+  const halfGP = DATA.resources.greenPaper.amt.value.div(2);
+  const worth = getOreCost(ore);
+  const toBuy = halfGP.div(worth).floor();
+
+  if (toBuy.gt(0)) {
+    RESOURCES.greenPaper.sub(worth.mul(toBuy));
+    RESOURCES[ore.toLowerCase()].add(toBuy);
   }
 }
 
-/*function getTotalBlocks(x) {
-  let ret = D(0);
-  for (const value of Object.values(player.miners.ores)) ret = ret.add(value);
-  return ret;
-}*/
-
-function generateBlock(depth) {
-  depth = D(depth).round();
-
-  let layer = "";
-  let sum = 0;
-  for (const value of Object.values(LAYER_DATA)) {
-    sum += getRangeMulti(depth, value.range);
-  }
-
-  let random = Math.random();
-  let sum2 = 0;
-  for (const [index, key] of Object.entries(LAYER_DATA)) {
-    sum2 += getRangeMulti(depth, key.range) / sum;
-    if (sum2 >= random) {
-      layer = index;
-      break;
-    }
-  }
-
-  let rarity = 5;
-  if (DATA.setup) rarity /= getUpgradeEff("GreenPapers", 5).toNumber();
-
-  let ore = "";
-  for (const [index, key] of Object.entries(ORE_DATA)) {
-    if (depth.lt(key.range[0]) || depth.gt(key.range[1])) continue;
-    if (1 / Math.random() >= rarity * key.rarity) ore = index;
-  }
-  if (depth.gte(100)) {
-    layer = "Bedrock";
-    ore = "";
-  }
-
-  let treasure = false;
-  if (depth.gt(25) && ore === "" && layer !== "Bedrock" && Math.random() < 0.05)
-    treasure = true;
-
-  let health = getBlockHealth(depth, layer, ore);
-  return {
-    layer,
-    ore,
-    health,
-    treasure
-    // not needed, can be computed
-  };
-}
-
-function getRarity(x) {
-  if (x > 10 ** 4) return "Almighty";
-  if (x > 10 ** 3.5) return "Divine";
-  if (x > 10 ** 3) return "Mythical";
-  if (x > 10 ** 2.5) return "Legendary";
-  if (x > 10 ** 2) return "Epic";
-  if (x > 10 ** 1.5) return "Unique";
-  if (x > 10 ** 1) return "Rare";
-  if (x > 10 ** 0.5) return "Uncommon";
-  return "Common";
-}
-
+/* -=- QUARRY -=- */
 /*
 note to self on how quarry works:
 Array<Array<{id, health}, WIDTH>, HEIGHT> items for managing the quarry
@@ -416,7 +512,7 @@ export function initQuarry() {
     map: generateQuarryMap()
   };
 }
-export function incrementQuarryRow() {
+function incrementQuarryRow() {
   player.quarry.depth = Decimal.add(player.quarry.depth, 1);
 
   player.quarry.map.splice(0, 1);
@@ -429,13 +525,14 @@ export function doQuarryTick(diff) {
   if (player.quarry === undefined) {
     player.quarry = initQuarry();
   }
-  for (const miner of BUYABLES.Miners.data) {
-    miner.hit(diff);
+  if (D(player.quarry.depth).lt(100)) {
+    for (const miner of BUYABLES.Miners.data) {
+      miner.hit(diff);
+    }
   }
 
   let empty = true;
   for (const i of player.quarry.map[0]) {
-    // health is not gaurenteed to be Decimal
     if (Decimal.gt(i.health, 0)) {
       empty = false;
       break;
@@ -468,6 +565,7 @@ TABS.QuarrySite = {
       `</div>
         <div style="flex: 1 0 33.33%">
           <resource name="greenPaper" />
+          <button @click="sellAllOres()">Sell all</button>
           <table class="resourceTable">
             <tr 
               v-for="[index, key] of Object.entries(ORE_DATA).filter((x) => getBlockAmount(x[0]).gt(0))"
@@ -476,7 +574,7 @@ TABS.QuarrySite = {
                 <resource :name="index.toLowerCase()"/>
                 <div style="font-size:13.3333px"> 
                   (+1 per {{format(getOreGain(index).recip())}} damage dealt)<br>
-                  (+{{format(getOreWorth(index))}} Green Papers per 1 {{index}})
+                  (+{{format(getOreWorth(index))}} GP per 1 {{index}})
                 </div>
               </td>
               <td>
@@ -484,7 +582,7 @@ TABS.QuarrySite = {
                   Sell for {{format(getBlockAmount(index).mul(getOreWorth(index)))}} GP
                 </button>
                 <button v-if="hasUpgrade('GreenPapers', 4)" @click="buyOre(index)">
-                  Buy ??? for with 50% GP
+                  Buy {{format(buyOreAmount(index))}} with 50% GP
                 </button>
               </td>
             </tr>
@@ -509,8 +607,10 @@ TABS.QuarrySite = {
         getOreWorth,
         getOreCost,
         getOreGain,
+        buyOreAmount,
 
         sellOre,
+        sellAllOres,
         buyOre
       };
     }
@@ -534,12 +634,7 @@ setupVue.QuarryBlock = {
       const layerColor = LAYER_DATA[this.block.layer].color ?? "white";
       const oreColor = ORE_DATA[this.block.ore]?.color ?? "transparent";
       const treasureColor = this.block.treasure ? "#ffefbf" : "#0003";
-      const health = D(this.block.health)
-        .div(this.health)
-        .pow(0.5)
-        .max(0)
-        .min(1)
-        .toNumber();
+      const health = D(this.block.health).pow(0.5).toNumber();
 
       if (health > 0)
         return {
@@ -565,7 +660,7 @@ setupVue.QuarryBlock = {
           background: `
             linear-gradient(#0007, #0007),
             linear-gradient(${layerColor}, ${layerColor}),
-            linear-gradient(${treasureColor}, ${treasureColor}),
+            linear-gradient(#0003, #0003),
             linear-gradient(${layerColor}, ${layerColor})
           `,
           "background-position": "center, center, center, center",
@@ -582,7 +677,7 @@ setupVue.QuarryBlock = {
         <span v-if="block.ore !== ''">
           <br>Ore: {{block.ore}} ({{getRarity(ORE_DATA[block.ore].rarity)}})
         </span><br>
-        Health: {{format(block.health)}}/{{format(health)}}<br>
+        Health: {{format(health.mul(block.health))}}/{{format(health)}}<br>
         <b v-if="block.treasure" style='color: gold'>Treasure inside!</b>
       </span>
     </div>

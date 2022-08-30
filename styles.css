@@ -60,12 +60,10 @@ h3 {
   overflow: hidden;
   box-shadow: inset 0 -20px 8px -20px #07f7;
 }
-.tab_navigator span {
-  margin: 0 2px;
-}
 .tab_navigator button {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
+  margin: 0 2px;
 }
 .tab_navigator[role="layers"] button {
   font-size: 16px;
@@ -138,10 +136,10 @@ button:active {
   padding: 5px 8px;
   flex-grow: 1;
 }
-.buyable > div:first-child b {
+.buyable > div:first-child > b {
   font-size: 18px;
 }
-.buyable > div:first-child span {
+.buyable > div:first-child > span {
   display: inline-block;
   min-height: 50px;
   padding-top: 2px;
@@ -276,4 +274,18 @@ button[role="greenpapers"] {
 /* Show the tooltip text when you mouse over the tooltip container */
 .tooltip:hover .tooltiptext {
   visibility: visible;
+}
+
+/* Formula thingies */
+
+frac {
+  display: inline-block;
+  vertical-align: middle;
+  width: max-content;
+  font-size: 0.9em;
+}
+
+frac > div:last-child {
+  width: 100%;
+  border-top: 1px solid;
 }

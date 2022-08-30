@@ -8,11 +8,17 @@ import {
   BUYABLES,
   getBuyable,
   getBuyableEff,
-  getUpgradeEff
+  getUpgradeEff,
+  hasUpgrade
 } from "../../components/buyables.js";
 import { Resource, RESOURCES } from "../../components/resources.js";
 
-import { QUARRY_SIZE, doQuarryTick, getOreGain } from "./quarry.js";
+import {
+  QUARRY_SIZE,
+  doQuarryTick,
+  getOreGain,
+  getBlockHealth
+} from "./quarry.js";
 import { getTreasure } from "./treasures.js";
 
 //Make sure to add assignation too
@@ -21,10 +27,12 @@ class Miner extends Buyable {
     super(obj);
     this.x = obj.x;
     this._eff = this.eff;
-    this.eff = (amt) =>
-      this._eff(amt).mul(
-        getUpgradeEff("GreenPapers", 0).mul(getUpgradeEff("GreenPapers", 7))
-      );
+    this.eff = (amt) => {
+      let mul = this._eff(amt).mul(getUpgradeEff("GreenPapers", 0));
+      if (hasUpgrade("GreenPapers", 7))
+        mul = mul.mul(getUpgradeEff("GreenPapers", 7));
+      return mul;
+    };
     this._desc = this.desc;
     this.desc = (eff) =>
       `${format(eff)} damage/hit × ${format(
@@ -48,23 +56,32 @@ class Miner extends Buyable {
     let pick;
     const choice = Array(QUARRY_SIZE.width)
       .fill()
-      .map((_, ind) =>
-        player.quarry.map
+      .map((_, ind) => {
+        let id = player.quarry.map
           .map((i) => i[ind])
-          .find((i) => Decimal.gt(i.health, 0))
-      );
-    while (pick === undefined) pick = random(choice);
+          .findIndex((i) => Decimal.gt(i.health, 0));
+        return [id, player.quarry.map[id][ind]];
+      });
+    while (pick?.[1] === undefined) pick = random(choice);
 
     const eff = getBuyableEff(this.group, this.x);
-    const damage = eff.mul(hits).min(pick.health);
-    pick.health = Decimal.sub(pick.health, damage);
-    if (pick.ore) {
-      RESOURCES[pick.ore.toLowerCase()].add(damage.mul(getOreGain(pick.ore)));
+    const maxHealth = getBlockHealth(
+      Decimal.add(player.quarry.depth, pick[0]),
+      pick[1].layer,
+      pick[1].ore
+    );
+    const damage = eff.mul(hits).div(maxHealth).min(pick[1].health);
+    pick[1].health = Decimal.sub(pick[1].health, damage).min(1);
+    if (pick[1].ore) {
+      RESOURCES[pick[1].ore.toLowerCase()].add(
+        damage.mul(maxHealth).mul(getOreGain(pick[1].ore))
+      );
     }
-    if (pick.health.lte(0)) {
-      pick.health = D(0);
+    if (pick[1].health.lte(0)) {
+      pick[1].health = D(0);
       player.stats.mined++;
-      if (pick.treasure) getTreasure(player.quarry.depth);
+      if (pick[1].treasure)
+        getTreasure(Decimal.add(player.quarry.depth, pick[0]), pick[1].layer);
     }
   }
 }
@@ -74,7 +91,8 @@ export function getMiner(x) {
 }
 
 export function getMinerSpeed(x) {
-  return getUpgradeEff("GreenPapers", 1);
+  let mul = getUpgradeEff("GreenPapers", 1);
+  return mul;
 }
 
 export function getMinerEff(x) {

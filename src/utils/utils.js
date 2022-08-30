@@ -14,3 +14,27 @@ export function countDecimals(value) {
   }
   return 0;
 }
+
+export function getRarity(probability) {
+  const rarities = [
+    "Common",
+    "Uncommon",
+    "Rare",
+    "Unique",
+    "Epic",
+    "Legendary",
+    "Mythical",
+    "Divine",
+    "Almighty"
+  ];
+  return rarities[
+    Math.min(
+      Math.max(Math.floor(2 * Math.log10(probability) - 1), 0),
+      rarities.length - 1
+    )
+  ];
+}
+
+export function isRarity(ore, name) {
+  return getRarity(ore.rarity) === name;
+}

@@ -5,7 +5,9 @@ import { setupVue } from "./setup.js";
 // what the heck  is this now
 import { loadGame } from "./player.js";
 
+import "./features/news-ticker.js";
 import "./features/import-layer.js";
+
 /* --- CODE START --- */
 export const app = createApp()
   .component("main-app", {

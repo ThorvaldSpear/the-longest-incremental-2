@@ -2,16 +2,22 @@ import { RESOURCES } from "../../components/resources.js";
 import { D } from "../../utils/break_eternity.js";
 import { format } from "../../utils/format.js";
 import { notify } from "../../utils/notify.js";
+import { getOreGain, getOreWorthMul, LAYER_DATA } from "./quarry.js";
 
 const TREASURE_DATA = {
   greenPapers: {
     range: [0, Infinity],
     rarity: 1,
-    worth(depth) {
-      return D(1e3).pow(D(depth).div(50)).mul(D(depth).div(50).add(1)).div(3);
+    worth(depth, layer) {
+      return D(1e3)
+        .pow(D(depth).div(50))
+        .mul(LAYER_DATA[layer].health)
+        .mul(getOreGain(null, true))
+        .mul(getOreWorthMul())
+        .div(3);
     },
-    obtain(depth) {
-      const worth = this.worth(depth);
+    obtain(depth, layer) {
+      const worth = this.worth(depth, layer);
       RESOURCES.greenPaper.add(worth);
       notify("You have obtained " + format(worth) + " Green Papers!");
     }
@@ -42,6 +48,6 @@ function generateTreasure(depth) {
   return get;
 }
 
-export function getTreasure(depth) {
-  for (let i of generateTreasure(depth)) TREASURE_DATA[i].obtain(depth);
+export function getTreasure(depth, layer) {
+  for (let i of generateTreasure(depth)) TREASURE_DATA[i].obtain(depth, layer);
 }

@@ -13,7 +13,7 @@ export function notify(message, args) {
   });
 }
 function removeNotify(num) {
-  if (notifications[num].dismissable) notifications.splice(num, 1);
+  if (notifications?.[num]?.dismissable) notifications.splice(num, 1);
 }
 
 setupVue.notifications = {
