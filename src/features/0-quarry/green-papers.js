@@ -128,7 +128,7 @@ UPGRADES.GreenPapers = {
         return `Gain <span class="tooltip">
           ${format(
             eff
-          )}x more Green Papers based on your GP... this also affects buy cost... how does this make any sense hashing and ssh doesn't even exist yet
+          )}x more Green Papers based on your GP. This also affects buy cost.
           <span class="tooltiptext">log<sub>10</sub>(Green Papers + 10)</span>
         </span><br>`;
       },

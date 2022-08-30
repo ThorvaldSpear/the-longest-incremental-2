@@ -603,7 +603,7 @@ TABS.QuarrySite = {
                   Sell for {{format(getBlockAmount(index).mul(getOreWorth(index)))}} GP
                 </button>
                 <button v-if="hasUpgrade('GreenPapers', 4)" @click="buyOre(index)">
-                  Buy {{format(buyOreAmount(index))}} with 50% GP
+                  Buy {{format(buyOreAmount(index))}} {{index}} with 50% GP
                 </button>
               </td>
             </tr>
