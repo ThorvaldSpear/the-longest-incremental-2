@@ -4,6 +4,12 @@ window.onerror = (event, source, lineno, colno, error) => {
     <div>
       <h1>An error has occurred:</h1>
       <h2>${error.toString()}</h2>
+      <div>
+      Metadata:<br>
+      Source: ${source}<br>
+      Line number: ${lineno}<br>
+      Column number: ${colno}<br>
+      </div>
       <pre>${error.stack}</pre>
       <br><br>
       Please copy this text and send it to the developers.<br>

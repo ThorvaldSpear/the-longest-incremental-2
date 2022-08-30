@@ -80,14 +80,6 @@ export const TABS = (window.TABS = {
     /*component: {
       template: `<button>Collapse!</button>`
     }*/
-  },
-  Encyclopedia: {
-    subtabs: ["ore-stats", "block-stats"],
-    component: {
-      template: `<div>
-        This is a list of block and ore stats.<br>
-      </div>`
-    }
   }
 });
 

@@ -54,7 +54,7 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "Forgery",
-      cost: () => D(100),
+      cost: () => D(1000),
       eff: () => 1,
       desc() {
         return `You can create better Pickaxes with Bronze and Silver. (NOT IMPLEMENTED)`;
@@ -64,7 +64,7 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "Refinery",
-      cost: () => D(250),
+      cost: () => D(2500),
       eff: () => 1,
       desc() {
         return `You can buy blocks with Green Papers.`;
@@ -74,7 +74,7 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "Ore Luck",
-      cost: (lvl) => Decimal.pow(3, lvl).mul(1000),
+      cost: (lvl) => Decimal.pow(3, lvl).mul(6000),
       eff: (lvl) => D(lvl).div(20).add(1),
       max: 20,
       desc(eff) {
@@ -85,7 +85,7 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "Softer Atoms",
-      cost: (lvl) => Decimal.pow(5, lvl).mul(5000),
+      cost: (lvl) => Decimal.pow(5, lvl).mul(25000),
       eff: (lvl) => D(1.015).pow(lvl).recip(),
       max: 100,
       desc(eff) {
@@ -97,7 +97,7 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "Coordination",
-      cost: () => D(25000),
+      cost: () => D(65000),
       // tbd
       eff: (lvl) =>
         getMiner(0)

@@ -26,15 +26,6 @@ function getBlockAmount(index) {
   return DATA.resources[index.toLowerCase()].amt.value;
 }
 
-export function isExposed(x, y) {
-  return (
-    Decimal.lte(player.quarry.map[y - 1]?.[x]?.health ?? Decimal.dZero, 0) ||
-    Decimal.lte(player.quarry.map[y + 1]?.[x]?.health ?? Decimal.dInf, 0) ||
-    Decimal.lte(player.quarry.map[y]?.[x - 1]?.health ?? Decimal.dInf, 0) ||
-    Decimal.lte(player.quarry.map[y]?.[x + 1]?.health ?? Decimal.dInf, 0)
-  );
-}
-
 export function getBlockHealth(depth, layer, ore) {
   let ret = getBlockStrength(depth).mul(LAYER_DATA[layer].health);
   ret = ret.mul(DATA.setup ? getUpgradeEff("GreenPapers", 6) : 1);
@@ -44,6 +35,15 @@ export function getBlockHealth(depth, layer, ore) {
     ret = ret.div(ORE_DATA[ore].rarity);
   }
   return ret;
+}
+
+export function isBlockExposed(x, y) {
+  return (
+    Decimal.lte(player.quarry.map[y - 1]?.[x]?.health ?? Decimal.dZero, 0) ||
+    Decimal.lte(player.quarry.map[y + 1]?.[x]?.health ?? Decimal.dInf, 0) ||
+    Decimal.lte(player.quarry.map[y]?.[x - 1]?.health ?? Decimal.dInf, 0) ||
+    Decimal.lte(player.quarry.map[y]?.[x + 1]?.health ?? Decimal.dInf, 0)
+  );
 }
 
 function generateBlock(depth) {
@@ -643,12 +643,7 @@ setupVue.QuarryBlock = {
       const layerColor = LAYER_DATA[this.block.layer].color ?? "white";
       const oreColor = ORE_DATA[this.block.ore]?.color ?? "transparent";
       const treasureColor = this.block.treasure ? "#ffefbf" : "#0003";
-      const health = D(this.block.health)
-        .div(this.health)
-        .pow(0.5)
-        .max(0)
-        .min(1)
-        .toNumber();
+      const health = D(this.block.health).pow(0.5).max(0).min(1).toNumber();
 
       if (health > 0)
         return {
@@ -681,6 +676,7 @@ setupVue.QuarryBlock = {
           "background-size": `100% 100%, calc(100% - 2px) calc(100% - 2px), 100% 100%, 100% 100%`,
           "background-repeat": "no-repeat, no-repeat, no-repeat, no-repeat"
         };
+    }
   },
   template: `
     <div class="tooltip">

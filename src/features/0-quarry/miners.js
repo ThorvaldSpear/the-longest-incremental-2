@@ -17,7 +17,7 @@ import {
   doQuarryTick,
   getOreGain,
   getBlockHealth,
-  isExposed
+  isBlockExposed
 } from "./quarry.js";
 import { getTreasure } from "./treasures.js";
 
@@ -44,7 +44,7 @@ class Miner extends Buyable {
     this.select =
       obj.select ??
       ((x, y, block) => {
-        return isExposed(x, y);
+        return isBlockExposed(x, y);
       });
 
     this.progress = Decimal.dZero;
@@ -74,7 +74,6 @@ class Miner extends Buyable {
         )
           choice.push([y, block]);
       }
-    console.log(choice);
     if (!choice.length) return;
     pick = random(choice);
 
@@ -149,7 +148,7 @@ BUYABLES.Miners = {
         return `to 1 exposed non-ore block`;
       },
       select(x, y, block) {
-        return isExposed(x, y) && !block.ore;
+        return isBlockExposed(x, y) && !block.ore;
       },
       unl: () => getMiner(0).amt.gte(1),
       group: "Miners",
@@ -159,7 +158,7 @@ BUYABLES.Miners = {
     new Miner({
       name: "Veining Miner",
       cost: (lvl) => lvl.add(1).pow(4).mul(2).add(98),
-      eff: (lvl) => D(lvl),
+      eff: (lvl) => D(lvl).mul(2),
       desc(eff) {
         return `to 1 block on the highest layer`;
       },
@@ -168,7 +167,7 @@ BUYABLES.Miners = {
       },
       unl: () => getMiner(1).amt.gte(1),
       group: "Miners",
-      speed: 3,
+      speed: 0.8,
       x: 2
     }),
     new Miner({
@@ -179,7 +178,7 @@ BUYABLES.Miners = {
         return `to 1 exposed ore block`;
       },
       select(x, y, block) {
-        return isExposed(x, y) && block.ore;
+        return isBlockExposed(x, y) && block.ore;
       },
       unl: () => getMiner(2).amt.gte(1),
       group: "Miners",

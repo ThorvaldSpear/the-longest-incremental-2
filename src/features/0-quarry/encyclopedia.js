@@ -1,30 +1,43 @@
 import { setupVue } from "../../setup.js";
 import { TABS } from "../../components/tabs.js";
+import { D } from "../../utils/break_eternity.js";
+
+import { player } from "../../player.js";
 import { LAYER_DATA, ORE_DATA } from "./quarry.js";
 
-TABS["ore-stats"] = {
+TABS.Encyclopedia = {
+  subtabs: ["OreStats", "BlockStats", "Story"],
+  component: {
+    template: ``
+  }
+};
+
+TABS.OreStats = {
   disp: "Ore Stats",
   component: {
     template: `<div>
-    <h2>Ore Stats</h2>
-    <div>
-      Pretty self expanatory. Rarity divides block health but multiplies ore value.
-    </div>
-    <ore-entry
-      v-for="(_, i) in ORE_DATA"
-      type="ore"
-      :name="i"
-    />
-  </div>`,
+      <h2>Ore Stats</h2>
+      <div>
+        Pretty self expanatory. Rarity divides block health but multiplies ore value.
+      </div>
+      <div v-for="(name, block) of Object.entries(ORE_DATA)">
+        <ore-entry
+          type="ore"
+          :name="block"
+        />
+      </div>
+    </div>`,
     setup() {
       return {
-        ORE_DATA
+        ORE_DATA,
+        D,
+        player
       };
     }
   }
 };
 
-TABS["block-stats"] = {
+TABS.BlockStats = {
   disp: "Block Stats",
   component: {
     template: `<div>
@@ -35,15 +48,18 @@ TABS["block-stats"] = {
         until it no longer spawns.
         This scales linearly.
       </div>
-      <ore-entry
-        v-for="(_, i) in LAYER_DATA"
-        type="layer"
-        :name="i"
-      />
+      <div v-for="(name, block) of Object.entries(LAYER_DATA)">
+        <ore-entry
+          type=""
+          :name="block"
+        />
+      </div>
     </div>`,
     setup() {
       return {
-        LAYER_DATA
+        LAYER_DATA,
+        D,
+        player
       };
     }
   }
@@ -52,17 +68,17 @@ TABS["block-stats"] = {
 setupVue["ore-entry"] = {
   props: ["type", "name"],
   template: `
-  <h2 :style="{'background-color': ore.color}">{{name}}</h2>
-  <div>Health multiplier: {{isOre ? ore.density : ore.health}}x</div>
-  <div>Starts spawning at Depth {{isOre ? ore.range[0] : ore.range.spawn}}</div>
-  <div v-if="!isOre">
-    Spawn chance maxed at Depth {{ore.range.full}}<br>
-    Spawn chance decreasing starting at {{ore.range.decrease}}
-  </div>
-  <div>Stops spawning at Depth {{isOre ? ore.range[1] : ore.range.despawn}}</div>
-  <div v-if="isOre">
-    Rarity: {{ore.rarity}}
-  </div>
+    <h2 :style="{'background-color': ore.color}">{{name}}</h2>
+    <div>Health multiplier: {{isOre ? ore.density : ore.health}}x</div>
+    <div>Starts spawning at Depth {{isOre ? ore.range[0] : ore.range.spawn}}</div>
+    <div v-if="!isOre">
+      Spawn chance maxed at Depth {{ore.range.full}}<br>
+      Spawn chance decreasing starting at {{ore.range.decrease}}
+    </div>
+    <div>Stops spawning at Depth {{isOre ? ore.range[1] : ore.range.despawn}}</div>
+    <div v-if="isOre">
+      Rarity: {{ore.rarity}}
+    </div>
   `,
   computed: {
     ore() {
@@ -71,5 +87,26 @@ setupVue["ore-entry"] = {
     isOre() {
       return this.type === "ore";
     }
+  }
+};
+
+TABS.Story = {
+  component: {
+    template: `
+      <h2>Welcome!</h2>
+      Where am I? Was I dreaming about my dream work?<br>
+      Let's just look around the map.
+
+      <br><br>
+      Hmmm... A worker? Hey, can I talk for a moment?<br>
+      "Where am I?," he said. "This is a quarry site we need, we mine for King's needs," the worker said.<br>
+      He realized he was transported into another castle. He need Mana in order to free himself with helpers.<br>
+      And so, the journey begins.
+
+      <br><br>
+      Welcome to the Longest Incremental^2. Here, you can hire Miners with Mana.<br>
+      Later on, you can sell ores for Green Papers which can be spent for Upgrades!<br>
+      Have fun!
+    `
   }
 };

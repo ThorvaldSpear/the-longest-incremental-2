@@ -30,12 +30,14 @@ TABS.Equipment = {
       </div>
 
       You can hold up to 5 unique items for each type.<br>
-      <b>Maps</b><br>
+      <h2>Maps</h2>
       <Inventory group="map"/>
-      <b>Pickaxes</b><br>
-      <button>Create Pickaxe</button>
+      <h2>Pickaxes</h2>
       <Inventory group="pickaxe"/>
-      <b>Artifacts</b><br>
+      <resource name="bronze"/>
+      <resource name="silver"/>
+      <button>Create Pickaxe with Bronze and Silver</button>
+      <h2>Artifacts</h2>
       <Inventory group="artifact"/>
     </div>
     `
@@ -50,11 +52,13 @@ TABS.Equipment = {
 setupVue.Inventory = {
   props: ["group"],
   template: `
-    <b>5/5</b><br>
-    <div style='border: 2px solid grey; height: 30px; width: 30px'></div>
-    <div style='border: 2px solid grey; height: 30px; width: 30px'></div>
-    <div style='border: 2px solid grey; height: 30px; width: 30px'></div>
-    <div style='border: 2px solid grey; height: 30px; width: 30px'></div>
-    <div style='border: 2px solid grey; height: 30px; width: 30px'></div>
+    <h3>5/5</h3><br>
+    <div>
+      <button style='border: 2px solid grey; background: transparent; height: 30px; width: 30px'></button>
+      <button style='border: 2px solid grey; background: transparent; height: 30px; width: 30px'></button>
+      <button style='border: 2px solid grey; background: transparent; height: 30px; width: 30px'></button>
+      <button style='border: 2px solid grey; background: transparent; height: 30px; width: 30px'></button>
+      <button style='border: 2px solid grey; background: transparent; height: 30px; width: 30px'></button>
+    </div>
   `
 };
