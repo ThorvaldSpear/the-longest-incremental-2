@@ -3,13 +3,10 @@ window.onerror = (event, source, lineno, colno, error) => {
   document.getElementById("app").innerHTML = `
     <div>
       <h1>An error has occurred:</h1>
-      <h2>${error.toString()}</h2>
-      <div>
-      Metadata:<br>
-      Source: ${source}<br>
-      Line number: ${lineno}<br>
-      Column number: ${colno}<br>
-      </div>
+      <h2>${error.toString()}<br/>
+        <span style="font-size:16px">at ${source}:${lineno}:${colno}<br></span>
+      </h2>
+      
       <pre>${error.stack}</pre>
       <br><br>
       Please copy this text and send it to the developers.<br>

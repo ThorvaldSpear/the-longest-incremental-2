@@ -64,8 +64,9 @@ class Miner extends Buyable {
 
     let pick;
     const choice = [];
-    for (let y in player.quarry.map)
-      for (let x in player.quarry.map[y]) {
+    // ew in quit using it
+    for (const y of player.quarry.map.keys())
+      for (const x of player.quarry.map[y].keys()) {
         const block = player.quarry.map[y][x];
         if (
           block.layer !== "Bedrock" &&
@@ -163,7 +164,7 @@ BUYABLES.Miners = {
         return `to 1 block on the highest layer`;
       },
       select(x, y, block) {
-        return y === 0;
+        return y === 0 || y === "0"; // eslint-disable eqeqeq
       },
       unl: () => getMiner(1).amt.gte(1),
       group: "Miners",

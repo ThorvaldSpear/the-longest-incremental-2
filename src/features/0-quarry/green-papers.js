@@ -137,7 +137,7 @@ UPGRADES.GreenPapers = {
       unl: () => getUpgrade("GreenPapers", 7).amt.gte(1)
     }),
     new Upgrade({
-      name: "More Pain, Ore Greed",
+      name: "More Pain, Ore Gain",
       cost: () => D(5000000),
       eff: (lvl) => D(10).pow(D(player.quarry.depth).sub(75).div(50)),
       desc(eff) {

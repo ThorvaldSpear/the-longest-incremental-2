@@ -31,18 +31,19 @@ export function getBlockHealth(depth, layer, ore) {
   ret = ret.mul(DATA.setup ? getUpgradeEff("GreenPapers", 6) : 1);
 
   if (ore !== "") {
-    ret = ret.mul(ORE_DATA[ore].density);
-    ret = ret.div(ORE_DATA[ore].rarity);
+    ret = ret.mul(ORE_DATA[ore].health);
   }
   return ret;
 }
 
 export function isBlockExposed(x, y) {
+  const map = player.quarry.map;
   return (
-    Decimal.lte(player.quarry.map[y - 1]?.[x]?.health ?? Decimal.dZero, 0) ||
-    Decimal.lte(player.quarry.map[y + 1]?.[x]?.health ?? Decimal.dInf, 0) ||
-    Decimal.lte(player.quarry.map[y]?.[x - 1]?.health ?? Decimal.dInf, 0) ||
-    Decimal.lte(player.quarry.map[y]?.[x + 1]?.health ?? Decimal.dInf, 0)
+    (Decimal.lte(map[y - 1]?.[x]?.health ?? Decimal.dZero, 0) ||
+      Decimal.lte(map[y + 1]?.[x]?.health ?? Decimal.dInf, 0) ||
+      Decimal.lte(map[y]?.[x - 1]?.health ?? Decimal.dInf, 0) ||
+      Decimal.lte(map[y]?.[x + 1]?.health ?? Decimal.dInf, 0)) &&
+    map[y]?.[x]?.layer !== "bedrock"
   );
 }
 
@@ -181,7 +182,7 @@ export const LAYER_DATA = {
     health: 32
   },
   Bedrock: {
-    color: "black",
+    color: "#fff2",
     range: {
       spawn: Infinity,
       full: Infinity,
@@ -239,32 +240,37 @@ export const ORE_DATA = {
   Bronze: {
     color: "#CD7F32",
     range: [2, 125],
-    density: 1.5,
+    health: 1.5,
+    sell: 1,
     rarity: 1
   },
   Silver: {
     color: "#f2f0f0",
     range: [4, 150],
-    density: 6,
-    rarity: 3
+    health: 6,
+    sell: 3,
+    rarity: 5
   },
   Gold: {
     color: "#ffe600",
     range: [10, 100],
-    density: 17.5,
-    rarity: 7
+    health: 17.5,
+    sell: 7,
+    rarity: 20
   },
   Diamond: {
     color: "#91fffa",
     range: [25, 190],
-    density: 45,
-    rarity: 15
+    health: 45,
+    sell: 15,
+    rarity: 100
   },
   Platinum: {
     color: "#e9ffd4",
     range: [50, 175],
-    density: 70,
-    rarity: 20
+    health: 70,
+    sell: 20,
+    rarity: 500
   }
   /*Adamantite: {
     color: "#c93030",
@@ -433,7 +439,9 @@ for (const [index, key] of Object.entries(ORE_DATA)) {
 }
 
 function getOreSparseness(ore) {
-  return getBlockStrength(ORE_DATA[ore].range[0]);
+  return Decimal.div(player.quarry.depth, 100)
+    .add(1)
+    .mul(Decimal.add(Object.keys(ORE_DATA).indexOf(ore), 1));
 }
 
 export function getOreGain(ore, mult = false) {
@@ -454,10 +462,9 @@ export function getOreWorthMul(ore) {
 
 function getOreWorth(ore) {
   return getOreSparseness(ore)
-    .div(ORE_DATA[ore].density)
     .div(5)
-    .mul(ORE_DATA[ore].rarity)
-    .mul(getOreWorthMul());
+    .mul(ORE_DATA[ore].sell ?? 1)
+    .mul(getOreWorthMul(ore));
 }
 
 function getOreCost(ore) {
@@ -667,9 +674,9 @@ setupVue.QuarryBlock = {
       else
         return {
           background: `
-            linear-gradient(#0007, #0007),
+            linear-gradient(#000a, #000a),
             linear-gradient(${layerColor}, ${layerColor}),
-            linear-gradient(${treasureColor}, ${treasureColor}),
+            linear-gradient(#0003, #0003),
             linear-gradient(${layerColor}, ${layerColor})
           `,
           "background-position": "center, center, center, center",
