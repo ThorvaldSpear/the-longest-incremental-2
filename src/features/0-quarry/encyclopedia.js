@@ -20,10 +20,11 @@ TABS.OreStats = {
       <div>
         Pretty self expanatory. Rarity divides block health but multiplies ore value.
       </div>
-      <div v-for="(name, block) of Object.entries(ORE_DATA)">
+      <div v-for="[name, block] of Object.entries(ORE_DATA)">
         <ore-entry
+          v-if="D(player.quarry.depth).gte(block.range[0])"
           type="ore"
-          :name="block"
+          :name="name"
         />
       </div>
     </div>`,
@@ -48,10 +49,11 @@ TABS.BlockStats = {
         until it no longer spawns.
         This scales linearly.
       </div>
-      <div v-for="(name, block) of Object.entries(LAYER_DATA)">
+      <div v-for="[name, block] of Object.entries(LAYER_DATA)">
         <ore-entry
+          v-if="D(player.quarry.depth).gte(block.range.spawn)"
           type=""
-          :name="block"
+          :name="name"
         />
       </div>
     </div>`,
@@ -68,7 +70,7 @@ TABS.BlockStats = {
 setupVue["ore-entry"] = {
   props: ["type", "name"],
   template: `
-    <h2 :style="{'background-color': ore.color}">{{name}}</h2>
+    <h2 :style="{'background-color': ore.color, 'border': '2px 0 2px 0 solid #0003'}">{{name}}</h2>
     <div>Health multiplier: {{isOre ? ore.density : ore.health}}x</div>
     <div>Starts spawning at Depth {{isOre ? ore.range[0] : ore.range.spawn}}</div>
     <div v-if="!isOre">
@@ -94,13 +96,19 @@ TABS.Story = {
   component: {
     template: `
       <h2>Welcome!</h2>
-      Where am I? Was I dreaming about my dream work?<br>
-      Let's just look around the map.
+      Where am I? Did I transported by the King?<br>
+      Let's just look around this settlement.
 
       <br><br>
       Hmmm... A worker? Hey, can I talk for a moment?<br>
-      "Where am I?," he said. "This is a quarry site we need, we mine for King's needs," the worker said.<br>
-      He realized he was transported into another castle. He need Mana in order to free himself with helpers.<br>
+      He questioned about this settlement. The worker said, "This is a quarry site, we mine for colony needs."<br>
+      He remembered how was his hard work years ago. It was unbearable.<br>
+      But he comes to a realization.
+
+      <br><br>
+      He was neither a brave worker, nor a slave.<br>
+      He need Mana in order to free himself with helpers.<br>
+      A-ha! Mana is what I need to live on, he said.<br>
       And so, the journey begins.
 
       <br><br>
