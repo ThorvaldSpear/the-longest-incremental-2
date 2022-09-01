@@ -4,15 +4,6 @@ Miners, Quarry, Selling, Treasures, and Green Papers are done.
 This is a isekai-medieval themed.
 (Medieval people are transported to work with King's needs)
 
-Biomes:
-- There's a chance that other biomes appear with different blocks.
-- All biomes have specific depth ranges.
-
-Pickaxes:
-- You can use Stone and Bronze to create Pickaxes.
-- Pickaxes boost speed (from Bronze) and increase efficiency.
-- Higher-tier Pickaxes require higher-tier materials.
-
 ------------------------------------ *** LAYER 1 - COLLAPSE *** ------------------------------------
 (formerly Boosters)
 Collapse resets your progress, and will extend Quarry by 1 row.
@@ -25,6 +16,15 @@ Collapse Milestones:
 - ??? Collapses: Miners are more efficient.
 - ??? Collapses: Increase the luck on Ores.
 - ??? Collapses: Gain more Green Papers.
+
+Biomes:
+- There's a chance that other biomes appear with different blocks.
+- All biomes have specific depth ranges.
+
+Pickaxes:
+- You can use Stone and Bronze to create Pickaxes.
+- Pickaxes boost speed (from Bronze) and increase efficiency.
+- Higher-tier Pickaxes require higher-tier materials.
 
 Artifacts:
 - Equip a specific kind of Miners with Artifacts which upgrade them with better abilities!

@@ -3,8 +3,9 @@ import { setupVue } from "../setup.js";
 import { notify } from "./notify.js";
 
 export const ver = {
-  phase: "delta",
-  dev: 8,
+  phase: "alpha",
+  rc: 1,
+  dev: 0,
 
   release: 0,
   layers: 0,
@@ -48,13 +49,16 @@ function verName(x) {
     x.layers +
     (x.content ? "." + x.content : "") +
     (x.patch ? "-p" + x.patch : "") +
+    (x.rc ? "-rc" + x.rc : "") +
     (x.dev ? "-" + phases[1] + x.dev : "")
   );
 }
 
 export function updateVer(x) {
-  if (gtVer(ver, player.ver))
+  if (gtVer(ver, player.ver)) {
     notify("The game has been successfuly updated to " + verName(ver) + "!");
+    delete player.won;
+  }
   player.ver = ver;
 }
 

@@ -48,3 +48,6 @@ export function setupData() {
 
   DATA.setup = true;
 }
+
+//Setup custom functions for ticking
+export const TICK_DATA = {};

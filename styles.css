@@ -3,7 +3,7 @@
   --font: "Lato", sans-serif;
   --font-color: #003f7f;
   --bg: linear-gradient(#acc8e5, #719dcc);
-  --inner-bg: linear-gradient(#fff3, transparent);
+  --inner-bg: linear-gradient(#fff5, transparent);
 }
 body {
   font-family: var(--font);
@@ -51,7 +51,7 @@ table {
 h1,
 h2,
 h3 {
-  color: #003f7f;
+  color: #007fff;
 }
 .tab_navigator {
   width: 100%;
@@ -72,6 +72,18 @@ h3 {
 .tab {
   position: relative;
   width: 100%;
+}
+
+/* Obligatory news ticker */
+.newsTicker {
+  padding: 5px 0;
+  margin: 10px 10% 0 10%;
+  border: 1px solid;
+  border-radius: 5px;
+  overflow: hidden;
+}
+.newsMessage {
+  width: max-content;
 }
 
 /*#menu_btn {
@@ -151,6 +163,114 @@ button:active {
   margin: 6px;
 }
 
+.canbuy {
+  background: linear-gradient(#bfb, #7f7);
+  color: #570;
+  transition: all 0.8s ease;
+}
+.cannotbuy {
+  background: linear-gradient(grey, #533);
+  color: #200;
+  transition: all 0.8s ease;
+}
+
+.tooltip {
+  position: relative;
+}
+.detailed {
+  text-decoration: underline dotted;
+}
+/* Tooltip text */
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: max-content;
+  max-width: 400px;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: black;
+  color: #ffffff;
+  text-align: center;
+  padding: 5px 8px;
+  border-radius: 6px;
+  font-size: 13.3333px;
+  pointer-events: none;
+
+  /* Position the tooltip text - see examples below! */
+  position: absolute;
+  z-index: 1;
+}
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 8px solid transparent;
+  border-top: 8px solid black;
+}
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+/* Modifier table */
+
+.tooltiptext table {
+  border-spacing: 0;
+}
+.tooltiptext table td:first-child {
+  text-align: left;
+}
+.tooltiptext table td:last-child {
+  padding-left: 1em;
+  text-align: right;
+}
+.tooltiptext table tr:nth-last-child(2) td {
+  padding-bottom: 4px;
+}
+.tooltiptext table tr:last-child td {
+  padding-top: 4px;
+}
+.tooltiptext table tr:last-child td {
+  border-top: 1px solid;
+}
+
+.ach {
+  border-radius: 12px;
+  font-size: 12px;
+  width: 90px;
+  height: 90px;
+  border: 2px solid #0000003f;
+}
+.ach.incomplete {
+  background: linear-gradient(red, black);
+  background-size: 120px 120px;
+  background-position: 0 -10px;
+  color: #ffbfbf;
+}
+.ach.completed {
+  background: linear-gradient(lime, green);
+  background-size: 120px 120px;
+  background-position: 0 -10px;
+  color: #007f00;
+}
+
+.criticalError #bg {
+  background: linear-gradient(red, #000000);
+}
+.criticalError #inner_bg {
+  background: black;
+}
+.criticalError #app,
+.criticalError #app * {
+  color: red !important;
+}
+.criticalError pre {
+  display: inline-block;
+  text-align: left;
+}
+
 #notifyarea {
   position: fixed;
   top: 0px;
@@ -170,21 +290,6 @@ button:active {
   z-index: 1;
 }
 
-.criticalError #bg {
-  background: linear-gradient(red, #000000);
-}
-.criticalError #inner_bg {
-  background: black;
-}
-.criticalError #app,
-.criticalError #app * {
-  color: red !important;
-}
-.criticalError pre {
-  display: inline-block;
-  text-align: left;
-}
-
 #version {
   position: fixed;
   top: 0;
@@ -200,21 +305,21 @@ button:active {
 
 /* GAME */
 .buyable:is([role="efficient miner"]) {
-  background: url("images/StrongMiner_BG_LQ.png");
+  background-image: url("images/StrongMiner_BG_LQ.png");
   background-position: auto 25%;
   background-size: cover 20%;
   color: white;
 }
 
 .buyable:is([role="ranged miner"]) {
-  background: url("images/RangedMiner_BG_LQ.png");
+  background-image: url("images/RangedMiner_BG_LQ.png");
   background-position: auto 10%;
   background-size: cover 20%;
   color: white;
 }
 
 .upgrade:is([role="miner power"]) {
-  background: url("images/SSH_Hashing.png");
+  background-image: url("images/SSH_Hashing.png");
 }
 
 /*.buyable:is([erole="strong miner"]) button {
@@ -234,46 +339,6 @@ button[role="equipment"] {
 }
 button[role="greenpapers"] {
   background: linear-gradient(white, #bfb);
-}
-
-.canbuy {
-  background: linear-gradient(#bfb, #7f7);
-  color: #570;
-  transition: all 0.8s ease;
-}
-.cannotbuy {
-  background: linear-gradient(grey, #533);
-  color: #200;
-  transition: all 0.8s ease;
-}
-
-.tooltip {
-  position: relative;
-}
-
-/* Tooltip text */
-.tooltip .tooltiptext {
-  visibility: hidden;
-  width: max-content;
-  max-width: 400px;
-  bottom: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: black;
-  color: #ffffff;
-  text-align: center;
-  padding: 5px 8px;
-  border-radius: 6px;
-  pointer-events: none;
-
-  /* Position the tooltip text - see examples below! */
-  position: absolute;
-  z-index: 1;
-}
-
-/* Show the tooltip text when you mouse over the tooltip container */
-.tooltip:hover .tooltiptext {
-  visibility: visible;
 }
 
 /* Formula thingies */

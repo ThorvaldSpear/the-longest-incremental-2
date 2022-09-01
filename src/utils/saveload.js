@@ -14,7 +14,13 @@ function fixData(obj, mergeFrom) {
   for (const item in mergeFrom) {
     const thing = mergeFrom[item];
     if (typeof thing === "object" && thing !== null) {
-      fixData(obj[item], thing);
+      if (thing.length !== undefined && obj.length === undefined) {
+        obj[item] = thing;
+      } else if (thing.length === undefined && obj.length !== undefined) {
+        obj[item] = thing;
+      } else {
+        fixData(obj[item], thing);
+      }
     } else {
       obj[item] = thing;
     }

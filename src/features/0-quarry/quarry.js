@@ -1,101 +1,110 @@
-import Decimal, { D } from "../../utils/break_eternity.js";
-import { format, formatPrecise } from "../../utils/format.js";
-import { generateGradient } from "../../utils/gradient.js";
-import { getRarity } from "../../utils/utils.js";
-
-import { DATA } from "../../tmp.js";
 import { player } from "../../player.js";
-import { setupVue } from "../../setup.js";
+import { DATA, TICK_DATA } from "../../tmp.js";
 
-import { TABS } from "../../components/tabs.js";
-import { Resource, RESOURCES } from "../../components/resources.js";
+import Decimal, { D } from "../../utils/break_eternity.js";
+import { format, formatPrecise, formatTime } from "../../utils/format.js";
+import { notify } from "../../utils/notify.js";
+
 import {
   BUYABLES,
   getUpgradeEff,
   hasUpgrade
 } from "../../components/buyables.js";
+import {
+  createChainedMulti,
+  createMultiplicativeMulti,
+  createUpgradeMulti
+} from "../../components/gainMulti.js";
+import { TABS } from "../../components/tabs.js";
+import { Resource, RESOURCES } from "../../components/resources.js";
 
-/* -=- BLOCKS -=- */
-function getBlockStrength(depth) {
-  let ret = D(1e3).pow(Decimal.div(depth, 50));
-  ret = ret.div(10).add(0.9);
-  return ret;
+import { generateBlock, getBlockAmount } from "./blocks.js";
+
+/* -=- QUARRY -=- */
+/*
+note to self on how quarry works:
+Array<Array<{id, health}, WIDTH>, HEIGHT> items for managing the quarry
+each item contains data about quarry
+depth starts at 0
+
+*/
+export const QUARRY_SIZE = {
+  width: 10,
+  height: 10
+};
+export function getQuarryDepth() {
+  return D(inQuarryMap() ? player.quarry.inMap.depth : player.quarry.depth);
 }
-
-function getBlockAmount(index) {
-  return DATA.resources[index.toLowerCase()].amt.value;
+export function getEffectiveDepth(depth) {
+  if (D(depth).gt(getVoidDepth()))
+    depth = D(depth)
+      .sub(getVoidDepth())
+      .mul(getVoidStrength())
+      .add(getVoidDepth());
+  return depth;
 }
-
-export function getBlockHealth(depth, layer, ore) {
-  let ret = getBlockStrength(depth).mul(LAYER_DATA[layer].health);
-  ret = ret.mul(DATA.setup ? getUpgradeEff("GreenPapers", 6) : 1);
-
-  if (ore !== "") {
-    ret = ret.mul(ORE_DATA[ore].health);
-  }
-  return ret;
+function generateQuarryRow(depth) {
+  let array = Array(QUARRY_SIZE.width)
+    .fill()
+    .map(() => generateBlock(depth));
+  return array;
+}
+function generateQuarryMap(init) {
+  const array = Array(QUARRY_SIZE.height)
+    .fill()
+    .map((_, i) =>
+      generateQuarryRow(init ? i : getQuarryDepth().add(inQuarryMap() ? 0 : i))
+    );
+  return array;
+}
+export function initQuarry() {
+  return {
+    ores: {},
+    depth: D(0),
+    map: generateQuarryMap(true)
+  };
 }
 
 export function isBlockExposed(x, y) {
   const map = player.quarry.map;
   return (
-    (Decimal.lte(map[y - 1]?.[x]?.health ?? Decimal.dZero, 0) ||
-      Decimal.lte(map[y + 1]?.[x]?.health ?? Decimal.dInf, 0) ||
-      Decimal.lte(map[y]?.[x - 1]?.health ?? Decimal.dInf, 0) ||
-      Decimal.lte(map[y]?.[x + 1]?.health ?? Decimal.dInf, 0)) &&
-    map[y]?.[x]?.layer !== "bedrock"
+    Decimal.lte(map[y - 1]?.[x]?.health ?? Decimal.dZero, 0) ||
+    Decimal.lte(map[y + 1]?.[x]?.health ?? Decimal.dInf, 0) ||
+    Decimal.lte(map[y]?.[x - 1]?.health ?? Decimal.dInf, 0) ||
+    Decimal.lte(map[y]?.[x + 1]?.health ?? Decimal.dInf, 0)
   );
 }
 
-function generateBlock(depth) {
-  depth = D(depth).round();
+function deleteEmptyQuarryRows() {
+  const inMap = inQuarryMap();
+  while (player.quarry.map[0] !== undefined) {
+    for (const i of player.quarry.map[0]) {
+      if (Decimal.gt(i.health, 0)) return;
+    }
+    player.quarry.map.splice(0, 1);
 
-  let layer = "";
-  let sum = 0;
-  for (const value of Object.values(LAYER_DATA)) {
-    sum += getLayerRarity(depth, value.range);
-  }
-
-  let random = Math.random();
-  let sum2 = 0;
-  for (const [index, key] of Object.entries(LAYER_DATA)) {
-    sum2 += getLayerRarity(depth, key.range) / sum;
-    if (sum2 >= random) {
-      layer = index;
-      break;
+    if (!inMap) {
+      player.quarry.depth = Decimal.add(player.quarry.depth, 1);
+      if (D(player.quarry.depth).round().eq(getVoidDepth()))
+        notify(
+          "You have reached the void. At this point, no more ores will spawn and blocks scale faster. Collapse to proceed!"
+        );
+    } else {
+      player.stats.mapRows = Decimal.add(player.stats.mapRows, 1);
     }
   }
-
-  let rarity = 5;
-  if (DATA.setup) rarity /= getUpgradeEff("GreenPapers", 5).toNumber();
-
-  let ore = "";
-  for (const [index, key] of Object.entries(ORE_DATA)) {
-    if (depth.lt(key.range[0]) || depth.gt(key.range[1])) continue;
-    if (1 / Math.random() >= rarity * key.rarity) ore = index;
-  }
-  if (depth.gte(100)) {
-    layer = "Bedrock";
-    ore = "";
-  }
-
-  let treasure = false;
-  if (depth.gt(25) && ore === "" && layer !== "Bedrock" && Math.random() < 0.05)
-    treasure = true;
-
-  return {
-    layer,
-    ore,
-    health: Decimal.dOne,
-    treasure
-  };
 }
 
-/*function getTotalBlocks(x) {
-  let ret = D(0);
-  for (const value of Object.values(player.miners.ores)) ret = ret.add(value);
-  return ret;
-}*/
+function fillQuarryRows() {
+  const inMap = inQuarryMap();
+  while (player.quarry.map[QUARRY_SIZE.height - 1] === undefined) {
+    player.quarry.map.push(
+      generateQuarryRow(
+        D(getQuarryDepth()).add(inMap ? 0 : player.quarry.map.length)
+      )
+    );
+  }
+}
 
 /* -=- LAYERS -=- */
 /*
@@ -127,7 +136,7 @@ export const LAYER_DATA = {
       spawn: 3,
       full: 6,
       decrease: 45,
-      despawn: 6
+      despawn: 50
     },
     health: 2
   },
@@ -157,9 +166,19 @@ export const LAYER_DATA = {
       spawn: 130,
       full: 150,
       decrease: 190,
-      despawn: 200
+      despawn: 190
     },
     health: 16
+  },
+  Bedrock: {
+    color: "#5f00bf",
+    range: {
+      spawn: 190,
+      full: 190,
+      decrease: 200,
+      despawn: 200
+    },
+    health: 32
   },
   Magma: {
     color: "#bf5f00",
@@ -167,7 +186,7 @@ export const LAYER_DATA = {
       spawn: 190,
       full: 200,
       decrease: 200,
-      despawn: 210
+      despawn: 200
     },
     health: 64
   },
@@ -179,21 +198,11 @@ export const LAYER_DATA = {
       decrease: 300,
       despawn: 300
     },
-    health: 32
-  },
-  Bedrock: {
-    color: "#fff2",
-    range: {
-      spawn: Infinity,
-      full: Infinity,
-      decrease: Infinity,
-      despawn: Infinity
-    },
-    health: Infinity
+    health: 48
   }
 };
 
-function getLayerRarity(depth, range) {
+export function getLayerRarity(depth, range) {
   //4 depths: [spawn, full, decrease, despawn]
   //1st: where a layer starts.
   //2nd: where a layer becomes most common.
@@ -239,38 +248,38 @@ ORE_DATA:
 export const ORE_DATA = {
   Bronze: {
     color: "#CD7F32",
-    range: [2, 125],
+    range: [2, 75],
     health: 1.5,
     sell: 1,
     rarity: 1
   },
   Silver: {
     color: "#f2f0f0",
-    range: [4, 150],
-    health: 6,
-    sell: 3,
-    rarity: 5
+    range: [4, 100],
+    health: 2,
+    sell: 1.5,
+    rarity: 3
   },
   Gold: {
     color: "#ffe600",
     range: [10, 100],
-    health: 17.5,
-    sell: 7,
-    rarity: 20
+    health: 3,
+    sell: 2,
+    rarity: 5
   },
   Diamond: {
     color: "#91fffa",
-    range: [25, 190],
-    health: 45,
-    sell: 15,
-    rarity: 100
+    range: [25, 125],
+    health: 5,
+    sell: 3,
+    rarity: 10
   },
   Platinum: {
     color: "#e9ffd4",
     range: [50, 175],
-    health: 70,
-    sell: 20,
-    rarity: 500
+    health: 10,
+    sell: 5,
+    rarity: 20
   }
   /*Adamantite: {
     color: "#c93030",
@@ -434,23 +443,60 @@ for (const [index, key] of Object.entries(ORE_DATA)) {
     src: {
       parent: () => player.quarry.ores,
       id: index
+    },
+    multipliers: {
+      ore: createChainedMulti(
+        () => 1,
+        createMultiplicativeMulti(
+          createUpgradeMulti({
+            group: "GreenPapers",
+            id: 2,
+            type: "multiply"
+          })
+        ),
+        createMultiplicativeMulti(
+          createUpgradeMulti({
+            group: "GreenPapers",
+            id: 6,
+            type: "multiply"
+          })
+        ),
+        createMultiplicativeMulti(
+          createUpgradeMulti({
+            group: "GreenPapers",
+            id: 9,
+            type: "multiply"
+          })
+        ),
+        createMultiplicativeMulti({
+          toMultiply: () => getOreSparseness(index).recip(),
+          enabled: () => true,
+          name: "Sparseness Multiplier"
+        })
+      ),
+      gp: createChainedMulti(
+        () => Decimal.div(ORE_DATA[index].sell ?? 1, 5),
+        createMultiplicativeMulti(
+          createUpgradeMulti({
+            group: "GreenPapers",
+            id: 8,
+            type: "multiply"
+          })
+        ),
+        createMultiplicativeMulti({
+          toMultiply: () => getOreSparseness(index),
+          enabled: () => true,
+          name: "Sparseness Multiplier"
+        })
+      )
     }
   });
 }
 
 function getOreSparseness(ore) {
-  return Decimal.div(player.quarry.depth, 100)
+  return Decimal.div(getQuarryDepth(), 100)
     .add(1)
     .mul(Decimal.add(Object.keys(ORE_DATA).indexOf(ore), 1));
-}
-
-export function getOreGain(ore, mult = false) {
-  let ret = getUpgradeEff("GreenPapers", 2);
-  if (hasUpgrade("GreenPapers", 9))
-    ret = ret.mul(getUpgradeEff("GreenPapers", 9));
-  if (!mult) ret = ret.div(getOreSparseness(ore));
-
-  return ret;
 }
 
 export function getOreWorthMul(ore) {
@@ -461,17 +507,17 @@ export function getOreWorthMul(ore) {
 }
 
 function getOreWorth(ore) {
-  return getOreSparseness(ore)
-    .div(5)
-    .mul(ORE_DATA[ore].sell ?? 1)
-    .mul(getOreWorthMul(ore));
+  return RESOURCES[ore.toLowerCase()].multipliers.gp.value();
 }
 
+export function getOreGain(ore) {
+  return RESOURCES[ore.toLowerCase()].multipliers.ore.value();
+}
 function getOreCost(ore) {
   return getOreWorth(ore).mul(1.5);
 }
 
-function sellAllOres(ore) {
+function sellAllOres() {
   for (const index of Object.keys(ORE_DATA)) sellOre(index);
 }
 
@@ -497,220 +543,124 @@ function buyOre(ore) {
   }
 }
 
-/* -=- QUARRY -=- */
-/*
-note to self on how quarry works:
-Array<Array<{id, health}, WIDTH>, HEIGHT> items for managing the quarry
-each item contains data about quarry
-depth starts at 0
-
-*/
-export const QUARRY_SIZE = {
-  width: 10,
-  height: 10
-};
-function generateQuarryRow(depth) {
-  let array = Array(QUARRY_SIZE.width)
-    .fill()
-    .map(() => generateBlock(depth));
-  return array;
-}
-function generateQuarryMap() {
-  let array = Array(QUARRY_SIZE.height)
-    .fill()
-    .map((_, i) => generateQuarryRow(i));
-  return array;
-}
-export function initQuarry() {
-  return {
-    ores: {},
-    depth: D(0),
-    map: generateQuarryMap()
-  };
-}
-function incrementQuarryRow() {
-  player.quarry.depth = Decimal.add(player.quarry.depth, 1);
-
-  player.quarry.map.splice(0, 1);
-  player.quarry.map.push(
-    generateQuarryRow(player.quarry.depth.add(QUARRY_SIZE.height - 1))
-  );
+/* -=- VOID -=- */
+export function getVoidDepth() {
+  return D(100);
 }
 
-export function doQuarryTick(diff) {
+function getVoidStrength() {
+  return 1.5;
+}
+
+/* -=- MAPS -=- */
+export function inQuarryMap() {
+  return DATA.setup ? player.quarry.inMap !== undefined : false;
+}
+export const switchMap = (window.switchMap = function (data) {
+  player.quarry.inMap = data;
+  if (!data) delete player.quarry.inMap;
+
+  player.quarry.map = generateQuarryMap();
+});
+
+/* -=- INSERT NEW CONTENT -=- */
+TICK_DATA.quarry = function (diff) {
   if (player.quarry === undefined) {
     player.quarry = initQuarry();
   }
-  if (D(player.quarry.depth).lt(100)) {
-    for (const miner of BUYABLES.Miners.data) {
-      miner.hit(diff);
-    }
+  for (const miner of BUYABLES.Miners.data) {
+    miner.hit(diff);
   }
 
-  let empty = true;
-  for (const i of player.quarry.map[0]) {
-    if (Decimal.gt(i.health, 0)) {
-      empty = false;
-      break;
-    }
-  }
-  if (empty) incrementQuarryRow();
-}
+  deleteEmptyQuarryRows();
+  fillQuarryRows();
+};
 
-//TODO: Implement the biomes and the map.
-//DOM STUFF
+TABS.Quarry = {
+  subtabs: ["QuarrySite", "Equipment", "GreenPapers"]
+};
+
 TABS.QuarrySite = {
   disp: "The Site",
-  parent: "Quarry",
   component: {
-    template:
-      `
-      <div style="display: flex; flex-direction: row; vertical-align: top">
+    template: `
+      <div>
         <div style="flex: 1 0 33.33%">
-          <resource name="mana" />
-          <buyables group="Miners" />
-        </div>
-        <div style="flex: 1 0 33.33%">
-          You are currently in Depth {{format(player.quarry.depth, 0)}} / 100.<br><br>
-          <grid type="QuarryBlock" 
+          <span v-if="player.miners.manualCooldown">Click cooldown: {{formatTime(player.miners.manualCooldown)}}</span>
+          <div v-if="!player.quarry.inMap">You are currently in Depth {{format(player.quarry.depth, 0)}} / 100.</div>
+          <button v-if="player.quarry.inMap" onclick="switchMap()">Exit Map</button>
+          <button v-if="new Decimal(player.quarry.depth).round().gte(getVoidDepth())" 
+          @click="notify('Soon.')">(C) Collapse!</button><br>
+          <grid type="Block" 
                 :width="QUARRY_SIZE.width" 
                 :height="QUARRY_SIZE.height" 
-                style="border: 2px solid green" />` +
-      /*<button>Exit Map</button>*/
-      // why does it not work???????????
-      `</div>
-        <div style="flex: 1 0 33.33%">
-          <resource name="greenPaper" />
-          <button @click="sellAllOres()">Sell all</button>
-          <table class="resourceTable">
-            <tr>
-              <td colspan="2">
-                Note: quarry depth multiplies ore value but nerfs ore gain.
-              </td>
-            </tr>
-            <tr 
-              v-for="[index, key] of Object.entries(ORE_DATA).filter((x) => getBlockAmount(x[0]).gt(0))"
-              :key="index">
-              <td style="width:calc(100%);text-align:left">
-                <resource :name="index.toLowerCase()"/>
-                <div style="font-size:13.3333px"> 
-                  (+1 per {{format(getOreGain(index).recip())}} damage dealt)<br>
-                  (+{{format(getOreWorth(index))}} GP per 1 {{index}})
-                </div>
-              </td>
-              <td>
-                <button @click="sellOre(index)">
-                  Sell for {{format(getBlockAmount(index).mul(getOreWorth(index)))}} GP
-                </button>
-                <button v-if="hasUpgrade('GreenPapers', 4)" @click="buyOre(index)">
-                  Buy {{format(buyOreAmount(index))}} {{index}} with 50% GP
-                </button>
-              </td>
-            </tr>
-          </table>
+                style="border: 2px solid green" />
+        </div>
+        <div style="display: flex; flex-direction: row; vertical-align: top">
+          <miners style="flex: 1 0 50%" />
+          <div style="flex: 1 0 50%">
+            <resource name="greenPaper" />
+            <button @click="sellAllOres()">Sell all</button>
+            <table class="resourceTable">
+              <tr>
+                <td colspan="2">
+                  Note: Quarry depth multiplies ore value but nerfs ore gain.
+                </td>
+              </tr>
+              <tr 
+                v-for="[index, key] of Object.entries(ORE_DATA).filter(
+                  (x) => getBlockAmount(x[0]).gt(0))"
+                :key="index">
+                <td style="width:100%;font-size:13.3333px;text-align:left">
+                  <resource :name="index.toLowerCase()"/>
+                  <gain-multi :multi="RESOURCES[index.toLowerCase()].multipliers.ore">
+                    {{format(getOreGain(index))}} unit/damage dealt
+                  </gain-multi> ×
+                  <gain-multi :multi="RESOURCES[index.toLowerCase()].multipliers.gp">
+                    {{format(getOreWorth(index))}} GP/unit
+                  </gain-multi>
+                </td>
+                <td>
+                  <button @click="sellOre(index)">
+                    Sell for {{format(getBlockAmount(index).mul(getOreWorth(index)))}} GP
+                  </button>
+                  <button v-if="hasUpgrade('GreenPapers', 4)" @click="buyOre(index)">
+                    Buy {{format(buyOreAmount(index))}} {{index}} with 50% GP
+                  </button>
+                </td>
+              </tr>
+            </table>
+          </div>
         </div>
       </div>
     `,
     setup() {
       const resources = DATA.resources;
-      window.Decimal = Decimal;
       return {
         ORE_DATA,
         QUARRY_SIZE,
+        RESOURCES,
         Decimal,
         format,
         formatPrecise,
+        formatTime,
         player,
         resources,
         hasUpgrade,
+        notify,
 
         getBlockAmount,
         getOreWorth,
         getOreCost,
-        getOreGain,
         buyOreAmount,
 
         sellOre,
         sellAllOres,
-        buyOre
+        buyOre,
+        getOreGain,
+
+        getVoidDepth
       };
     }
-  }
-};
-
-setupVue.QuarryBlock = {
-  props: ["width", "height", "x", "y"],
-  computed: {
-    block() {
-      return player.quarry.map[this.y][this.x];
-    },
-    health() {
-      return getBlockHealth(
-        Decimal.add(player.quarry.depth, this.y),
-        this.block.layer,
-        this.block.ore
-      );
-    },
-    style() {
-      const layerColor = LAYER_DATA[this.block.layer].color ?? "white";
-      const oreColor = ORE_DATA[this.block.ore]?.color ?? "transparent";
-      const treasureColor = this.block.treasure ? "#ffefbf" : "#0003";
-      const health = D(this.block.health).pow(0.5).max(0).min(1).toNumber();
-
-      if (health > 0)
-        return {
-          // why linear gradient on the _same_ thing
-          background: `
-            linear-gradient(#0003, #0003),
-            linear-gradient(#0003, #0003),
-            linear-gradient(${oreColor}, ${oreColor}),
-            linear-gradient(${layerColor}, ${layerColor}),
-            linear-gradient(${treasureColor}, ${treasureColor}),
-            linear-gradient(${layerColor}, ${layerColor})
-          `,
-          "background-position":
-            "center, center, center, center, center, center",
-          "background-size": `${(1 - health) * 100}% 2px, 2px ${
-            (1 - health) * 100
-          }%, 50% 50%, calc(100% - 2px) calc(100% - 2px), 100% 100%, 100% 100%`,
-          "background-repeat":
-            "no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat"
-        };
-      else
-        return {
-          background: `
-            linear-gradient(#000a, #000a),
-            linear-gradient(${layerColor}, ${layerColor}),
-            linear-gradient(#0003, #0003),
-            linear-gradient(${layerColor}, ${layerColor})
-          `,
-          "background-position": "center, center, center, center",
-          "background-size": `100% 100%, calc(100% - 2px) calc(100% - 2px), 100% 100%, 100% 100%`,
-          "background-repeat": "no-repeat, no-repeat, no-repeat, no-repeat"
-        };
-    }
-  },
-  template: `
-    <div class="tooltip">
-      <div :style="style" style="width: 32px; height: 32px; transition: background-size .5s"></div>
-      <span v-if="Decimal.gt(block.health, 0) && block.layer !== 'Bedrock'" class="tooltiptext">
-        <b style='font-size: 16px'>Block Type: {{block.layer}}</b>
-        <span v-if="block.ore !== ''">
-          <br>Ore: {{block.ore}} ({{getRarity(ORE_DATA[block.ore].rarity)}})
-        </span><br>
-        Health: {{format(health.mul(block.health))}}/{{format(health)}}<br>
-        <b v-if="block.treasure" style='color: gold'>Treasure inside!</b>
-      </span>
-    </div>
-  `,
-  setup() {
-    return {
-      generateGradient,
-      format,
-      getRarity,
-      LAYER_DATA,
-      ORE_DATA,
-      Decimal
-    };
   }
 };

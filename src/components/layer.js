@@ -94,7 +94,7 @@ function doLayerReset(layer, force) {
       : setupLayer(layer);
     layerPlayer.did = true;
   }
-  for (const toReset = layer; toReset > 0; toReset--) {
+  for (let toReset = layer; toReset > 0; toReset--) {
     recordLayerStats(layer, toReset, force);
     if (toReset > 1 && layerExist(toReset - 1)) {
       const priorLayerPlayer = layerPlayer(toReset - 1);
@@ -124,7 +124,7 @@ function recordLayerStats(toReset, layer, force) {
 }
 
 function getHighestLayer() {
-  for (const layer = LAYERS.length - 1; layer >= 0; layer--) {
+  for (let layer = LAYERS.length - 1; layer >= 0; layer--) {
     if (layerUnl(layer)) return layer;
   }
   return 0;

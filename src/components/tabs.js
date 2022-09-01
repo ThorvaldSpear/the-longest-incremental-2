@@ -7,42 +7,46 @@ export const TABS = (window.TABS = {
     subtabs: ["Quarry", "Menu"]
   },
   Menu: {
-    subtabs: [
-      "Encyclopedia",
-      "Options",
-      /* "Achievements", "Statistics", */ "About"
-    ]
+    component: {
+      template: `<div>Note: Hovering over some numbers allows you to see their formulas.</div>`
+    },
+    subtabs: ["Options", "Stats", "Story", "Achievements", "About"]
   },
   Options: {
     component: {
       template: `
-      <div>
-        <h2>Save</h2>
-        <button @click="save(true)">Save</button>
-        <button @click="">Load (not implemented yet)</button>
-        <button @click="exportSave()">Export</button>
-        <button @click="">Download (not implemented yet)</button>
-        <button @click="importSave()">Import</button>
-        <button @click="$refs.importFile.click()">
-          Import File</button
-        ><input
-          type="file"
-          style="display: none"
-          ref="importFile"
-          accept=".txt"
-        />
-        <button id="hardreset" @click="hardReset()">HARD RESET</button>
-        <br />
-        <button
-          id="offline"
-          @click="player.options.off = !player.options.off"
-        >
-          Offline Progresssion: {{player.options.off ? "ON" : "OFF" }}</button
-        ><br />
+        <div>
+          <h2>Save</h2>
+          <button @click="save(true)">Save</button>
+          <button @click="">Load (not implemented yet)</button>
+          <button @click="exportSave()">Export</button>
+          <button @click="">Download (not implemented yet)</button>
+          <button @click="importSave()">Import</button>
+          <button @click="$refs.importFile.click()">
+            Import File</button
+          ><input
+            type="file"
+            style="display: none"
+            ref="importFile"
+            accept=".txt"
+          />
+          <button id="hardreset" @click="hardReset()">HARD RESET</button>
+          <br />
+          <button
+            id="offline"
+            @click="player.options.off = !player.options.off"
+          >
+            Offline Progresssion: {{player.options.off ? "ON" : "OFF" }}</button
+          ><br />
 
-        <h2>Discord</h2>
-        <a href="https://discord.gg/fcEXYjPQ43" target="_blank">Discord</a>
-      </div>
+          <h2>Misc</h2>
+          <button @click="player.options.news=!player.options.news">
+            News ticker: {{player.options.news ? "ON" : "OFF"}}
+          </button>
+
+          <h2>Discord</h2>
+          <a href="https://discord.gg/fcEXYjPQ43" target="_blank"><button>Discord</button></a>
+        </div>
       `,
       setup() {
         return {
@@ -69,17 +73,11 @@ export const TABS = (window.TABS = {
         Hosted by meta.
 
         <h2>Changelog</h2>
-        <h3>β0.0</h3>
+        <h3>α0.0</h3>
         Released.
       </div>
       `
     }
-  },
-
-  Quarry: {
-    /*component: {
-      template: `<button>Collapse!</button>`
-    }*/
   }
 });
 

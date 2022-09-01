@@ -4,12 +4,13 @@ import Decimal, { D } from "../utils/break_eternity.js";
 import { format } from "../utils/format.js";
 
 export class Resource {
-  constructor({ name, color, src, prodFunc, based }) {
+  constructor({ name, color, src, prodFunc, based, multipliers }) {
     this.name = name;
     this.color = color ?? "var(--font-color)";
     this.src = src; ///{parent, id} -> data
     this.prodFunc = prodFunc ?? (() => D(0));
     this.based = based;
+    this.multipliers = multipliers;
   }
 
   get amt() {

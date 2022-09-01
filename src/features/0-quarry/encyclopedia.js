@@ -5,21 +5,11 @@ import { D } from "../../utils/break_eternity.js";
 import { player } from "../../player.js";
 import { LAYER_DATA, ORE_DATA } from "./quarry.js";
 
-TABS.Encyclopedia = {
-  subtabs: ["OreStats", "BlockStats", "Story"],
-  component: {
-    template: ``
-  }
-};
-
 TABS.OreStats = {
-  disp: "Ore Stats",
+  disp: "Ores",
   component: {
     template: `<div>
       <h2>Ore Stats</h2>
-      <div>
-        Pretty self expanatory. Rarity divides block health but multiplies ore value.
-      </div>
       <div v-for="[name, block] of Object.entries(ORE_DATA)">
         <ore-entry
           v-if="D(player.quarry.depth).gte(block.range[0])"
@@ -39,7 +29,7 @@ TABS.OreStats = {
 };
 
 TABS.BlockStats = {
-  disp: "Block Stats",
+  disp: "Blocks",
   component: {
     template: `<div>
       <h2>Block Stats</h2>
@@ -96,28 +86,32 @@ setupVue["ore-entry"] = {
 TABS.Story = {
   component: {
     template: `
-      <h2>Welcome!</h2>
-      Where am I? How'd I get here? What am I doing here?<br>
-      Oh look, there's a village nearby.<br>
-      I'm just going to look around that settlement.
+      <div>
+        <h2>Welcome!</h2>
+        <i>In a medieval colony...</i><br><br>
 
-      <br><br>
-      Hmmm... A worker? Maybe I can talk for a moment...<br>
-      I question about this settlement. 
-      The worker said, "This is a quarry site, we mine for the colony."<br>
-      I remember about how hard this was years ago. It was unbearable.<br>
-      But I come to a realization.
+        Where am I? How'd I get here? What am I doing here?<br>
+        Oh look, there's a village nearby.<br>
+        I'm just going to look around that settlement.
 
-      <br><br>
-      He was neither a brave worker, nor a slave.<br>
-      He need Mana in order to free himself with helpers.<br>
-      A-ha! Mana is what I need to live on, he said.<br>
-      And so, the journey begins.
+        <br><br>
+        Hmmm... A worker? Maybe I can talk for a moment...<br>
+        I question about this settlement. 
+        The worker said, "This is a quarry site, we mine for the colony."<br>
+        I remember about how hard this was years ago. It was unbearable.<br>
+        But I come to a realization.
 
-      <br><br>
-      Welcome to the Longest Incremental<sup>2</sup>. Here, you can hire Miners with Mana.<br>
-      Later on, you can sell ores for Green Papers which can be spent for Upgrades!<br>
-      Have fun <s>and don't forget about the void</s>!
+        <br><br>
+        He was neither a brave worker, nor a slave.<br>
+        He need Mana in order to free himself with helpers.<br>
+        A-ha! Mana is what I need to live on, he said.<br>
+        And so, the journey begins.
+
+        <br><br>
+        Welcome to the Longest Incremental<sup>2</sup>. Here, you can hire Miners with Mana.<br>
+        Later on, you can sell ores for Green Papers which can be spent for Upgrades!<br>
+        Have fun <s>and don't forget about the void</s>!
+      </div>
     `
   }
 };

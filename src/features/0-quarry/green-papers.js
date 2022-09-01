@@ -6,6 +6,7 @@ import { Upgrade, UPGRADES, getUpgrade } from "../../components/buyables.js";
 import { TABS } from "../../components/tabs.js";
 
 import { getMiner } from "./miners.js";
+import { applyScaling } from "../../utils/utils.js";
 
 RESOURCES.greenPaper = new Resource({
   name: "Green Papers",
@@ -22,9 +23,12 @@ UPGRADES.GreenPapers = {
   data: [
     new Upgrade({
       name: "Miner Power",
-      cost: (lvl) => Decimal.pow(1.3, lvl).mul(1),
+      cost: (lvl) => {
+        lvl = applyScaling(lvl, 20, 2);
+        return Decimal.pow(1.3, lvl).mul(1);
+      },
       eff: (lvl) => D(lvl).div(10).add(1),
-      max: 20,
+      max: 50,
       desc(eff) {
         return `Miner effectiveness is increased by ${formatChange(eff)}<br>`;
       },
@@ -32,9 +36,12 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "Speed Mining",
-      cost: (lvl) => Decimal.pow(1.6, lvl).mul(10),
+      cost: (lvl) => {
+        lvl = applyScaling(lvl, 20, 3);
+        return Decimal.pow(1.6, lvl).mul(10);
+      },
       eff: (lvl) => D(lvl).div(10).add(1),
-      max: 20,
+      max: 50,
       desc(eff) {
         return `Miner speed is increased by ${formatChange(eff)}`;
       },
@@ -57,7 +64,7 @@ UPGRADES.GreenPapers = {
       cost: () => D(1000),
       eff: () => 1,
       desc() {
-        return `You can create better Pickaxes with Bronze and Silver. (NOT IMPLEMENTED)`;
+        return `Unlock the Equipment.`;
       },
       group: "GreenPapers",
       unl: () => getUpgrade("GreenPapers", 2).amt.gte(1)
@@ -70,7 +77,7 @@ UPGRADES.GreenPapers = {
         return `You can buy blocks with Green Papers.`;
       },
       group: "GreenPapers",
-      unl: () => getUpgrade("GreenPapers", 3).amt.gte(1)
+      unl: () => false
     }),
     new Upgrade({
       name: "Ore Luck",
@@ -81,15 +88,18 @@ UPGRADES.GreenPapers = {
         return `Ores spawn ${formatChange(eff)} more frequently`;
       },
       group: "GreenPapers",
-      unl: () => getUpgrade("GreenPapers", 4).amt.gte(1)
+      unl: () => getUpgrade("GreenPapers", 3).amt.gte(1)
     }),
     new Upgrade({
       name: "Softer Atoms",
       cost: (lvl) => Decimal.pow(5, lvl).mul(25000),
-      eff: (lvl) => D(1.015).pow(lvl).recip(),
+      eff: (lvl) => D(1.015).pow(lvl),
       max: 100,
       desc(eff) {
-        return `Block health is now ${formatChange(eff, 2)}<br>
+        return `Make blocks ${format(
+          eff,
+          2
+        )}× softer, reducing block health while increasing ore gain.<br>
         Everyone deserves more progress!`;
       },
       group: "GreenPapers",
@@ -108,29 +118,24 @@ UPGRADES.GreenPapers = {
           .add(10)
           .log10(),
       desc(eff) {
-        return `<span class="tooltip">
-          ${format(eff)}x to miner effectiveness based on amount of miners.
+        return `<span class="tooltip detailed">
+          ${format(eff)}×
           <span class="tooltiptext">log<sub>10</sub>(miner amount + 10)</span>
-        </span><br>
+        </span> to miner effectiveness based on amount of miners.<br>
         Teamwork?`;
       },
       group: "GreenPapers",
       unl: () => getUpgrade("GreenPapers", 6).amt.gte(1)
     }),
     new Upgrade({
-      name: "SSH Hashing...?", // DONT CHANGE MY GIVEN GP NAMES
-      // DIDN'T META SAY NO CRYPTOCURRENCY REFERENCES?
-      // ALSO HOW DO YOU HASH AN INTERNET PROTOCOL
-      // SSH HASHING ISNT CRYPTO REFRENCE ITS A METHOD TO VALIDATE DATA PACKETS FROM SOURCES THEY COME FROM
+      name: "Green Paper Banking",
       cost: () => D(525000),
       eff: (lvl) => RESOURCES.greenPaper.amt.add(10).log10(),
       desc(eff) {
-        return `Gain <span class="tooltip">
-          ${format(
-            eff
-          )}x more Green Papers based on your GP. This also affects buy cost.
+        return `Gain <span class="tooltip detailed">
+          ${format(eff)}×
           <span class="tooltiptext">log<sub>10</sub>(Green Papers + 10)</span>
-        </span><br>`;
+        </span> more Green Papers based on your GP. This also affects buy cost.<br>`;
       },
       group: "GreenPapers",
       unl: () => getUpgrade("GreenPapers", 7).amt.gte(1)
@@ -140,10 +145,10 @@ UPGRADES.GreenPapers = {
       cost: () => D(50000000),
       eff: (lvl) => D(10).pow(D(player.quarry.depth).sub(75).div(50)),
       desc(eff) {
-        return `Gain <span class="tooltip">
-          ${format(eff)}x Ores based on depth
+        return `Gain <span class="tooltip detailed">
+          ${format(eff)}×
           <span class="tooltiptext">10<sup><frac>(depth - 75)<div>50</div></frac></span>
-        </span>`;
+        </span> more ores based on depth`;
       },
       group: "GreenPapers",
       unl: () =>
@@ -168,7 +173,6 @@ UPGRADES.GreenPapers = {
 
 TABS.GreenPapers = {
   disp: "Upgrades",
-  parent: "Quarry",
   component: {
     template: `
     <div>

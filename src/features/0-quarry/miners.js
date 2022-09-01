@@ -1,8 +1,8 @@
-import { format } from "../../utils/format.js";
-import Decimal, { D } from "../../utils/break_eternity.js";
-import { random } from "../../utils/utils.js";
+import { setupVue } from "../../setup.js";
 
 import { player } from "../../player.js";
+import { DATA, TICK_DATA } from "../../tmp.js";
+
 import {
   Buyable,
   BUYABLES,
@@ -11,15 +11,19 @@ import {
   getUpgradeEff,
   hasUpgrade
 } from "../../components/buyables.js";
+import {
+  createChainedMulti,
+  createMultiplicativeMulti,
+  createUpgradeMulti
+} from "../../components/gainMulti.js";
 import { Resource, RESOURCES } from "../../components/resources.js";
 
-import {
-  doQuarryTick,
-  getOreGain,
-  getBlockHealth,
-  isBlockExposed
-} from "./quarry.js";
-import { getTreasure } from "./treasures.js";
+import { format, formatTime } from "../../utils/format.js";
+import Decimal, { D } from "../../utils/break_eternity.js";
+import { random } from "../../utils/utils.js";
+
+import { mineBlock } from "./blocks.js";
+import { isBlockExposed } from "./quarry.js";
 
 //Make sure to add assignation too
 class Miner extends Buyable {
@@ -27,19 +31,36 @@ class Miner extends Buyable {
     super(obj);
     this.x = obj.x;
 
-    this._eff = this.eff;
-    this.eff = (amt) => {
-      let mul = this._eff(amt).mul(getUpgradeEff("GreenPapers", 0));
-      if (hasUpgrade("GreenPapers", 7))
-        mul = mul.mul(getUpgradeEff("GreenPapers", 7));
-      return mul;
-    };
+    this.dmgMultiplier = createChainedMulti(
+      (amt) => obj.eff(amt ?? this.amt, this.x),
+      createMultiplicativeMulti(
+        createUpgradeMulti({
+          group: "GreenPapers",
+          id: 0,
+          type: "multiply"
+        })
+      ),
+      createMultiplicativeMulti(
+        createUpgradeMulti({
+          group: "GreenPapers",
+          id: 7,
+          type: "multiply"
+        })
+      )
+    );
 
-    this._desc = this.desc;
-    this.desc = (eff) =>
-      `${format(eff)} damage/hit × ${format(
-        getMinerSpeed(this.x).mul(this.speed)
-      )} hits/sec<br>${this._desc(eff)}`;
+    this.speedMultiplier = createChainedMulti(
+      () => this.speed,
+      createMultiplicativeMulti({
+        toMultiply: () => getUpgradeEff("GreenPapers", 1),
+        enabled: () => hasUpgrade("GreenPapers", 1),
+        name: "Speed Mining"
+      })
+    );
+    this._eff = obj.eff;
+    this.eff = (amt) => {
+      return this.dmgMultiplier.value(amt);
+    };
 
     this.select =
       obj.select ??
@@ -54,8 +75,8 @@ class Miner extends Buyable {
   hit(diff) {
     if (Decimal.eq(this.player[this.name.toLowerCase()] ?? 0, 0)) return;
 
-    const speed = getMinerSpeed(this.x).mul(this.speed);
-    this.progress = this.progress.plus(speed.mul(diff));
+    const speed = this.speedMultiplier.value();
+    this.progress = this.progress.plus(Decimal.mul(speed, diff));
     const hits = this.progress.floor();
     if (hits.lt(1)) return;
     this.progress = this.progress.sub(hits);
@@ -64,54 +85,81 @@ class Miner extends Buyable {
 
     let pick;
     const choice = [];
-    // ew in quit using it
     for (const y of player.quarry.map.keys())
       for (const x of player.quarry.map[y].keys()) {
         const block = player.quarry.map[y][x];
-        if (
-          block.layer !== "Bedrock" &&
-          Decimal.gt(block.health, 0) &&
-          this.select(x, y, block)
-        )
+        if (Decimal.gt(block.health, 0) && this.select(x, y, block))
           choice.push([y, block]);
       }
     if (!choice.length) return;
     pick = random(choice);
 
-    const eff = getBuyableEff(this.group, this.x);
-    const maxHealth = getBlockHealth(
-      Decimal.add(player.quarry.depth, pick[0]),
-      pick[1].layer,
-      pick[1].ore
-    );
-    const damage = eff.mul(hits).div(maxHealth).min(pick[1].health);
-    pick[1].health = Decimal.sub(pick[1].health, damage).min(1);
-    if (pick[1].ore) {
-      RESOURCES[pick[1].ore.toLowerCase()].add(
-        damage.mul(maxHealth).mul(getOreGain(pick[1].ore))
-      );
-    }
-    if (pick[1].health.lte(0)) {
-      pick[1].health = D(0);
-      player.stats.mined++;
-      if (pick[1].treasure)
-        getTreasure(Decimal.add(player.quarry.depth, pick[0]), pick[1].layer);
-    }
+    mineBlock(pick[0], pick[1], getMinerEff(this.x).mul(hits));
   }
 }
+
+setupVue.miner = {
+  props: ["value"],
+  template: `
+    <div class="buyable" v-if="key_data.unl()">
+      <div :role="key_data.name.toLowerCase()">
+        <b>({{format(key.amt.value, 0)}}×) {{key_data.name}}</b><br>
+        <span>
+          <gain-multi :multi="key_data.dmgMultiplier">
+            {{format(key.eff.value)}} damage/hit
+          </gain-multi> × 
+          <gain-multi :multi="key_data.speedMultiplier">
+            {{format(
+              key_data.speedMultiplier.value()
+            )}} hits/sec
+          </gain-multi><br>{{key_data.desc(key.eff.value)}}
+        </span>
+      </div>
+      <div>
+        <button @click="key_data.buy()" 
+        :class="{
+          canbuy: key_data.canBuy(), 
+          cannotbuy: !key_data.canBuy()
+        }">
+          <b>{{key_group.buyPhrase ?? "Buy"}} +1</b><br>
+          {{
+            (Decimal.gt(key.levelDiff.value, 0) ? "+" : "")
+             + format(key.levelDiff.value)
+          }} {{key_data.diffDesc}}<br>
+          {{format(key.cost.value)}} {{key_data.res.name}}
+        </button>
+      </div>
+    </div>
+  `,
+  setup(props) {
+    const key = DATA.buyables.Miners[props.value];
+    const key_group = BUYABLES.Miners;
+    const key_data = key_group.data[props.value];
+    return {
+      key,
+      key_group,
+      key_data,
+      format,
+      Decimal
+    };
+  }
+};
 
 export function getMiner(x) {
   return getBuyable("Miners", x);
 }
 
-export function getMinerSpeed(x) {
-  let mul = getUpgradeEff("GreenPapers", 1);
-  return mul;
-}
-
 export function getMinerEff(x) {
   return getBuyableEff("Miners", x);
 }
+
+//Insert new content
+TICK_DATA.miners = function (diff) {
+  player.miners.manualCooldown = Math.max(
+    player.miners.manualCooldown - diff,
+    0
+  );
+};
 
 RESOURCES.mana = new Resource({
   name: "Mana",
@@ -201,6 +249,20 @@ BUYABLES.Miners = {
   ]
 };
 
-export function doMine(diff) {
-  doQuarryTick(diff);
-}
+setupVue.miners = {
+  template: `
+  <div>
+    <resource name="mana" /><br>
+    <div class="buyables" align=center>
+      <miner v-for="(_, key) in BUYABLES.Miners.data" :value="key" />
+    </div><br>
+  </div>
+  `,
+  setup() {
+    return {
+      BUYABLES,
+      player,
+      formatTime
+    };
+  }
+};

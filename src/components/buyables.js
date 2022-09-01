@@ -64,7 +64,10 @@ setupVue.buyable = {
     <div class="buyable" v-if="key_data.unl()">
       <div :role="key_data.name.toLowerCase()">
         <b>({{format(key.amt.value, 0)}}x) {{key_data.name}}</b><br>
-        <span v-html="key_data.desc(key.eff.value)" />
+        <gain-multi v-if="key_data.multipliers" :multi="key_data.multipliers">
+          <span v-html="text" />
+        </gain-multi>
+        <span v-else v-html="text" />
       </div>
       <div>
         <button @click="key_data.buy()" 
@@ -74,7 +77,7 @@ setupVue.buyable = {
         }">
           <b>{{key_group.buyPhrase ?? "Buy"}} +1</b><br>
           {{
-            key_data.desc(key.eff.value).includes("%") ? 
+            key_data.desc(key.eff.value).includes?.("%") ? 
             formatChange(key.levelDiff.value.add(1), 2) 
             : ((Decimal.gt(key.levelDiff.value, 0) ? "+" : "")
              + format(key.levelDiff.value))
@@ -88,13 +91,15 @@ setupVue.buyable = {
     const key = DATA.buyables[props.group][props.value];
     const key_group = BUYABLES[props.group];
     const key_data = key_group.data[props.value];
+    const text = key_data.desc(key.eff.value);
     return {
       key,
       key_group,
       key_data,
       format,
       formatChange,
-      Decimal
+      Decimal,
+      text
     };
   }
 };
