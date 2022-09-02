@@ -611,7 +611,8 @@ TABS.QuarrySite = {
           </span>
           <span v-else>
             Click on any highlighted block to deal {{format(getMinerEff(0))}}
-            damage (equal to Novice Miners' damage/hit)
+            damage (equal to Novice Miners' damage/hit).<br>
+            Click cooldown is equal to 2/[Novice Miners' seconds/hit]
           </span>
           <div v-if="!player.quarry.inMap">You are currently in Depth {{format(player.quarry.depth, 0)}} / 100.</div>
           <div>
@@ -624,16 +625,19 @@ TABS.QuarrySite = {
           </div>
         </div>
         <div class="flex">
-          <div class="flex-base">
+          <miners class="flex-base" style="flex-basis:33%" />
+          <div class="flex-base" style="flex-basis:33%">
             <grid type="Block" 
               :width="QUARRY_SIZE.width" 
               :height="QUARRY_SIZE.height" 
-              style="border: 2px solid #804000;" 
+              style="border: 2px solid #80400;" 
               /><br>
             <block-stats />
           </div>
-          <miners class="flex-base" />
-          <div class="flex-base">
+          <div 
+            class="flex-base" 
+            style="flex-basis:33%"
+          >
             <resource name="greenPaper" />
             <button @click="sellAllOres()">Sell all for {{format(getAllWorth())}} GP</button>
             <table class="resourceTable">
