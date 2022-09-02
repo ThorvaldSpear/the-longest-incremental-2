@@ -76,13 +76,25 @@ setupVue.news = {
   // therefore it will not get tracked by vue
   // and updated
   // go use a ref or smh
+  data() {
+    return {
+      oldPosition: -Infinity
+    };
+  },
+  watch: {
+    newsPosition: {
+      immediate: true,
+      handler(_, old) {
+        this.oldPosition = old;
+      }
+    }
+  },
   computed: {
     style() {
       const style = {
         "margin-left": this.newsPosition + "px",
         transition: this.oldPosition > this.newsPosition ? ".2s" : ""
       };
-      this.oldPosition = this.newsPosition;
       return style;
     },
     newsMsg() {
