@@ -20,6 +20,8 @@ import { Resource, RESOURCES } from "../../components/resources.js";
 
 import { generateBlock, getBlockAmount } from "./blocks.js";
 
+import { getMinerEff } from "./miners.js";
+
 /* -=- QUARRY -=- */
 /*
 note to self on how quarry works:
@@ -586,7 +588,13 @@ TABS.QuarrySite = {
     template: `
       <div>
         <div style="flex: 1 0 33.33%">
-          <span v-if="player.miners.manualCooldown">Click cooldown: {{formatTime(player.miners.manualCooldown)}}</span>
+          <span v-if="player.miners.manualCooldown">
+            Click cooldown: {{formatTime(player.miners.manualCooldown)}}
+          </span>
+          <span v-else>
+            Click on any block with a green outline to deal {{format(getMinerEff(0))}}
+            damage (equal to Noivce Miners' damage/hit)
+          </span>
           <div v-if="!player.quarry.inMap">You are currently in Depth {{format(player.quarry.depth, 0)}} / 100.</div>
           <button v-if="player.quarry.inMap" onclick="switchMap()">Exit Map</button>
           <button v-if="new Decimal(player.quarry.depth).round().gte(getVoidDepth())" 
@@ -594,7 +602,7 @@ TABS.QuarrySite = {
           <grid type="Block" 
                 :width="QUARRY_SIZE.width" 
                 :height="QUARRY_SIZE.height" 
-                style="border: 2px solid green" />
+                style="border: 2px solid brown" />
         </div>
         <div style="display: flex; flex-direction: row; vertical-align: top">
           <miners style="flex: 1 0 50%" />
@@ -658,7 +666,7 @@ TABS.QuarrySite = {
         sellAllOres,
         buyOre,
         getOreGain,
-
+        getMinerEff,
         getVoidDepth
       };
     }

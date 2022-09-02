@@ -194,10 +194,13 @@ setupVue.Block = {
       const oreColor = ORE_DATA[this.block.ore]?.color ?? "transparent";
       const treasureColor = this.block.treasure ? "#ffefbf" : "#0001";
       const health = D(this.block.health).pow(0.5).max(0).min(1).toNumber();
+      const isGreen =
+        player.miners.manualCooldown === 0 && isBlockExposed(this.x, this.y);
 
       if (health > 0)
         return {
           // why linear gradient on the _same_ thing
+          border: `1px solid ${isGreen ? "green" : layerColor}`,
           background: `
             linear-gradient(#0003, #0003),
             linear-gradient(#0003, #0003),
@@ -216,6 +219,7 @@ setupVue.Block = {
         };
       else
         return {
+          border: `1px solid black`,
           background: `
             linear-gradient(#000a, #000a),
             linear-gradient(${layerColor}, ${layerColor}),
@@ -235,7 +239,8 @@ setupVue.Block = {
         <b>Block Type: {{block.layer}}</b>
         <span v-if="block.voided">
           <br>This is a Void Block... (Collapse to proceed!)
-        </span><span v-else>
+        </span>
+        <span v-else>
           <span v-if="block.ore !== ''">
             <br>Ore: {{block.ore}} ({{getRarity(ORE_DATA[block.ore].rarity)}})
           </span><br>

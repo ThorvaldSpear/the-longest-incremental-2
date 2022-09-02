@@ -97,8 +97,7 @@ setupVue["gain-multi"] = {
  `,
   setup() {
     return {
-      format,
-      console
+      format
     };
   }
 };
