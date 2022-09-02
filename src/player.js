@@ -9,6 +9,7 @@ import { ver } from "./utils/version.js";
 import { initTabs } from "./components/tabs.js";
 import { RESOURCES } from "./components/resources.js";
 import { achInterval } from "./components/achs.js";
+import { isDev } from "./dev.js";
 
 import { initQuarry, getQuarryDepth } from "./features/0-quarry/quarry.js";
 import { tickNews } from "./components/news-ticker.js";
@@ -16,7 +17,10 @@ import Decimal from "./utils/break_eternity.js";
 
 // not going to work
 // computed() requires reactive source
-export const player = (window.player = reactive(setupPlayer()));
+export const player = reactive(setupPlayer());
+if (isDev) {
+  window.player = player;
+}
 
 /**
  * Returns inital player data.

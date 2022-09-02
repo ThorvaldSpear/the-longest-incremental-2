@@ -630,7 +630,7 @@ TABS.QuarrySite = {
             <grid type="Block" 
               :width="QUARRY_SIZE.width" 
               :height="QUARRY_SIZE.height" 
-              style="border: 2px solid #80400;" 
+              style="border: 2px solid #80400" 
               /><br>
             <block-stats />
           </div>
