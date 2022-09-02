@@ -117,7 +117,7 @@ function manualMine(x, y) {
   if (D(player.quarry.map[y][x].health).lte(0)) return;
   mineBlock(x, y, getMinerEff(0));
 
-  player.miners.manualCooldown = D(0.5)
+  player.miners.manualCooldown = D(1)
     .div(getMiner(0).speedMultiplier.value())
     .toNumber();
 }
