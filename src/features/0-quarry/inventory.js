@@ -23,7 +23,7 @@ function deleteInventory(type, index) {
     notify("Cannot delete maps while in a map.");
     return;
   }
-  if (!confirm("Are you sure do you want to delete this?")) return;
+  if (!confirm("Are you sure to delete this?")) return;
   notify("Item deleted.");
   player.inventory[type].splice(index, 1);
 }

@@ -13,9 +13,11 @@ function createBaseMulti(obj) {
   return obj;
 }
 
-export function createUpgradeMulti({ group, id, type }) {
+export function createUpgradeMulti({ group, id, type, change }) {
+  const realChange = change ?? ((x) => x);
   return createLazyProxy(() => ({
-    [type === "add" ? "toAdd" : "toMultiply"]: () => getUpgradeEff(group, id),
+    [type === "add" ? "toAdd" : "toMultiply"]: () =>
+      realChange(getUpgradeEff(group, id)),
     enabled: () => hasUpgrade(group, id),
     name: () => UPGRADES[group].data[id].name
   }));

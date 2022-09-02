@@ -122,11 +122,21 @@ LAYER_DATA:
   health: multiplies health of block
 */
 export const LAYER_DATA = {
-  Dirt: {
-    color: "#7f5f3f",
+  Grass: {
+    color: "#3fbf00",
     range: {
       spawn: 0,
       full: 0,
+      decrease: 1,
+      despawn: 2
+    },
+    health: 1
+  },
+  Dirt: {
+    color: "#7f5f3f",
+    range: {
+      spawn: 1,
+      full: 1,
       decrease: 4,
       despawn: 6
     },
@@ -595,7 +605,7 @@ TABS.QuarrySite = {
   component: {
     template: `
       <div>
-        <div style="flex: 1 0 33.33%">
+        <div>
           <span v-if="player.miners.manualCooldown">
             Click cooldown: {{formatTime(player.miners.manualCooldown)}}
           </span>
@@ -607,18 +617,23 @@ TABS.QuarrySite = {
           <div>
             <button v-if="player.quarry.inMap" onclick="switchMap()">Exit Map</button>
             <button 
-              v-if="new Decimal(player.quarry.depth).round().gte(getVoidDepth()) && hasUpgrade('GreenPapers', 10) && !player.quarry.inMap" 
+              v-if="new Decimal(player.quarry.depth).round().gte(getVoidDepth()) 
+              && hasUpgrade('GreenPapers', 10) && !player.quarry.inMap" 
               @click="notify('Soon.')"
             >(C) Collapse!</button>
           </div>
-          <grid type="Block" 
-                :width="QUARRY_SIZE.width" 
-                :height="QUARRY_SIZE.height" 
-                style="border: 2px solid brown" />
         </div>
-        <div style="display: flex; flex-direction: row; vertical-align: top">
-          <miners style="flex: 1 0 50%" />
-          <div style="flex: 1 0 50%">
+        <div class="flex">
+          <div class="flex-base">
+            <grid type="Block" 
+              :width="QUARRY_SIZE.width" 
+              :height="QUARRY_SIZE.height" 
+              style="border: 2px solid #804000;" 
+              /><br>
+            <block-stats />
+          </div>
+          <miners class="flex-base" />
+          <div class="flex-base">
             <resource name="greenPaper" />
             <button @click="sellAllOres()">Sell all for {{format(getAllWorth())}} GP</button>
             <table class="resourceTable">

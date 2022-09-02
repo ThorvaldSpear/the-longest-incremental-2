@@ -4,7 +4,7 @@ import { notify } from "./notify.js";
 
 export const ver = {
   phase: "alpha",
-  rc: 1,
+  rc: 2,
   dev: 0,
 
   release: 0,

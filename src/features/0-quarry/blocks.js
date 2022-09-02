@@ -5,7 +5,6 @@ import { DATA } from "../../tmp.js";
 
 import Decimal, { D } from "../../utils/break_eternity.js";
 import { format } from "../../utils/format.js";
-import { generateGradient } from "../../utils/gradient.js";
 import { getRarity } from "../../utils/utils.js";
 
 import { getUpgradeEff } from "../../components/buyables.js";
@@ -27,8 +26,9 @@ import {
   getLayerRarity,
   getOreGain
 } from "./quarry.js";
-import { getMinerEff } from "./miners.js";
+import { getMiner, getMinerEff } from "./miners.js";
 import { getTreasure } from "./treasures.js";
+import { reactive } from "https://unpkg.com/vue@3.2.37/dist/vue.esm-browser.js";
 
 /* -=- BLOCKS -=- */
 function getBlockStrength(depth) {
@@ -40,17 +40,6 @@ function getBlockStrength(depth) {
 
 export function getBlockAmount(index) {
   return DATA.resources[index.toLowerCase()].amt.value;
-}
-
-export function getBlockHealth(depth, layer, ore) {
-  let ret = getBlockStrength(depth).mul(LAYER_DATA[layer].health);
-  ret = ret.div(DATA.setup ? getUpgradeEff("GreenPapers", 6) : 1);
-
-  if (ore !== "") {
-    ret = ret.mul(ORE_DATA[ore].health);
-    if (inQuarryMap()) ret = ret.mul(player.quarry.inMap.health ?? 1);
-  }
-  return ret;
 }
 
 export function generateBlock(depth) {
@@ -105,9 +94,10 @@ export function generateBlock(depth) {
   };
 }
 
-export function mineBlock(offset, block, damage) {
-  const depth = getQuarryDepth().add(offset);
-  const maxHealth = getBlockHealth(depth, block.layer, block.ore);
+export function mineBlock(x, y, damage) {
+  const depth = getQuarryDepth().add(y);
+  const maxHealth = BLOCK_STATS[y][x].value();
+  const block = player.quarry.map[y][x];
   block.health = D(block.health).sub(D(damage).div(maxHealth)).min(1);
 
   if (block.health.lte(0)) {
@@ -121,12 +111,15 @@ export function mineBlock(offset, block, damage) {
   }
 }
 
-function manualMine(x, y, block) {
+function manualMine(x, y) {
   if (player.miners.manualCooldown > 0) return;
   if (!isBlockExposed(x, y)) return;
   if (D(player.quarry.map[y][x].health).lte(0)) return;
-  mineBlock(y, block, getMinerEff(0));
-  player.miners.manualCooldown = 2;
+  mineBlock(x, y, getMinerEff(0));
+
+  player.miners.manualCooldown = D(2)
+    .div(getMiner(0).speedMultiplier.value())
+    .toNumber();
 }
 
 /*function getTotalBlocks(x) {
@@ -151,8 +144,9 @@ const BLOCK_STATS = Array(10)
           createMultiplicativeMulti(
             createUpgradeMulti({
               group: "GreenPapers",
-              id: 5,
-              type: "multiply"
+              id: 6,
+              type: "multiply",
+              change: (x) => Decimal.recip(x)
             })
           ),
           createMultiplicativeMulti({
@@ -169,7 +163,64 @@ const BLOCK_STATS = Array(10)
       )
   );
 
+const blockHovered = reactive([undefined, undefined]);
 /* -=- INSERT NEW CONTENT -=- */
+
+setupVue["block-stats"] = {
+  computed: {
+    y() {
+      return blockHovered[1];
+    },
+    x() {
+      return blockHovered[0];
+    },
+    block() {
+      return player.quarry.map[this.y][this.x];
+    },
+    multi() {
+      return BLOCK_STATS[this.y][this.x];
+    },
+    health() {
+      return this.multi.value();
+    }
+  },
+  template: `
+  <div v-if="blockHovered.every(i=>i!==undefined)">
+    <div>
+      Location: ({{x}}, {{y}})
+    </div>
+    <div v-if="Decimal.lte(block.health, 0)">
+      This block is already mined!
+    </div>
+    <div v-else-if="block.layer === 'Bedrock'">
+      This block is impassable.
+    </div>
+    <div v-else>
+      <b>Block Type: {{block.layer}}</b>
+      <span v-if="block.voided">
+        <br>This is a Void Block... (Collapse to proceed!)
+      </span>
+      <span v-if="block.ore !== ''">
+        <br>Ore: {{block.ore}} ({{getRarity(ORE_DATA[block.ore].rarity)}})
+      </span><br>
+      Health: {{format(health.mul(block.health))}}/
+      <gain-multi :multi="multi">
+        {{format(health)}}
+      </gain-multi><br>
+      <b v-if="block.treasure" style='color: gold'>Treasure inside!</b>
+    </div>
+  </div>
+  `,
+  setup() {
+    return {
+      Decimal,
+      blockHovered,
+      getRarity,
+      ORE_DATA,
+      format
+    };
+  }
+};
 setupVue.Block = {
   props: ["width", "height", "x", "y"],
   computed: {
@@ -181,12 +232,14 @@ setupVue.Block = {
     },
     style() {
       const layerColor = this.block.voided
-        ? "black"
+        ? "#000"
         : LAYER_DATA[this.block.layer].color ?? "white";
       const oreColor = ORE_DATA[this.block.ore]?.color ?? "transparent";
       const treasureColor = this.block.treasure ? "#ffefbf" : "#0001";
       const health = D(this.block.health).pow(0.5).max(0).min(1).toNumber();
-      const exposedColor = isBlockExposed(this.x, this.y) ? "#0000" : "#0004";
+      const exposedColor = isBlockExposed(this.x, this.y)
+        ? "transparent"
+        : "#0007";
 
       if (health > 0)
         return {
@@ -222,31 +275,23 @@ setupVue.Block = {
         };
     }
   },
+  methods: {
+    updateHover(x, y) {
+      blockHovered[0] = x;
+      blockHovered[1] = y;
+    }
+  },
   template: `
-    <div v-if="block !== undefined" class="tooltip">
-      <div @click="manualMine(x, y, block)" :style="style" style="width: 32px; height: 32px; transition: background-size .5s"></div>
-      <span v-if="Decimal.gt(block.health, 0) && block.layer !== 'Bedrock'" class="tooltiptext">
-        <b>Block Type: {{block.layer}}</b>
-        <span v-if="block.voided">
-          <br>This is a Void Block... (Collapse to proceed!)
-        </span>
-        <span v-if="block.ore !== ''">
-          <br>Ore: {{block.ore}} ({{getRarity(ORE_DATA[block.ore].rarity)}})
-        </span><br>
-        Health: {{format(health.mul(block.health))}}/{{format(health)}}<br>
-        <b v-if="block.treasure" style='color: gold'>Treasure inside!</b>
-      </span>
+    <div 
+      v-if="block !== undefined"
+      @click="manualMine(x, y, block)"
+      @mouseover="updateHover(x, y)"
+      :style="style" 
+      style="width: 32px; height: 32px; transition: background-size .5s">
     </div>
   `,
   setup() {
     return {
-      LAYER_DATA,
-      ORE_DATA,
-      Decimal,
-
-      generateGradient,
-      format,
-      getRarity,
       manualMine
     };
   }

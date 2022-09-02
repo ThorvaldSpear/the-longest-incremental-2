@@ -89,7 +89,7 @@ class Miner extends Buyable {
       for (const x of player.quarry.map[y].keys()) {
         const block = player.quarry.map[y][x];
         if (Decimal.gt(block.health, 0) && this.select(x, y, block))
-          choice.push([y, block]);
+          choice.push([x, y]);
       }
     if (!choice.length) return;
     pick = random(choice);

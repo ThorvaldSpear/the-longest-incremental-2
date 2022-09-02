@@ -161,7 +161,7 @@ UPGRADES.GreenPapers = {
       eff: () => 1,
       desc(eff) {
         return `Unlock Collapse.<br>
-        Requires 100 Depth!`;
+        Prestiging awaits... Rise up for more items!`;
       },
       group: "GreenPapers",
       unl: () => getUpgrade("GreenPapers", 9).amt.gte(1)

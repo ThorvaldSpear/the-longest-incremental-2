@@ -24,10 +24,14 @@ const newsMessages = [
   [
     'The neighboring kingdom had to close borders to investigate for potential forbidden rift magic users as too many people were claiming to come from a non-existant country called "Japan"'
   ],
-
   [
     'Local ore mine managed to convince people to buy ores at a considerable markup by marketing their ores as "SSH Hashed" despite no one really knows what that phrase actually means.',
     () => hasUpgrade("GreenPapers", 8)
+  ],
+
+  [
+    "The king needs magical artifacts in order to look out for anomalies. The progress they are making is steady yet.",
+    () => false
   ]
 ];
 
