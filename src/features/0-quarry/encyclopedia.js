@@ -88,22 +88,22 @@ TABS.Story = {
     template: `
       <div>
         <h2>Welcome!</h2>
-        <i>In a medieval colony...</i><br><br>
+        <i>In a medieval colony...</i>
 
+        <br><br>
         Where am I? How'd I get here? What am I doing here?<br>
         Oh look, there's a village nearby.<br>
         I'm just going to look around that settlement.
 
         <br><br>
         Hmmm... A worker? Maybe I can talk for a moment...<br>
-        I question about this settlement. 
-        The worker said, "This is a quarry site, we mine for the colony."<br>
+        I question about this settlement. The worker says, "This is a quarry site, we mine for the motherland."<br>
         I remember about how hard this was years ago. It was unbearable.<br>
         But I come to a realization.
 
         <br><br>
         He was neither a brave worker, nor a slave.<br>
-        He need Mana in order to free himself with helpers.<br>
+        He needs mana in order to free himself with helpers.<br>
         A-ha! Mana is what I need to live on, he said.<br>
         And so, the journey begins.
 

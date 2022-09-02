@@ -143,6 +143,10 @@ button:active {
   flex-grow: 1;
   flex-shrink: 0;
 }
+
+.inline {
+  display: inline-block;
+}
 .buyables {
   display: grid;
   align-items: center;
