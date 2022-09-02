@@ -62,14 +62,33 @@ export function updateVer(x) {
   player.ver = ver;
 }
 
+function verColoring(x) {
+  switch (x.phase) {
+    default:
+      return "";
+    case "beta":
+      return "#00f";
+    case "alpha":
+      return "#f00";
+    case "delta":
+      return "#0f0";
+  }
+}
+
 setupVue.version = {
   template: `
-    <div id="version">{{verName(ver)}}</div>
+    <div
+      id="version"
+      :style="{ color: verColoring(ver) }"
+    >
+      {{verName(ver)}}
+    </div>
   `,
   setup() {
     return {
       ver,
-      verName
+      verName,
+      verColoring
     };
   }
 };

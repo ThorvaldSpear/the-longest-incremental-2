@@ -13,7 +13,7 @@ const newsMessages = [
     'Man arrested for trying to use forbidden rift magic, saying "this universe doesn\'t contain any waifus" when asked why.'
   ],
   [
-    "If you're feeling suck because you're transported to a new world with no one to follow you, remember that you're still lucky enough to not randomly get killed in the middle of episode 1"
+    "If you're feeling suck because you're transported to a new world with no one to follow you, remember that you're still lucky enough to not randomly get killed in the middle of episode 1 with explanations not appearing until much later on."
   ],
   [
     'Royal magicians have made a breakthrough when they discovered the secrets of irreversible time-freezing magic. It turns out all you need to do is saying "the next update is in 5 hours away" wait did I just say that OH GOD F-'
@@ -44,12 +44,12 @@ let lastNewsPos = Date.now();
 export function tickNews() {
   const diff = (Date.now() - lastNewsPos) / 1000;
   lastNewsPos = Date.now();
-  newsPosition.value -= diff * 100;
+  newsPosition.value -= diff * 120;
 
   if (!player.options.news) return;
   if (
     newsPosition.value <
-      -document.querySelector(".newsMessage")?.clientWidth - 10 ??
+      -document.querySelector(".newsMessage")?.clientWidth - 25 ??
     Infinity
   )
     newNewsMessage();
@@ -64,7 +64,7 @@ function newNewsMessage() {
     return i[1] === undefined || i[1]();
   });
   newsValue.value = random(newsCandidates);
-  newsPosition.value = document.querySelector(".newsTicker")?.clientWidth + 10;
+  newsPosition.value = document.querySelector(".newsTicker")?.clientWidth + 25;
 }
 
 setupVue.news = {
@@ -74,9 +74,12 @@ setupVue.news = {
   // go use a ref or smh
   computed: {
     style() {
-      return {
-        "margin-left": this.newsPosition + "px"
+      const style = {
+        "margin-left": this.newsPosition + "px",
+        transition: this.oldPosition > this.newsPosition ? ".2s" : ""
       };
+      this.oldPosition = this.newsPosition;
+      return style;
     },
     newsMsg() {
       return this.newsValue?.[0];

@@ -124,7 +124,7 @@ export function mineBlock(offset, block, damage) {
 function manualMine(x, y, block) {
   if (player.miners.manualCooldown > 0) return;
   if (!isBlockExposed(x, y)) return;
-  if (D(player.quarry.map[x][y].health).eq(0)) return;
+  if (D(player.quarry.map[y][x].health).lte(0)) return;
   mineBlock(y, block, getMinerEff(0));
   player.miners.manualCooldown = 2;
 }
@@ -169,14 +169,6 @@ const BLOCK_STATS = Array(10)
       )
   );
 
-function getBlockDataByValues(depth, layer, ore) {
-  const y = player.quarry.map.find((i, ind) =>
-    Decimal.sub(depth, getQuarryDepth()).eq(ind)
-  );
-  const x = y.find((i, ind) => i.layer === layer && i.ore === ore);
-  return [player.quarry.map.indexOf(y), y.indexOf(x)];
-}
-
 /* -=- INSERT NEW CONTENT -=- */
 setupVue.Block = {
   props: ["width", "height", "x", "y"],
@@ -194,32 +186,30 @@ setupVue.Block = {
       const oreColor = ORE_DATA[this.block.ore]?.color ?? "transparent";
       const treasureColor = this.block.treasure ? "#ffefbf" : "#0001";
       const health = D(this.block.health).pow(0.5).max(0).min(1).toNumber();
-      const isGreen =
-        player.miners.manualCooldown === 0 && isBlockExposed(this.x, this.y);
+      const exposedColor = isBlockExposed(this.x, this.y) ? "#0000" : "#0004";
 
       if (health > 0)
         return {
           // why linear gradient on the _same_ thing
-          border: `1px solid ${isGreen ? "green" : layerColor}`,
           background: `
             linear-gradient(#0003, #0003),
             linear-gradient(#0003, #0003),
+            linear-gradient(${exposedColor}, ${exposedColor}),
             linear-gradient(${oreColor}, ${oreColor}),
             linear-gradient(${layerColor}, ${layerColor}),
             linear-gradient(${treasureColor}, ${treasureColor}),
             linear-gradient(${layerColor}, ${layerColor})
           `,
           "background-position":
-            "center, center, center, center, center, center",
+            "center, center, center, center, center, center, center",
           "background-size": `${(1 - health) * 100}% 2px, 2px ${
             (1 - health) * 100
-          }%, 50% 50%, calc(100% - 2px) calc(100% - 2px), 100% 100%, 100% 100%`,
+          }%, 100% 100%, 50% 50%, calc(100% - 2px) calc(100% - 2px), 100% 100%, 100% 100%`,
           "background-repeat":
-            "no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat"
+            "no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat"
         };
       else
         return {
-          border: `1px solid black`,
           background: `
             linear-gradient(#000a, #000a),
             linear-gradient(${layerColor}, ${layerColor}),
@@ -240,13 +230,11 @@ setupVue.Block = {
         <span v-if="block.voided">
           <br>This is a Void Block... (Collapse to proceed!)
         </span>
-        <span v-else>
-          <span v-if="block.ore !== ''">
-            <br>Ore: {{block.ore}} ({{getRarity(ORE_DATA[block.ore].rarity)}})
-          </span><br>
-          Health: {{format(health.mul(block.health))}}/{{format(health)}}<br>
-          <b v-if="block.treasure" style='color: gold'>Treasure inside!</b>
-        </span>
+        <span v-if="block.ore !== ''">
+          <br>Ore: {{block.ore}} ({{getRarity(ORE_DATA[block.ore].rarity)}})
+        </span><br>
+        Health: {{format(health.mul(block.health))}}/{{format(health)}}<br>
+        <b v-if="block.treasure" style='color: gold'>Treasure inside!</b>
       </span>
     </div>
   `,

@@ -54,7 +54,7 @@ export function save(manual) {
  */
 export function load(save) {
   // csb does not understand ?? lmao
-  const data = save ?? localStorage.getItem(SAVE_KEY);
+  const data = save || localStorage.getItem(SAVE_KEY);
   // can only be null if it is not found
   if (data === null || data === "") return;
   try {
@@ -92,7 +92,7 @@ export async function exportSave() {
 
 export function hardReset(force = false) {
   if (
-    !force &&
+    force ||
     !confirm(
       "Are you sure? This is not the soft reset you are looking for. " +
         "THIS WILL RESET THE ENTIRE GAME WITH NO REWARD."

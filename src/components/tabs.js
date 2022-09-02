@@ -36,12 +36,15 @@ export const TABS = (window.TABS = {
             id="offline"
             @click="player.options.off = !player.options.off"
           >
-            Offline Progresssion: {{player.options.off ? "ON" : "OFF" }}</button
+            Offline Progression: {{player.options.off ? "ON" : "OFF" }}</button
           ><br />
 
           <h2>Misc</h2>
           <button @click="player.options.news=!player.options.news">
             News ticker: {{player.options.news ? "ON" : "OFF"}}
+          </button>
+          <button @click="player.options.icons=!player.options.icons">
+            Icons: {{player.options.icons ? "Based off progress" : "Dirt"}}
           </button>
 
           <h2>Discord</h2>

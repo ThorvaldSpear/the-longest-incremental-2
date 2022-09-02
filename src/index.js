@@ -47,7 +47,10 @@ const titles = [
   "Refactor I",
   "The Deepest Shaft",
   "The Incremental of Black Company",
-  "gwalicious"
+  "gwalicious",
+  "Beach layer when?",
+  "gwa edition",
+  "The Longest Incremental³"
 ];
 document.title = "The Longest Incremental²: " + random(titles);
 

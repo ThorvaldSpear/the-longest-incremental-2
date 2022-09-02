@@ -128,7 +128,7 @@ UPGRADES.GreenPapers = {
       unl: () => getUpgrade("GreenPapers", 6).amt.gte(1)
     }),
     new Upgrade({
-      name: "Green Paper Banking",
+      name: "Clever Marketing",
       cost: () => D(525000),
       eff: (lvl) => RESOURCES.greenPaper.amt.add(10).log10(),
       desc(eff) {
@@ -157,16 +157,14 @@ UPGRADES.GreenPapers = {
     new Upgrade({
       name: "Into The Deep",
       // Free to prevent soft-locking
-      cost: () => D(0),
+      cost: () => (D(player.quarry.depth).gte(100) ? D(0) : D(Infinity)),
       eff: () => 1,
       desc(eff) {
         return `Unlock Collapse.<br>
         Requires 100 Depth!`;
       },
       group: "GreenPapers",
-      unl: () =>
-        getUpgrade("GreenPapers", 9).amt.gte(1) &&
-        D(player.quarry.depth).gte(100)
+      unl: () => getUpgrade("GreenPapers", 9).amt.gte(1)
     })
   ]
 };

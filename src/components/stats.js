@@ -37,7 +37,7 @@ TABS.StatsMain = {
           <td><h3>Treasures Found</h3></td>
           <td>{{format(stats.treasures, 0)}}</td>
         </tr>
-        <tr>
+        <tr v-if="hasUpgrade('GreenPapers', 3)">
           <td><h3>Rows cleared in Maps</h3></td>
           <td>{{format(stats.mapRows, 0)}}</td>
         </tr>

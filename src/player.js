@@ -3,7 +3,7 @@ import { app } from "./index.js";
 import { setupVue } from "./setup.js";
 import { DATA, setupData, TICK_DATA } from "./tmp.js";
 
-import { load, hardReset } from "./utils/saveload.js";
+import { load, hardReset, save } from "./utils/saveload.js";
 import { ver } from "./utils/version.js";
 
 import { initTabs } from "./components/tabs.js";
@@ -50,7 +50,11 @@ export function setupPlayer() {
 
       mapRows: new Decimal(0)
     },
-    options: {}
+    options: {
+      off: true,
+      news: true,
+      icons: true
+    }
   };
 }
 
@@ -117,3 +121,17 @@ setupVue.end = {
     };
   }
 };
+
+document.addEventListener(
+  "keydown",
+  function (e) {
+    if (
+      (window.navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey) &&
+      e.keyCode == 83
+    ) {
+      e.preventDefault();
+      save(true);
+    }
+  },
+  false
+);

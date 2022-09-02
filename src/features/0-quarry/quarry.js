@@ -519,6 +519,14 @@ function getOreCost(ore) {
   return getOreWorth(ore).mul(1.5);
 }
 
+function getAllWorth() {
+  let value = new Decimal(0);
+  for (const name of Object.keys(ORE_DATA)) {
+    value = value.add(getBlockAmount(name).mul(getOreWorth(name)));
+  }
+  return value;
+}
+
 function sellAllOres() {
   for (const index of Object.keys(ORE_DATA)) sellOre(index);
 }
@@ -592,13 +600,17 @@ TABS.QuarrySite = {
             Click cooldown: {{formatTime(player.miners.manualCooldown)}}
           </span>
           <span v-else>
-            Click on any block with a green outline to deal {{format(getMinerEff(0))}}
-            damage (equal to Noivce Miners' damage/hit)
+            Click on any highlighted block to deal {{format(getMinerEff(0))}}
+            damage (equal to Novice Miners' damage/hit)
           </span>
           <div v-if="!player.quarry.inMap">You are currently in Depth {{format(player.quarry.depth, 0)}} / 100.</div>
-          <button v-if="player.quarry.inMap" onclick="switchMap()">Exit Map</button>
-          <button v-if="new Decimal(player.quarry.depth).round().gte(getVoidDepth())" 
-          @click="notify('Soon.')">(C) Collapse!</button><br>
+          <div>
+            <button v-if="player.quarry.inMap" onclick="switchMap()">Exit Map</button>
+            <button 
+              v-if="new Decimal(player.quarry.depth).round().gte(getVoidDepth()) && hasUpgrade('GreenPapers', 10) && !player.quarry.inMap" 
+              @click="notify('Soon.')"
+            >(C) Collapse!</button>
+          </div>
           <grid type="Block" 
                 :width="QUARRY_SIZE.width" 
                 :height="QUARRY_SIZE.height" 
@@ -608,7 +620,7 @@ TABS.QuarrySite = {
           <miners style="flex: 1 0 50%" />
           <div style="flex: 1 0 50%">
             <resource name="greenPaper" />
-            <button @click="sellAllOres()">Sell all</button>
+            <button @click="sellAllOres()">Sell all for {{format(getAllWorth())}} GP</button>
             <table class="resourceTable">
               <tr>
                 <td colspan="2">
@@ -659,6 +671,7 @@ TABS.QuarrySite = {
 
         getBlockAmount,
         getOreWorth,
+        getAllWorth,
         getOreCost,
         buyOreAmount,
 

@@ -183,9 +183,10 @@ button:active {
 /* Tooltip text */
 .tooltip .tooltiptext {
   visibility: hidden;
+  opacity: 0;
   width: max-content;
   max-width: 400px;
-  bottom: calc(100% + 8px);
+  bottom: 100%;
   left: 50%;
   transform: translateX(-50%);
   background-color: black;
@@ -199,19 +200,22 @@ button:active {
   /* Position the tooltip text - see examples below! */
   position: absolute;
   z-index: 1;
+  transition: 0.2s;
+}
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+  bottom: calc(100% + 8px);
+  opacity: 1;
+  visibility: visible;
 }
 .tooltip .tooltiptext::after {
   content: "";
   position: absolute;
-  top: 100%;
+  top: calc(100% - 1px);
   left: 50%;
   transform: translateX(-50%);
-  border: 8px solid transparent;
-  border-top: 8px solid black;
-}
-/* Show the tooltip text when you mouse over the tooltip container */
-.tooltip:hover .tooltiptext {
-  visibility: visible;
+  border: 9px solid transparent;
+  border-top: 9px solid black;
 }
 
 /* Modifier table */
@@ -261,6 +265,11 @@ button:active {
 }
 .criticalError #inner_bg {
   background: black;
+}
+.criticalError button {
+  background: #800 !important;
+  color: black !important;
+  box-shadow: 3px 3px 6px #f007;
 }
 .criticalError #app,
 .criticalError #app * {
@@ -339,6 +348,9 @@ button[role="equipment"] {
 }
 button[role="greenpapers"] {
   background: linear-gradient(white, #bfb);
+}
+button[role="achievements"] {
+  background: linear-gradient(white, #ffb);
 }
 
 /* Formula thingies */
