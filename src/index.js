@@ -5,6 +5,7 @@ import { setupVue } from "./setup.js";
 // what the heck  is this now
 import "./components/stats.js";
 import "./components/news-ticker.js";
+import "./components/gainMulti_aarex.js";
 import { random } from "./utils/utils.js";
 
 import { player, loadGame, gameEnded } from "./player.js";
@@ -17,8 +18,8 @@ export const app = createApp()
       <version />
       <news />
       <notifications />
-      <end v-if="!gameEnded() && !player.won"/>
-      <tab v-if="gameEnded() || player.won" tab="Layers" />
+      <end v-if="gameEnded() && !player.won"/>
+      <tab v-if="!gameEnded() || player.won" tab="Layers" />
     `,
     setup() {
       return {

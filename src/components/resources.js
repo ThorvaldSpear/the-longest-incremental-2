@@ -11,6 +11,7 @@ export class Resource {
     this.prodFunc = prodFunc ?? (() => D(0));
     this.based = based;
     this.multipliers = multipliers;
+    //will use GAIN_MULTS soon
   }
 
   get amt() {
@@ -27,6 +28,9 @@ export class Resource {
 
   set(x) {
     this.amt = x;
+  }
+  addWithoutMultipliers(x) {
+    this.amt = this.amt.add(x);
   }
   add(x) {
     this.amt = this.amt.add(x);

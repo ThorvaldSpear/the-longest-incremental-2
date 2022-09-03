@@ -4,10 +4,14 @@ import { player } from "../player.js";
 import { random } from "../utils/utils.js";
 import { hasUpgrade } from "./buyables.js";
 
-// please put only news in this overwise use the random title feature
+// Please put only news or messages that could come
+// from a news company in this overwise use the random title feature
+// News messages should be longer than this line:
+// -------------------------------------------------------
 const newsMessages = [
+  // Unconditional news messages
   [
-    'As always, the News Ticker Transport Prism depends on you to maintain the service running. Direct your magic to <a href="https://discord.gg/fcEXYjPQ43" target="_blank">this underlined running text</a> to instantly transport yourself to the council headquarters if you wish to create submissions. You\'ve been reading the NTTP.'
+    'As always, the News Ticker Transport Prism depends on you to maintain the service running. Direct your focus to <a href="https://discord.gg/fcEXYjPQ43" target="_blank">this underlined running text</a> to instantly transport yourself to the council headquarters if you wish to create submissions. You\'ve been reading the NTTP.'
   ],
   [
     'Man arrested for trying to use forbidden rift magic, saying "this universe doesn\'t contain any waifus" when asked why.'
@@ -25,10 +29,20 @@ const newsMessages = [
     'The neighboring kingdom had to close borders to investigate for potential forbidden rift magic users as too many people were claiming to come from a non-existant country called "Japan"'
   ],
   [
+    "Weather forcast: The weather tomorrow will be sunny with a chance of slimes falling down the sky due to a local sorcerer blasting explosion magic to a nearby slime dungeon. There is a high chance a spider web storm will occur the day after that since the explosion mentioned earlier woke up the spider goddess who had been sleeping nearby. Unless said sorcerer managed to resolve the situation in request of the village elder it is strongly adviced for everyone to stay home, store necessity items such as water or food, close all houses' doors and windows, and pray for safety for the next three days."
+  ],
+  [
+    "Tip of the day: Did you know that for every 60 seconds in isekai, a minute passes?"
+  ],
+  ["As always, make sure to work. We're mining for deep secrets. Shhh...."],
+
+  // Conditional news messages
+  [
     'Local ore mine managed to convince people to buy ores at a considerable markup by marketing their ores as "SSH Hashed" despite no one really knows what that phrase actually means.',
     () => hasUpgrade("GreenPapers", 8)
-  ],
+  ], // this message is no longer valid as the upgrade has been renamed
 
+  // Uhhh......
   [
     "The king needs magical artifacts in order to look out for anomalies. The progress they are making is steady yet.",
     () => false
@@ -102,19 +116,19 @@ setupVue.news = {
     }
   },
   template: `
-    <div v-if="player.options.news" class="newsTicker">
-      <div
-        :style="style"
-        v-html="newsMsg"
-        class="newsMessage"
-      ></div>
+    <div class="tooltip">
+      <div v-if="player.options.news" class="newsTicker" @click="newNewsMessage()">
+        <div :style="style" v-html="newsMsg" class="newsMessage"></div>
+      </div>
+      <div class="tooltiptext bottom">Click to change news message</div>
     </div>
   `,
   setup() {
     return {
       player,
       newsPosition,
-      newsValue
+      newsValue,
+      newNewsMessage
     };
   }
 };

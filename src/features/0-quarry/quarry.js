@@ -610,9 +610,10 @@ TABS.QuarrySite = {
             Click cooldown: {{formatTime(player.miners.manualCooldown)}}
           </span>
           <span v-else>
-            Click on any highlighted block to deal {{format(getMinerEff(0))}}
-            damage (equal to Novice Miners' damage/hit).<br>
-            Click cooldown is equal to 1/[Novice Miners' seconds/hit]
+            Click on any highlighted block to deal <span class="tooltip detailed">
+              {{format(getMinerEff(0))}} damage
+              <span class="tooltiptext">Click cooldown is equal to 1/[Novice Miners' seconds/hit]</span>
+            </span>.
           </span>
           <div v-if="!player.quarry.inMap">You are currently in Depth {{format(player.quarry.depth, 0)}} / 100.</div>
           <div>

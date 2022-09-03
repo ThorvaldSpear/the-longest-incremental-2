@@ -67,7 +67,7 @@ setupVue["gain-multi"] = {
   <span class="tooltip detailed">
     <slot></slot>
     <span class="tooltiptext">
-    Modifiers:<br>
+    <b>Modifiers:</b><br>
     <table>
       <tr>
         <td>
@@ -77,14 +77,16 @@ setupVue["gain-multi"] = {
           {{format(multi.base())}}
         </td>
       </tr>
-      <tr v-for="disp of multi.multi">
-        <td v-if="disp.enabled()">
-          {{typeof disp.name === 'function' ? disp.name() : disp.name}}:
-        </td>
-        <td v-if="disp.enabled()">
-          {{disp.description()}}
-        </td>
-      </tr>
+      <template v-for="disp of multi.multi">
+        <tr v-if="disp.enabled()">
+          <td>
+            {{typeof disp.name === 'function' ? disp.name() : disp.name}}:
+          </td>
+          <td>
+            {{disp.description()}}
+          </td>
+        </tr>
+      </template>
       <tr>
         <td>
           Total:

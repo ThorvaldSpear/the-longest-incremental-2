@@ -165,62 +165,6 @@ const BLOCK_STATS = Array(10)
 
 const blockHovered = reactive([undefined, undefined]);
 /* -=- INSERT NEW CONTENT -=- */
-
-setupVue["block-stats"] = {
-  computed: {
-    y() {
-      return blockHovered[1];
-    },
-    x() {
-      return blockHovered[0];
-    },
-    block() {
-      return player.quarry.map[this.y][this.x];
-    },
-    multi() {
-      return BLOCK_STATS[this.y][this.x];
-    },
-    health() {
-      return this.multi.value();
-    }
-  },
-  template: `
-  <div v-if="blockHovered.every(i=>i!==undefined)">
-    <div>
-      Location: ({{x}}, {{y}})
-    </div>
-    <div v-if="Decimal.lte(block.health, 0)">
-      This block is already mined!
-    </div>
-    <div v-else-if="block.layer === 'Bedrock'">
-      This block is impassable.
-    </div>
-    <div v-else>
-      <b>Block Type: {{block.layer}}</b>
-      <span v-if="block.voided">
-        <br>This is a Void Block... (Collapse to proceed!)
-      </span>
-      <span v-if="block.ore !== ''">
-        <br>Ore: {{block.ore}} ({{getRarity(ORE_DATA[block.ore].rarity)}})
-      </span><br>
-      Health: {{format(health.mul(block.health))}}/
-      <gain-multi :multi="multi">
-        {{format(health)}}
-      </gain-multi><br>
-      <b v-if="block.treasure" style='color: gold'>Treasure inside!</b>
-    </div>
-  </div>
-  `,
-  setup() {
-    return {
-      Decimal,
-      blockHovered,
-      getRarity,
-      ORE_DATA,
-      format
-    };
-  }
-};
 setupVue.Block = {
   props: ["width", "height", "x", "y"],
   computed: {
@@ -285,7 +229,7 @@ setupVue.Block = {
     <div 
       v-if="block !== undefined"
       @click="manualMine(x, y, block)"
-      @mouseover="updateHover(x, y)"
+      @hover="updateHover(x, y)"
       :style="style" 
       style="width: 32px; height: 32px; transition: background-size .5s">
     </div>
@@ -293,6 +237,62 @@ setupVue.Block = {
   setup() {
     return {
       manualMine
+    };
+  }
+};
+
+setupVue["block-stats"] = {
+  computed: {
+    y() {
+      return blockHovered[1];
+    },
+    x() {
+      return blockHovered[0];
+    },
+    block() {
+      return player.quarry.map[this.y][this.x];
+    },
+    multi() {
+      return BLOCK_STATS[this.y][this.x];
+    },
+    health() {
+      return this.multi.value();
+    }
+  },
+  template: `
+    <div v-if="blockHovered.every(i=>i!==undefined)">
+      <div>
+        Location: ({{x}}, {{y}})
+      </div>
+      <div v-if="Decimal.lte(block.health, 0)">
+        This block is already mined!
+      </div>
+      <div v-else-if="block.voided">
+        This is a Void Block... (Collapse to proceed!)
+      </div>
+      <div v-else-if="block.layer === 'Bedrock'">
+        This block is impassable.
+      </div>
+      <div v-else>
+        <b>Block Type: {{block.layer}}</b>
+        <span v-if="block.ore !== ''">
+          <br>Ore: {{block.ore}} ({{getRarity(ORE_DATA[block.ore].rarity)}})
+        </span><br>
+        Health: {{format(health.mul(block.health))}} /
+        <gain-multi :multi="multi">
+          {{format(health)}}
+        </gain-multi><br>
+        <b v-if="block.treasure" style='color: gold'>Treasure inside!</b>
+      </div>
+    </div>
+  `,
+  setup() {
+    return {
+      Decimal,
+      blockHovered,
+      getRarity,
+      ORE_DATA,
+      format
     };
   }
 };

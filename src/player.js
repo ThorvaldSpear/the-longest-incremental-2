@@ -131,7 +131,7 @@ document.addEventListener(
   function (e) {
     if (
       (window.navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey) &&
-      e.keyCode == 83
+      e.keyCode === 83
     ) {
       e.preventDefault();
       save(true);

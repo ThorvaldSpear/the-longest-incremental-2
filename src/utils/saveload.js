@@ -103,7 +103,6 @@ export function hardReset(force = false) {
   if (!force) notify("Welcome back to the beginning.");
   save();
 }
-window.hardReset = hardReset;
 // this could still technically work due to the fact that toJSON is a thing in classes
 // actually for any object toJSON works
 /**

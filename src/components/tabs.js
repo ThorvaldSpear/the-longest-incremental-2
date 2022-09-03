@@ -1,8 +1,9 @@
 import { app } from "../index.js";
 import { player } from "../player.js";
 import { save, exportSave, importSave, hardReset } from "../utils/saveload.js";
+import { isDev } from "../dev.js";
 
-export const TABS = (window.TABS = {
+export const TABS = {
   Layers: {
     subtabs: ["Quarry", "Menu"]
   },
@@ -10,7 +11,14 @@ export const TABS = (window.TABS = {
     component: {
       template: `<div>Note: Hovering over some numbers allows you to see their formulas.</div>`
     },
-    subtabs: ["Options", "Stats", "Story", "Achievements", "About"]
+    subtabs: [
+      "Options",
+      "Stats",
+      "Story",
+      "Achievements",
+      "About",
+      ...(isDev ? ["Experimental"] : [])
+    ]
   },
   Options: {
     component: {
@@ -82,7 +90,14 @@ export const TABS = (window.TABS = {
       `
     }
   }
-});
+};
+
+if (isDev) {
+  window.TABS = TABS;
+  TABS.Experimental = {
+    template: `testing testing 1 2 3`
+  };
+}
 
 export function initTabs() {
   const extraComps = {};
@@ -107,7 +122,8 @@ export function initTabs() {
     props: ["tab"],
     template: `
       <component class="tab" :is="tab" />
-      <div class='tab_navigator' v-if="tabs.subtabs !== undefined && tabs.subtabs.length > 1" :role="tab.toLowerCase()">
+      <div class='tab_navigator' 
+      v-if="tabs.subtabs !== undefined && tabs.subtabs.length > 1" :role="tab.toLowerCase()">
         <br>
         <span v-for="subtab of tabs.subtabs" :key="subtab">
           <button v-if="TABS[subtab].unl()"
@@ -135,9 +151,8 @@ export function initTabs() {
         return TABS[this.tab] ?? {};
       }
     },
-    setup(props) {
+    setup() {
       return {
-        console,
         TABS
       };
     },

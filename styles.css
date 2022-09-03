@@ -11,6 +11,7 @@ body {
   margin: 0;
   text-align: center;
   box-sizing: border-box;
+  user-select: none;
 }
 table {
   margin: auto;
@@ -81,6 +82,10 @@ h3 {
   border: 1px solid;
   border-radius: 5px;
   overflow: hidden;
+  transition: 0.2s;
+}
+.newsTicker:active {
+  transform: scale(0.95);
 }
 .newsMessage {
   width: max-content;
@@ -105,7 +110,7 @@ h3 {
 button {
   background: linear-gradient(white, #7fcfff);
   color: #000b;
-  box-shadow: 3px 3px 6px #07f7;
+  box-shadow: 0 3px 6px #07f7;
   border: 0px;
   border-radius: 5px;
   padding: 5px 7px;
@@ -197,15 +202,17 @@ button:active {
 }
 /* Tooltip text */
 .tooltip .tooltiptext {
+  --offsetX: 0px;
   visibility: hidden;
   opacity: 0;
   width: max-content;
   max-width: 400px;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: black;
-  color: #ffffff;
+  bottom: calc(100% - 8px);
+  left: calc(50% + var(--offsetX));
+  transform: translateX(-50%) scale(0.9);
+  filter: drop-shadow(0 1px 3px #bfdfff) blur(2px);
+  background: linear-gradient(white, #bfdfff);
+  color: black;
   text-align: center;
   padding: 5px 8px;
   border-radius: 6px;
@@ -220,6 +227,8 @@ button:active {
 /* Show the tooltip text when you mouse over the tooltip container */
 .tooltip:hover .tooltiptext {
   bottom: calc(100% + 8px);
+  transform: translateX(-50%);
+  filter: drop-shadow(0 1px 3px #07f7);
   opacity: 1;
   visibility: visible;
 }
@@ -227,10 +236,24 @@ button:active {
   content: "";
   position: absolute;
   top: calc(100% - 1px);
-  left: 50%;
+  left: calc(50% - var(--offsetX));
   transform: translateX(-50%);
   border: 9px solid transparent;
-  border-top: 9px solid black;
+  border-top: 9px solid #bfdfff;
+}
+
+.tooltip .tooltiptext.bottom {
+  top: 100%;
+  bottom: auto;
+}
+.tooltip:hover .tooltiptext.bottom {
+  top: calc(100% + 8px);
+}
+.tooltip .tooltiptext.bottom::after {
+  bottom: calc(100% - 1px);
+  top: auto;
+  border: 9px solid transparent;
+  border-bottom: 9px solid white;
 }
 
 /* Modifier table */
@@ -312,6 +335,27 @@ button:active {
   text-align: center;
   border-radius: 6px 0 0 6px;
   z-index: 1;
+  animation: notifyOpen 0.3s ease-out;
+}
+@keyframes notifyOpen {
+  0% {
+    right: -100%;
+  }
+  100% {
+    right: -6px;
+  }
+}
+
+.notification.close {
+  animation: notifyOpen 0.3s ease-in reverse;
+}
+@keyframes notifyClose {
+  0% {
+    right: -6px;
+  }
+  100% {
+    right: -100%;
+  }
 }
 
 #version {

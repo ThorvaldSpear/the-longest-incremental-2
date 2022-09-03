@@ -130,7 +130,7 @@ UPGRADES.GreenPapers = {
     new Upgrade({
       name: "Clever Marketing",
       cost: () => D(525000),
-      eff: (lvl) => RESOURCES.greenPaper.amt.add(10).log10(),
+      eff: () => RESOURCES.greenPaper.amt.add(10).log10(),
       desc(eff) {
         return `Gain <span class="tooltip detailed">
           ${format(eff)}×
@@ -143,7 +143,7 @@ UPGRADES.GreenPapers = {
     new Upgrade({
       name: "More Pain, Ore Gain",
       cost: () => D(50000000),
-      eff: (lvl) => D(10).pow(D(player.quarry.depth).sub(75).div(50)),
+      eff: () => D(10).pow(D(player.quarry.depth).sub(75).div(50)),
       desc(eff) {
         return `Gain <span class="tooltip detailed">
           ${format(eff)}×

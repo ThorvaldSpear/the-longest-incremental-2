@@ -9,11 +9,15 @@ export function notify(message, args) {
     time: Date.now(),
     duration: 10,
     dismissable: true,
+    close: false,
     ...args
   });
 }
 function removeNotify(num) {
-  if (notifications?.[num]?.dismissable) notifications.splice(num, 1);
+  if (notifications?.[num]?.dismissable) {
+    notifications[num].close = true;
+    setTimeout(() => notifications.splice(num, 1), 200);
+  }
 }
 
 setupVue.notifications = {
@@ -27,8 +31,11 @@ setupVue.notifications = {
       <div
         v-for="(notify, i) in notif"
         class="notification"
+        :class="{
+          close: notify.close,
+        }"
         :key="notify.time"
-        @click="removeNotify(i)"
+        @click="removeNotify(notif.length - i - 1)"
       >
         {{notify.message}}
       </div>
