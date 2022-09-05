@@ -1,1 +1,1 @@
-export const setupVue = {};
+export const setupVue={};
