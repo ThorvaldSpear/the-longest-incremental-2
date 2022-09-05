@@ -1,7 +1,6 @@
 import { app } from "../index.js";
 import { player } from "../player.js";
 import { save, exportSave, importSave, hardReset } from "../utils/saveload.js";
-import { isDev } from "../dev.js";
 
 export const TABS = {
   Layers: {
@@ -11,14 +10,7 @@ export const TABS = {
     component: {
       template: `<div>Note: Hovering over some numbers allows you to see their formulas.</div>`
     },
-    subtabs: [
-      "Options",
-      "Stats",
-      "Story",
-      "Achievements",
-      "About",
-      ...(isDev ? ["Experimental"] : [])
-    ]
+    subtabs: ["Options", "Stats", "Story", "Achievements", "About"]
   },
   Options: {
     component: {
@@ -91,13 +83,6 @@ export const TABS = {
     }
   }
 };
-
-if (isDev) {
-  window.TABS = TABS;
-  TABS.Experimental = {
-    template: `testing testing 1 2 3`
-  };
-}
 
 export function initTabs() {
   const extraComps = {};

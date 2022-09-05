@@ -611,7 +611,7 @@ TABS.QuarrySite = {
           </span>
           <span v-else>
             Click on any highlighted block to deal <span class="tooltip detailed">
-              {{format(getMinerEff(0))}} damage
+              <span>{{format(getMinerEff(0))}} damage</span>
               <span class="tooltiptext">Click cooldown is equal to 1/[Novice Miners' seconds/hit]</span>
             </span>.
           </span>

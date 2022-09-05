@@ -10,6 +10,7 @@ import { random } from "./utils/utils.js";
 
 import { player, loadGame, gameEnded } from "./player.js";
 import "./features/import-layer.js";
+import { loadDev } from "./dev.js";
 
 /* --- CODE START --- */
 export const app = createApp()
@@ -51,8 +52,10 @@ const titles = [
   "gwalicious",
   "Beach layer when?",
   "gwa edition",
-  "The Longest Incremental³"
+  "The Longest Incremental³",
+  "Beyond Generators"
 ];
 document.title = "The Longest Incremental²: " + random(titles);
 
+loadDev();
 loadGame();
