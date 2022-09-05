@@ -8,15 +8,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Checks-out your repository
-      - uses: actions/checkout@v2
-        with:
-          ref: ${{ github.ref }}
+      - name: Checkout
+        uses: actions/checkout@v2
 
       - name: Minify Action
         uses: anthonyftwang/minify-action@v1.0.1
 
       # Auto-commit to repository
-      - uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: Minify source code
-          branch: ${{ github.ref }}
+       - name: Deploy 🚀
+         uses: JamesIves/github-pages-deploy-action@v4.2.5
+         with:
+          branch: gh-pages # The branch the action should deploy to.
+          folder: . # The folder the action should deploy.
