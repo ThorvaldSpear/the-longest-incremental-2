@@ -35,6 +35,9 @@ const newsMessages = [
     "Tip of the day: Did you know that for every 60 seconds in isekai, a minute passes?"
   ],
   ["As always, make sure to work. We're mining for deep secrets. Shhh...."],
+  [
+    "If you're wondering why this game's graphics is so minimal, do take note that we only have like 50MB of available disk space, so we really need to reserve them for gameplay code."
+  ],
 
   // Conditional news messages
   [

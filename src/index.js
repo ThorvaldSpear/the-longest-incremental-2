@@ -10,7 +10,6 @@ import { random } from "./utils/utils.js";
 
 import { player, loadGame, gameEnded } from "./player.js";
 import "./features/import-layer.js";
-import { loadDev } from "./dev.js";
 
 /* --- CODE START --- */
 export const app = createApp()
@@ -20,7 +19,7 @@ export const app = createApp()
       <news />
       <notifications />
       <end v-if="gameEnded() && !player.won"/>
-      <tab v-if="!gameEnded() || player.won" tab="Layers" />
+      <tab v-else tab="Layers" />
     `,
     setup() {
       return {
@@ -57,5 +56,4 @@ const titles = [
 ];
 document.title = "The Longest Incremental²: " + random(titles);
 
-loadDev();
 loadGame();
