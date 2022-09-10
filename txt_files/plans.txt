@@ -8,7 +8,7 @@ This is a isekai-medieval themed.
 (formerly Boosters)
 Collapse resets your progress, and will extend Quarry by 1 row.
 Collapse Milestones:
-- 1 Collapse: Unlock Auto-Assignation.
+- 1 Collapse: Unlock Recruiting.
 - 2 Collapses: Extend Quarry by 1 column, up to 20 total columns.
 - ??? Collapses: Unlock new Upgrades.
 - ??? Collapses: Unlock Artifacts.
@@ -21,13 +21,15 @@ Biomes:
 - There's a chance that other biomes appear with different blocks.
 - All biomes have specific depth ranges.
 
-Pickaxes:
-- You can use Stone and Bronze to create Pickaxes.
-- Pickaxes boost speed (from Bronze) and increase efficiency.
-- Higher-tier Pickaxes require higher-tier materials.
+Recruiting:
+- Basically, you passively generate a multiplier to Miners.
+- With your Research Points, you can create custom kinds of Miners.
+- Each new kind contains its own limit of RP, and have adjacent slots.
+- You can even set the layers they wish to mine!
 
 Artifacts:
 - Equip a specific kind of Miners with Artifacts which upgrade them with better abilities!
+- Each Miner contains multiple Artifact slots.
 -- Burning: Passively damages blocks.
 -- Critical: Damages blocks more rarely.
 -- Fortune: Gives you more blocks on mining.
