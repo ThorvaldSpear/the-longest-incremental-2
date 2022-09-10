@@ -1,16 +1,1 @@
-export class Challenge {
-  constructor({
-    title,
-    description,
-    complete,
-    onEnter,
-    rewardDescription,
-    effect
-  }) {
-    this.title = title;
-    this.description = description;
-    this.complete = complete ?? (() => false);
-    this.onEnter = onEnter ?? function () {};
-    this.rewardDescription = rewardDescription;
-  }
-}
+export class Challenge{constructor({title:t,description:e,complete:i,onEnter:r,rewardDescription:n,effect:o}){this.title=t,this.description=e,this.complete=i??(()=>!1),this.onEnter=r??function(){},this.rewardDescription=n}}
