@@ -33,7 +33,7 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "Speed Mining",
-      cost: 1;
+      cost: 1,
       eff: (lvl) => D(lvl).div(10).add(1),
       max: 50,
       desc(eff) {
@@ -44,7 +44,7 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "Fortune Mining",
-      cost: 1;
+      cost: 1,
       eff: (lvl) => D(lvl).div(10).add(1),
       max: 20,
       desc(eff) {
@@ -55,7 +55,7 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "Forgery",
-      cost: 1;
+      cost: 1,
       eff: () => 1,
       desc() {
         return `Unlock the Equipment.`;
@@ -65,7 +65,7 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "Refinery",
-      cost: 1;
+      cost: 1,
       eff: () => 1,
       desc() {
         return `You can buy blocks with Green Papers.`;
@@ -75,7 +75,7 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "Ore Luck",
-      cost: 1;
+      cost: 1,
       eff: (lvl) => D(lvl).div(20).add(1),
       max: 20,
       desc(eff) {
@@ -86,7 +86,7 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "Softer Atoms",
-      cost: 1;
+      cost: 1,
       eff: (lvl) => D(1.015).pow(lvl),
       max: 100,
       desc(eff) {
@@ -101,7 +101,7 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "Coordination",
-      cost: 1;
+      cost: 1,
       // tbd
       eff: (lvl) =>
         getMiner(0)
@@ -123,7 +123,7 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "Clever Marketing",
-      cost: 1;
+      cost: 1,
       eff: () => RESOURCES.greenPaper.amt.add(10).log10(),
       desc(eff) {
         return `Gain <span class="tooltip detailed">
@@ -136,7 +136,7 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "More Pain, Ore Gain",
-      cost: 1;
+      cost: 1,
       eff: () => D(10).pow(D(player.quarry.depth).sub(75).div(50)),
       desc(eff) {
         return `Gain <span class="tooltip detailed">
@@ -151,7 +151,7 @@ UPGRADES.GreenPapers = {
     new Upgrade({
       name: "Into The Deep",
       // Free to prevent soft-locking
-      cost: 1;
+      cost: 1,  
       eff: () => 1,
       desc(eff) {
         return `Unlock Collapse.<br>
