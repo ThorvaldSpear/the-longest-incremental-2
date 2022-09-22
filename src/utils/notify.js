@@ -1,1 +1,79 @@
-import{setupVue}from"../setup.js";import{reactive}from"https://unpkg.com/vue@3.2.37/dist/vue.esm-browser.js";const notifications=reactive([]);export function notify(i,t){notifications.push({message:i,time:Date.now(),duration:10,dismissable:!0,close:!1,...t})}function removeNotify(i){notifications?.[i]?.dismissable&&(notifications[i].close=!0,notifications.splice(i,1))}function removeAllNotifs(){notifications.splice(0)}setupVue.notifications={data:()=>({int:void 0}),template:'\n    <div id="notifyarea">\n      <transition-group name="fade">\n        <div v-if="notif.length > 1" class="notification closeAll" @click="removeAllNotifs()">\n          Close all\n        </div>\n        <div\n          v-for="(notify, i) in notif"\n          class="notification"\n          :class="{\n            dismissable: notify.dismissable,\n          }"\n          :key="notify.time"\n          @click="removeNotify(notif.length - i - 1)"\n        >\n          {{notify.message}}\n        </div>\n      </transition-group>\n    </div>\n  ',mounted(){this.int=setInterval((()=>{for(const[i,t]of this.notifications.entries())(Date.now()-t.time)/1e3>t.duration&&t.dismissable&&this.removeNotify(i)}),100)},beforeUnmount(){clearInterval(this.int)},computed:{notif(){return this.notifications.slice().reverse()}},setup:()=>({notifications:notifications,removeNotify:removeNotify,removeAllNotifs:removeAllNotifs})};
+import { setupVue } from "../setup.js";
+import { reactive } from "https://unpkg.com/vue@3.2.37/dist/vue.esm-browser.js";
+
+const notifications = reactive([]);
+
+export function notify(message, args) {
+  notifications.push({
+    message,
+    time: Date.now(),
+    duration: 10,
+    dismissable: true,
+    close: false,
+    ...args
+  });
+}
+function removeNotify(num) {
+  if (notifications?.[num]?.dismissable) {
+    notifications[num].close = true;
+    notifications.splice(num, 1);
+  }
+}
+function removeAllNotifs() {
+  notifications.splice(0);
+}
+
+setupVue.notifications = {
+  data() {
+    return {
+      int: undefined
+    };
+  },
+  template: `
+    <div id="notifyarea">
+      <transition-group name="fade">
+        <div v-if="notif.length > 1" class="notification closeAll" @click="removeAllNotifs()">
+          Close all
+        </div>
+        <div
+          v-for="(notify, i) in notif"
+          class="notification"
+          :class="{
+            dismissable: notify.dismissable,
+          }"
+          :key="notify.time"
+          @click="removeNotify(notif.length - i - 1)"
+        >
+          {{notify.message}}
+        </div>
+      </transition-group>
+    </div>
+  `,
+  mounted() {
+    this.int = setInterval(() => {
+      for (const [i, notif] of this.notifications.entries()) {
+        if (
+          (Date.now() - notif.time) / 1000 > notif.duration &&
+          notif.dismissable
+        ) {
+          this.removeNotify(i);
+        }
+      }
+    }, 100);
+  },
+  beforeUnmount() {
+    clearInterval(this.int);
+  },
+  computed: {
+    notif() {
+      return this.notifications.slice().reverse();
+    }
+  },
+  setup() {
+    return {
+      notifications,
+      removeNotify,
+      removeAllNotifs
+    };
+  }
+};

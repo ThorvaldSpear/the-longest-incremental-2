@@ -1,1 +1,20 @@
-window.onerror=(n,t,r,e,o)=>{document.body.className="criticalError",document.getElementById("app").innerHTML=`\n    <div>\n      <h1>An error has occurred:</h1>\n      <h2>${o.toString()}<br/>\n        <span style="font-size:16px">at ${t}:${r}:${e}<br></span>\n      </h2>\n      \n      <pre>${o.stack}</pre>\n      <br><br>\n      Please copy this text and send it to the developers.<br>\n      <a href="https://discord.gg/fcEXYjPQ43" target="_blank">\n        <button>Discord</button>\n      </a><br><br>\n      Additionally, you can download the save for bug reporting.<br>\n      <button>Download (not implemented)</button>\n    </div>\n  `};
+window.onerror = (event, source, lineno, colno, error) => {
+  document.body.className = "criticalError";
+  document.getElementById("app").innerHTML = `
+    <div>
+      <h1>An error has occurred:</h1>
+      <h2>${error.toString()}<br/>
+        <span style="font-size:16px">at ${source}:${lineno}:${colno}<br></span>
+      </h2>
+      
+      <pre>${error.stack}</pre>
+      <br><br>
+      Please copy this text and send it to the developers.<br>
+      <a href="https://discord.gg/fcEXYjPQ43" target="_blank">
+        <button>Discord</button>
+      </a><br><br>
+      Additionally, you can download the save for bug reporting.<br>
+      <button>Download (not implemented)</button>
+    </div>
+  `;
+};
