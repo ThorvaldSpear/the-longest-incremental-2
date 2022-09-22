@@ -23,7 +23,7 @@ UPGRADES.GreenPapers = {
   data: [
     new Upgrade({
       name: "Miner Power",
-      cost: 1;
+      cost: 1,
       eff: (lvl) => D(lvl).div(10).add(1),
       max: 50,
       desc(eff) {
@@ -151,7 +151,7 @@ UPGRADES.GreenPapers = {
     new Upgrade({
       name: "Into The Deep",
       // Free to prevent soft-locking
-      cost: 1;  
+      cost: 1;
       eff: () => 1,
       desc(eff) {
         return `Unlock Collapse.<br>
