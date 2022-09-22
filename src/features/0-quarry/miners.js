@@ -182,7 +182,7 @@ BUYABLES.Miners = {
     // @type {Array<Buyable>}
     new Miner({
       name: "Novice Miner",
-      cost: (lvl) => 1,
+      cost: (lvl) => 0,
       eff: (lvl) => D(lvl),
       desc(eff) {
         return `to 1 exposed block`;
