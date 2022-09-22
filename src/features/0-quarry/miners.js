@@ -108,7 +108,7 @@ setupVue.miner = {
         <span>
           <gain-multi :multi="key_data.dmgMultiplier">
             {{format(key.eff.value)}} damage/hit
-          </gain-multi> × 
+          </gain-multi> ×
           <gain-multi :multi="key_data.speedMultiplier">
             {{format(
               key_data.speedMultiplier.value()
@@ -117,9 +117,9 @@ setupVue.miner = {
         </span>
       </div>
       <div>
-        <button @click="key_data.buy()" 
+        <button @click="key_data.buy()"
         :class="{
-          canbuy: key_data.canBuy(), 
+          canbuy: key_data.canBuy(),
           cannotbuy: !key_data.canBuy()
         }">
           <b>{{key_group.buyPhrase ?? "Buy"}} +1</b><br>
@@ -182,7 +182,7 @@ BUYABLES.Miners = {
     // @type {Array<Buyable>}
     new Miner({
       name: "Novice Miner",
-      cost: (lvl) => (D(lvl).eq(0) ? D(0) : lvl.pow(4).add(9)),
+      cost: (lvl) => 1,
       eff: (lvl) => D(lvl),
       desc(eff) {
         return `to 1 exposed block`;
@@ -192,7 +192,7 @@ BUYABLES.Miners = {
     }),
     new Miner({
       name: "Stone Miner",
-      cost: (lvl) => lvl.add(1).pow(4).add(9),
+      cost: (lvl) => 1,
       eff: (lvl) => D(lvl).mul(2),
       desc(eff) {
         return `to 1 exposed non-ore block`;
@@ -207,7 +207,7 @@ BUYABLES.Miners = {
     }),
     new Miner({
       name: "Veining Miner",
-      cost: (lvl) => lvl.add(1).pow(4).mul(2).add(98),
+      cost: (lvl) => 1,
       eff: (lvl) => D(lvl).mul(2),
       desc(eff) {
         return `to 1 block on the highest layer`;
@@ -222,7 +222,7 @@ BUYABLES.Miners = {
     }),
     new Miner({
       name: "Efficient Miner",
-      cost: (lvl) => lvl.add(1).pow(4).mul(4).add(996),
+      cost: (lvl) => 1,
       eff: (lvl) => D(lvl),
       desc(eff) {
         return `to 1 exposed ore block`;
@@ -237,7 +237,7 @@ BUYABLES.Miners = {
     }),
     new Miner({
       name: "Ranged Miner",
-      cost: (lvl) => lvl.add(1).pow(4).mul(8).add(9992),
+      cost: (lvl) => 1,
       eff: (lvl) => D(lvl).mul(5),
       desc(eff) {
         return `to 1 exposed block + 1/2 damage to 4 adjacent blocks`;

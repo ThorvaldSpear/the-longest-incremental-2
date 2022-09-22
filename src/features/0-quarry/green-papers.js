@@ -23,10 +23,7 @@ UPGRADES.GreenPapers = {
   data: [
     new Upgrade({
       name: "Miner Power",
-      cost: (lvl) => {
-        lvl = applyScaling(lvl, 20, 2);
-        return Decimal.pow(1.3, lvl).mul(1);
-      },
+      cost: 1;
       eff: (lvl) => D(lvl).div(10).add(1),
       max: 50,
       desc(eff) {
@@ -36,10 +33,7 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "Speed Mining",
-      cost: (lvl) => {
-        lvl = applyScaling(lvl, 20, 3);
-        return Decimal.pow(1.6, lvl).mul(10);
-      },
+      cost: 1;
       eff: (lvl) => D(lvl).div(10).add(1),
       max: 50,
       desc(eff) {
@@ -50,7 +44,7 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "Fortune Mining",
-      cost: (lvl) => Decimal.pow(2, lvl).mul(100),
+      cost: 1;
       eff: (lvl) => D(lvl).div(10).add(1),
       max: 20,
       desc(eff) {
@@ -61,7 +55,7 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "Forgery",
-      cost: () => D(1000),
+      cost: 1;
       eff: () => 1,
       desc() {
         return `Unlock the Equipment.`;
@@ -71,7 +65,7 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "Refinery",
-      cost: () => D(2500),
+      cost: 1;
       eff: () => 1,
       desc() {
         return `You can buy blocks with Green Papers.`;
@@ -81,7 +75,7 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "Ore Luck",
-      cost: (lvl) => Decimal.pow(3, lvl).mul(6000),
+      cost: 1;
       eff: (lvl) => D(lvl).div(20).add(1),
       max: 20,
       desc(eff) {
@@ -92,7 +86,7 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "Softer Atoms",
-      cost: (lvl) => Decimal.pow(5, lvl).mul(25000),
+      cost: 1;
       eff: (lvl) => D(1.015).pow(lvl),
       max: 100,
       desc(eff) {
@@ -107,7 +101,7 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "Coordination",
-      cost: () => D(65000),
+      cost: 1;
       // tbd
       eff: (lvl) =>
         getMiner(0)
@@ -129,7 +123,7 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "Clever Marketing",
-      cost: () => D(525000),
+      cost: 1;
       eff: () => RESOURCES.greenPaper.amt.add(10).log10(),
       desc(eff) {
         return `Gain <span class="tooltip detailed">
@@ -142,7 +136,7 @@ UPGRADES.GreenPapers = {
     }),
     new Upgrade({
       name: "More Pain, Ore Gain",
-      cost: () => D(50000000),
+      cost: 1;
       eff: () => D(10).pow(D(player.quarry.depth).sub(75).div(50)),
       desc(eff) {
         return `Gain <span class="tooltip detailed">
@@ -157,7 +151,7 @@ UPGRADES.GreenPapers = {
     new Upgrade({
       name: "Into The Deep",
       // Free to prevent soft-locking
-      cost: () => (D(player.quarry.depth).gte(100) ? D(0) : D(Infinity)),
+      cost: 1;  
       eff: () => 1,
       desc(eff) {
         return `Unlock Collapse.<br>
@@ -174,7 +168,7 @@ TABS.GreenPapers = {
   component: {
     template: `
     <div>
-      <div>Note: you can hover over upgrade description 
+      <div>Note: you can hover over upgrade description
       for some upgrades to see their formulas.</div>
       <resource name="greenPaper"/><br>
       <upgrades group="GreenPapers"/>
